@@ -1,0 +1,1523 @@
+{
+  "codecrafters-io/build-your-own-x": {
+    "kind": "learning-resource",
+    "topic_id": "systems-from-scratch",
+    "topic_name": "从零实现计算机系统",
+    "concept_ids": [
+      "systems-design",
+      "implementation-by-rebuilding"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 132750724
+  },
+  "sindresorhus/awesome": {
+    "kind": "collection",
+    "topic_id": "technical-resource-discovery",
+    "topic_name": "技术资源检索与筛选",
+    "concept_ids": [
+      "resource-evaluation",
+      "information-curation"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 21737465
+  },
+  "public-apis/public-apis": {
+    "kind": "collection",
+    "topic_id": "api-integration",
+    "topic_name": "API发现与集成",
+    "concept_ids": [
+      "http-api",
+      "authentication",
+      "error-handling"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 54346799
+  },
+  "freeCodeCamp/freeCodeCamp": {
+    "kind": "learning-resource",
+    "topic_id": "full-stack-foundations",
+    "topic_name": "全栈开发基础",
+    "concept_ids": [
+      "web-programming",
+      "testing",
+      "data-structures"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 28457823
+  },
+  "EbookFoundation/free-programming-books": {
+    "kind": "collection",
+    "topic_id": "technical-resource-discovery",
+    "topic_name": "技术资源检索与筛选",
+    "concept_ids": [
+      "resource-evaluation",
+      "self-directed-learning"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 13491895
+  },
+  "openclaw/openclaw": {
+    "kind": "software",
+    "topic_id": "personal-assistant-agents",
+    "topic_name": "个人助理智能体",
+    "concept_ids": [
+      "agent-loop",
+      "tool-use",
+      "persistent-memory"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1103012935
+  },
+  "donnemartin/system-design-primer": {
+    "kind": "learning-resource",
+    "topic_id": "distributed-system-design",
+    "topic_name": "分布式系统设计",
+    "concept_ids": [
+      "load-balancing",
+      "caching",
+      "consistency"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 83222441
+  },
+  "nilbuild/developer-roadmap": {
+    "kind": "learning-resource",
+    "topic_id": "technical-learning-roadmaps",
+    "topic_name": "技术学习路线规划",
+    "concept_ids": [
+      "prerequisite-mapping",
+      "skill-assessment"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 85077558
+  },
+  "jwasham/coding-interview-university": {
+    "kind": "learning-resource",
+    "topic_id": "computer-science-foundations",
+    "topic_name": "计算机科学基础",
+    "concept_ids": [
+      "data-structures",
+      "algorithms",
+      "operating-systems"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 60493101
+  },
+  "vinta/awesome-python": {
+    "kind": "collection",
+    "topic_id": "python-ecosystem-selection",
+    "topic_name": "Python工具与库选型",
+    "concept_ids": [
+      "package-evaluation",
+      "dependency-selection"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 21289110
+  },
+  "awesome-selfhosted/awesome-selfhosted": {
+    "kind": "collection",
+    "topic_id": "self-hosted-applications",
+    "topic_name": "自托管应用",
+    "concept_ids": [
+      "deployment",
+      "backup",
+      "service-operation"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 36633370
+  },
+  "obra/superpowers": {
+    "kind": "software",
+    "topic_id": "agent-development-workflows",
+    "topic_name": "智能体辅助开发流程",
+    "concept_ids": [
+      "specification",
+      "task-decomposition",
+      "verification"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1073224795
+  },
+  "practical-tutorials/project-based-learning": {
+    "kind": "learning-resource",
+    "topic_id": "project-based-learning",
+    "topic_name": "项目驱动学习",
+    "concept_ids": [
+      "learning-by-building",
+      "implementation-transfer"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 88011908
+  },
+  "mattpocock/skills": {
+    "kind": "learning-resource",
+    "topic_id": "agent-development-workflows",
+    "topic_name": "智能体辅助开发流程",
+    "concept_ids": [
+      "task-decomposition",
+      "engineering-practices"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1148788086
+  },
+  "996icu/996.ICU": {
+    "kind": "unknown",
+    "topic_id": "developer-workplace-culture",
+    "topic_name": "开发者工作环境与文化",
+    "concept_ids": [
+      "workplace-culture"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 177736533
+  },
+  "affaan-m/ECC": {
+    "kind": "software",
+    "topic_id": "agent-harness-engineering",
+    "topic_name": "智能体执行环境工程",
+    "concept_ids": [
+      "context-management",
+      "agent-memory",
+      "verification"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1136590548
+  },
+  "NousResearch/hermes-agent": {
+    "kind": "software",
+    "topic_id": "personal-assistant-agents",
+    "topic_name": "个人助理智能体",
+    "concept_ids": [
+      "agent-loop",
+      "tool-use",
+      "persistent-memory"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1024554267
+  },
+  "torvalds/linux": {
+    "kind": "software",
+    "topic_id": "operating-system-kernels",
+    "topic_name": "操作系统内核",
+    "concept_ids": [
+      "process-scheduling",
+      "virtual-memory",
+      "device-drivers"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 2325298
+  },
+  "react/react": {
+    "kind": "software",
+    "topic_id": "declarative-reactive-ui",
+    "topic_name": "声明式与响应式界面",
+    "concept_ids": [
+      "state-driven-ui",
+      "reconciliation",
+      "component-composition"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 10270250
+  },
+  "trimstray/the-book-of-secret-knowledge": {
+    "kind": "collection",
+    "topic_id": "systems-administration-tools",
+    "topic_name": "系统管理与命令行工具",
+    "concept_ids": [
+      "shell-composition",
+      "network-diagnostics"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 138393139
+  },
+  "deepseek-ai/deepseek-harness": {
+    "kind": "software",
+    "topic_id": "agent-harness-engineering",
+    "topic_name": "智能体执行环境工程",
+    "concept_ids": [
+      "plugin-architecture",
+      "tool-use",
+      "context-management"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1333065091
+  },
+  "TheAlgorithms/Python": {
+    "kind": "learning-resource",
+    "topic_id": "algorithms-and-data-structures",
+    "topic_name": "算法与数据结构",
+    "concept_ids": [
+      "complexity",
+      "algorithmic-invariants",
+      "data-structures"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 63476337
+  },
+  "multica-ai/andrej-karpathy-skills": {
+    "kind": "learning-resource",
+    "topic_id": "agent-development-workflows",
+    "topic_name": "智能体辅助开发流程",
+    "concept_ids": [
+      "scope-control",
+      "verification",
+      "engineering-practices"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1142983825
+  },
+  "vuejs/vue": {
+    "kind": "software",
+    "topic_id": "declarative-reactive-ui",
+    "topic_name": "声明式与响应式界面",
+    "concept_ids": [
+      "reactivity",
+      "component-composition",
+      "state-driven-ui"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 11730342
+  },
+  "anomalyco/opencode": {
+    "kind": "software",
+    "topic_id": "coding-agents",
+    "topic_name": "代码智能体",
+    "concept_ids": [
+      "agent-loop",
+      "repository-context",
+      "tool-use"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 975734319
+  },
+  "ossu/computer-science": {
+    "kind": "learning-resource",
+    "topic_id": "computer-science-foundations",
+    "topic_name": "计算机科学基础",
+    "concept_ids": [
+      "data-structures",
+      "algorithms",
+      "operating-systems"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 19415064
+  },
+  "n8n-io/n8n": {
+    "kind": "software",
+    "topic_id": "workflow-automation",
+    "topic_name": "工作流自动化",
+    "concept_ids": [
+      "event-triggers",
+      "workflow-dag",
+      "retries"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 193215554
+  },
+  "DigitalPlatDev/FreeDomain": {
+    "kind": "software",
+    "topic_id": "dns-and-domain-management",
+    "topic_name": "域名与DNS管理",
+    "concept_ids": [
+      "dns-resolution",
+      "domain-lifecycle"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 808144141
+  },
+  "tensorflow/tensorflow": {
+    "kind": "software",
+    "topic_id": "automatic-differentiation",
+    "topic_name": "自动求导与神经网络训练",
+    "concept_ids": [
+      "computational-graphs",
+      "backpropagation",
+      "tensor-operations"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 45717250
+  },
+  "trekhleb/javascript-algorithms": {
+    "kind": "learning-resource",
+    "topic_id": "algorithms-and-data-structures",
+    "topic_name": "算法与数据结构",
+    "concept_ids": [
+      "complexity",
+      "algorithmic-invariants",
+      "data-structures"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 126577260
+  },
+  "yt-dlp/yt-dlp": {
+    "kind": "software",
+    "topic_id": "media-extraction-pipelines",
+    "topic_name": "媒体提取与处理流程",
+    "concept_ids": [
+      "format-selection",
+      "extractor-plugins",
+      "stream-processing"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 307260205
+  },
+  "ultraworkers/claw-code": {
+    "kind": "software",
+    "topic_id": "autonomous-software-maintenance",
+    "topic_name": "自主软件维护",
+    "concept_ids": [
+      "agent-orchestration",
+      "verification",
+      "release-automation"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1197021090
+  },
+  "massgravel/Microsoft-Activation-Scripts": {
+    "kind": "software",
+    "topic_id": "software-licensing-diagnostics",
+    "topic_name": "软件许可机制与诊断",
+    "concept_ids": [
+      "license-state",
+      "system-diagnostics"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 233472199
+  },
+  "microsoft/vscode": {
+    "kind": "software",
+    "topic_id": "extensible-code-editors",
+    "topic_name": "可扩展代码编辑器",
+    "concept_ids": [
+      "extension-host",
+      "language-server",
+      "editor-architecture"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 41881900
+  },
+  "ohmyzsh/ohmyzsh": {
+    "kind": "software",
+    "topic_id": "shell-productivity",
+    "topic_name": "Shell与终端工作流",
+    "concept_ids": [
+      "shell-composition",
+      "plugins",
+      "shell-configuration"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 291137
+  },
+  "firecrawl/firecrawl": {
+    "kind": "software",
+    "topic_id": "web-data-extraction",
+    "topic_name": "网页数据采集与结构化",
+    "concept_ids": [
+      "crawling",
+      "content-extraction",
+      "structured-output"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 787076358
+  },
+  "microsoft/markitdown": {
+    "kind": "software",
+    "topic_id": "document-conversion",
+    "topic_name": "文档解析与格式转换",
+    "concept_ids": [
+      "format-adapters",
+      "text-extraction",
+      "document-structure"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 888092115
+  },
+  "Significant-Gravitas/AutoGPT": {
+    "kind": "software",
+    "topic_id": "personal-assistant-agents",
+    "topic_name": "个人助理智能体",
+    "concept_ids": [
+      "agent-loop",
+      "task-planning",
+      "tool-use"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 614765452
+  },
+  "avelino/awesome-go": {
+    "kind": "collection",
+    "topic_id": "go-ecosystem-selection",
+    "topic_name": "Go工具与库选型",
+    "concept_ids": [
+      "package-evaluation",
+      "dependency-selection"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 21540759
+  },
+  "jackfrued/Python-100-Days": {
+    "kind": "learning-resource",
+    "topic_id": "python-programming-foundations",
+    "topic_name": "Python编程基础",
+    "concept_ids": [
+      "programming-fundamentals",
+      "data-processing",
+      "web-programming"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 123458551
+  },
+  "CyC2018/CS-Notes": {
+    "kind": "learning-resource",
+    "topic_id": "computer-science-foundations",
+    "topic_name": "计算机科学基础",
+    "concept_ids": [
+      "data-structures",
+      "networks",
+      "operating-systems"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 121395510
+  },
+  "getify/You-Dont-Know-JS": {
+    "kind": "learning-resource",
+    "topic_id": "javascript-language-semantics",
+    "topic_name": "JavaScript语言机制",
+    "concept_ids": [
+      "closures",
+      "scope",
+      "async-execution"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 14440270
+  },
+  "ollama/ollama": {
+    "kind": "software",
+    "topic_id": "local-llm-inference",
+    "topic_name": "本地大模型推理",
+    "concept_ids": [
+      "model-loading",
+      "inference-runtime",
+      "quantization"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 658928958
+  },
+  "521xueweihan/HelloGitHub": {
+    "kind": "collection",
+    "topic_id": "technical-resource-discovery",
+    "topic_name": "技术资源检索与筛选",
+    "concept_ids": [
+      "resource-evaluation",
+      "project-discovery"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 58028038
+  },
+  "anthropics/skills": {
+    "kind": "learning-resource",
+    "topic_id": "reusable-agent-skills",
+    "topic_name": "可复用智能体技能",
+    "concept_ids": [
+      "progressive-disclosure",
+      "skill-composition",
+      "task-procedures"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1061953414
+  },
+  "flutter/flutter": {
+    "kind": "software",
+    "topic_id": "cross-platform-ui",
+    "topic_name": "跨平台界面开发",
+    "concept_ids": [
+      "widget-composition",
+      "rendering-pipeline",
+      "state-driven-ui"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 31792824
+  },
+  "github/gitignore": {
+    "kind": "collection",
+    "topic_id": "version-control-hygiene",
+    "topic_name": "版本管理与仓库卫生",
+    "concept_ids": [
+      "ignore-rules",
+      "generated-artifacts",
+      "repository-boundaries"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1062897
+  },
+  "twbs/bootstrap": {
+    "kind": "software",
+    "topic_id": "responsive-web-design",
+    "topic_name": "响应式网页布局",
+    "concept_ids": [
+      "grid-layout",
+      "breakpoints",
+      "design-components"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 2126244
+  },
+  "f/prompts.chat": {
+    "kind": "collection",
+    "topic_id": "prompt-design",
+    "topic_name": "提示设计",
+    "concept_ids": [
+      "task-specification",
+      "examples",
+      "output-constraints"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 574523116
+  },
+  "huggingface/transformers": {
+    "kind": "software",
+    "topic_id": "transformer-models",
+    "topic_name": "Transformer模型应用",
+    "concept_ids": [
+      "tokenization",
+      "attention",
+      "model-inference"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 155220641
+  },
+  "AUTOMATIC1111/stable-diffusion-webui": {
+    "kind": "software",
+    "topic_id": "diffusion-image-generation",
+    "topic_name": "扩散模型图像生成",
+    "concept_ids": [
+      "denoising",
+      "conditioning",
+      "sampling"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 527591471
+  },
+  "jlevy/the-art-of-command-line": {
+    "kind": "learning-resource",
+    "topic_id": "shell-productivity",
+    "topic_name": "Shell与终端工作流",
+    "concept_ids": [
+      "shell-composition",
+      "text-streams",
+      "process-control"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 35955666
+  },
+  "Snailclimb/JavaGuide": {
+    "kind": "learning-resource",
+    "topic_id": "java-backend-engineering",
+    "topic_name": "Java后端工程",
+    "concept_ids": [
+      "jvm",
+      "concurrency",
+      "distributed-system-design"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 132464395
+  },
+  "DietrichGebert/ponytail": {
+    "kind": "learning-resource",
+    "topic_id": "agent-development-workflows",
+    "topic_name": "智能体辅助开发流程",
+    "concept_ids": [
+      "scope-control",
+      "engineering-practices"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1266797999
+  },
+  "msitarzewski/agency-agents": {
+    "kind": "learning-resource",
+    "topic_id": "role-based-agent-workflows",
+    "topic_name": "角色化智能体协作",
+    "concept_ids": [
+      "role-decomposition",
+      "task-routing",
+      "collaboration"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1075372545
+  },
+  "langgenius/dify": {
+    "kind": "software",
+    "topic_id": "llm-application-workflows",
+    "topic_name": "大模型应用工作流",
+    "concept_ids": [
+      "retrieval-augmented-generation",
+      "workflow-dag",
+      "model-orchestration"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 626805178
+  },
+  "langflow-ai/langflow": {
+    "kind": "software",
+    "topic_id": "llm-application-workflows",
+    "topic_name": "大模型应用工作流",
+    "concept_ids": [
+      "workflow-dag",
+      "model-orchestration",
+      "tool-use"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 599320067
+  },
+  "open-webui/open-webui": {
+    "kind": "software",
+    "topic_id": "llm-application-interfaces",
+    "topic_name": "大模型交互应用",
+    "concept_ids": [
+      "conversation-state",
+      "model-routing",
+      "retrieval-augmented-generation"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 701547123
+  },
+  "Genymobile/scrcpy": {
+    "kind": "software",
+    "topic_id": "remote-display-streaming",
+    "topic_name": "远程显示与交互",
+    "concept_ids": [
+      "video-encoding",
+      "low-latency-streaming",
+      "input-forwarding"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 111583593
+  },
+  "clash-verge-rev/clash-verge-rev": {
+    "kind": "software",
+    "topic_id": "proxy-routing",
+    "topic_name": "代理路由与客户端",
+    "concept_ids": [
+      "rule-based-routing",
+      "proxy-protocols",
+      "network-diagnostics"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 721767116
+  },
+  "anthropics/claude-code": {
+    "kind": "software",
+    "topic_id": "coding-agents",
+    "topic_name": "代码智能体",
+    "concept_ids": [
+      "agent-loop",
+      "repository-context",
+      "tool-use"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 937253475
+  },
+  "airbnb/javascript": {
+    "kind": "learning-resource",
+    "topic_id": "maintainable-javascript",
+    "topic_name": "可维护的JavaScript代码",
+    "concept_ids": [
+      "code-conventions",
+      "readability",
+      "linting"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 6498492
+  },
+  "langchain-ai/langchain": {
+    "kind": "software",
+    "topic_id": "llm-application-workflows",
+    "topic_name": "大模型应用工作流",
+    "concept_ids": [
+      "model-orchestration",
+      "retrieval-augmented-generation",
+      "tool-use"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 552661142
+  },
+  "x1xhlol/system-prompts-and-models-of-ai-tools": {
+    "kind": "collection",
+    "topic_id": "prompt-design",
+    "topic_name": "提示设计",
+    "concept_ids": [
+      "task-specification",
+      "output-constraints"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 943398999
+  },
+  "vercel/next.js": {
+    "kind": "software",
+    "topic_id": "full-stack-web-rendering",
+    "topic_name": "全栈网页渲染",
+    "concept_ids": [
+      "server-rendering",
+      "routing",
+      "data-fetching"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 70107786
+  },
+  "yangshun/tech-interview-handbook": {
+    "kind": "learning-resource",
+    "topic_id": "technical-interview-preparation",
+    "topic_name": "技术面试准备",
+    "concept_ids": [
+      "problem-decomposition",
+      "algorithms",
+      "communication"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 62607227
+  },
+  "farion1231/cc-switch": {
+    "kind": "software",
+    "topic_id": "coding-agent-configuration",
+    "topic_name": "代码智能体配置管理",
+    "concept_ids": [
+      "provider-routing",
+      "configuration-management",
+      "profile-switching"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1031912724
+  },
+  "ytdl-org/youtube-dl": {
+    "kind": "software",
+    "topic_id": "media-extraction-pipelines",
+    "topic_name": "媒体提取与处理流程",
+    "concept_ids": [
+      "format-selection",
+      "extractor-plugins",
+      "stream-processing"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1039520
+  },
+  "Shubhamsaboo/awesome-llm-apps": {
+    "kind": "learning-resource",
+    "topic_id": "applied-agent-projects",
+    "topic_name": "智能体与RAG项目实践",
+    "concept_ids": [
+      "retrieval-augmented-generation",
+      "tool-use",
+      "application-integration"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 793375104
+  },
+  "github/spec-kit": {
+    "kind": "software",
+    "topic_id": "specification-driven-development",
+    "topic_name": "规格驱动开发",
+    "concept_ids": [
+      "requirements-modeling",
+      "task-decomposition",
+      "verification"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1042367133
+  },
+  "iptv-org/iptv": {
+    "kind": "collection",
+    "topic_id": "media-stream-catalogs",
+    "topic_name": "媒体流目录管理",
+    "concept_ids": [
+      "stream-protocols",
+      "playlist-formats"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 157616880
+  },
+  "ripienaar/free-for-dev": {
+    "kind": "collection",
+    "topic_id": "developer-service-selection",
+    "topic_name": "开发者服务选型",
+    "concept_ids": [
+      "service-evaluation",
+      "resource-limits"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 32484381
+  },
+  "golang/go": {
+    "kind": "software",
+    "topic_id": "concurrent-language-runtime",
+    "topic_name": "并发语言与运行时",
+    "concept_ids": [
+      "goroutines",
+      "channels",
+      "garbage-collection"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 23096959
+  },
+  "microsoft/PowerToys": {
+    "kind": "software",
+    "topic_id": "desktop-automation-utilities",
+    "topic_name": "桌面效率工具",
+    "concept_ids": [
+      "window-management",
+      "keyboard-remapping",
+      "plugin-architecture"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 184456251
+  },
+  "Comfy-Org/ComfyUI": {
+    "kind": "software",
+    "topic_id": "node-based-generative-workflows",
+    "topic_name": "节点式生成工作流",
+    "concept_ids": [
+      "workflow-dag",
+      "diffusion-sampling",
+      "model-composition"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 589831718
+  },
+  "labuladong/fucking-algorithm": {
+    "kind": "learning-resource",
+    "topic_id": "algorithms-and-data-structures",
+    "topic_name": "算法与数据结构",
+    "concept_ids": [
+      "complexity",
+      "algorithmic-invariants",
+      "data-structures"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 241576270
+  },
+  "garrytan/gstack": {
+    "kind": "software",
+    "topic_id": "agent-development-workflows",
+    "topic_name": "智能体辅助开发流程",
+    "concept_ids": [
+      "role-decomposition",
+      "verification",
+      "release-automation"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1179264259
+  },
+  "nextlevelbuilder/ui-ux-pro-max-skill": {
+    "kind": "learning-resource",
+    "topic_id": "design-guided-code-generation",
+    "topic_name": "设计约束下的代码生成",
+    "concept_ids": [
+      "design-systems",
+      "accessibility",
+      "visual-verification"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1106996539
+  },
+  "excalidraw/excalidraw": {
+    "kind": "software",
+    "topic_id": "interactive-canvas-editors",
+    "topic_name": "交互式画布编辑器",
+    "concept_ids": [
+      "scene-graphs",
+      "geometry",
+      "collaborative-editing"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 231283452
+  },
+  "ggml-org/llama.cpp": {
+    "kind": "software",
+    "topic_id": "local-llm-inference",
+    "topic_name": "本地大模型推理",
+    "concept_ids": [
+      "quantization",
+      "tensor-kernels",
+      "inference-runtime"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 612354784
+  },
+  "krahets/hello-algo": {
+    "kind": "learning-resource",
+    "topic_id": "algorithms-and-data-structures",
+    "topic_name": "算法与数据结构",
+    "concept_ids": [
+      "complexity",
+      "algorithmic-invariants",
+      "data-structures"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 561730219
+  },
+  "harry0703/MoneyPrinterTurbo": {
+    "kind": "software",
+    "topic_id": "automated-video-production",
+    "topic_name": "自动化视频制作",
+    "concept_ids": [
+      "media-pipelines",
+      "script-generation",
+      "audio-video-composition"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 770153867
+  },
+  "Chalarangelo/30-seconds-of-code": {
+    "kind": "learning-resource",
+    "topic_id": "programming-idioms",
+    "topic_name": "常用编程模式",
+    "concept_ids": [
+      "functional-composition",
+      "data-transformation"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 112507086
+  },
+  "openai/codex": {
+    "kind": "software",
+    "topic_id": "coding-agents",
+    "topic_name": "代码智能体",
+    "concept_ids": [
+      "agent-loop",
+      "repository-context",
+      "tool-use"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 965415649
+  },
+  "kubernetes/kubernetes": {
+    "kind": "software",
+    "topic_id": "container-orchestration",
+    "topic_name": "容器编排",
+    "concept_ids": [
+      "declarative-state",
+      "reconciliation",
+      "scheduling"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 20580498
+  },
+  "react/react-native": {
+    "kind": "software",
+    "topic_id": "cross-platform-ui",
+    "topic_name": "跨平台界面开发",
+    "concept_ids": [
+      "native-bridges",
+      "component-composition",
+      "state-driven-ui"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 29028775
+  },
+  "rustdesk/rustdesk": {
+    "kind": "software",
+    "topic_id": "remote-desktop-systems",
+    "topic_name": "远程桌面系统",
+    "concept_ids": [
+      "peer-connectivity",
+      "video-streaming",
+      "input-forwarding"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 299354207
+  },
+  "shadcn-ui/ui": {
+    "kind": "software",
+    "topic_id": "composable-design-systems",
+    "topic_name": "可组合设计系统",
+    "concept_ids": [
+      "component-composition",
+      "accessibility",
+      "design-tokens"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 585146387
+  },
+  "Graphify-Labs/graphify": {
+    "kind": "software",
+    "topic_id": "code-knowledge-graphs",
+    "topic_name": "代码知识图谱",
+    "concept_ids": [
+      "graph-modeling",
+      "code-parsing",
+      "knowledge-retrieval"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1200597263
+  },
+  "electron/electron": {
+    "kind": "software",
+    "topic_id": "web-powered-desktop-apps",
+    "topic_name": "Web技术桌面应用",
+    "concept_ids": [
+      "multi-process-architecture",
+      "ipc",
+      "application-packaging"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 9384267
+  },
+  "nodejs/node": {
+    "kind": "software",
+    "topic_id": "event-driven-javascript-runtime",
+    "topic_name": "事件驱动JavaScript运行时",
+    "concept_ids": [
+      "event-loop",
+      "nonblocking-io",
+      "async-execution"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 27193779
+  },
+  "Hack-with-Github/Awesome-Hacking": {
+    "kind": "collection",
+    "topic_id": "security-learning-resources",
+    "topic_name": "安全学习资源检索",
+    "concept_ids": [
+      "resource-evaluation",
+      "security-foundations"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 55076063
+  },
+  "microsoft/generative-ai-for-beginners": {
+    "kind": "learning-resource",
+    "topic_id": "generative-ai-foundations",
+    "topic_name": "生成式AI应用基础",
+    "concept_ids": [
+      "model-inference",
+      "prompt-design",
+      "retrieval-augmented-generation"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 655806940
+  },
+  "VoltAgent/awesome-design-md": {
+    "kind": "collection",
+    "topic_id": "design-guided-code-generation",
+    "topic_name": "设计约束下的代码生成",
+    "concept_ids": [
+      "design-systems",
+      "design-tokens",
+      "visual-verification"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1197515131
+  },
+  "rust-lang/rust": {
+    "kind": "software",
+    "topic_id": "memory-safe-systems-programming",
+    "topic_name": "内存安全系统编程",
+    "concept_ids": [
+      "ownership",
+      "borrowing",
+      "type-systems"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 724712
+  },
+  "justjavac/free-programming-books-zh_CN": {
+    "kind": "collection",
+    "topic_id": "technical-resource-discovery",
+    "topic_name": "技术资源检索与筛选",
+    "concept_ids": [
+      "resource-evaluation",
+      "self-directed-learning"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 14098069
+  },
+  "godotengine/godot": {
+    "kind": "software",
+    "topic_id": "game-engine-architecture",
+    "topic_name": "游戏引擎架构",
+    "concept_ids": [
+      "scene-graphs",
+      "game-loops",
+      "physics-integration"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 15634981
+  },
+  "2dust/v2rayN": {
+    "kind": "software",
+    "topic_id": "proxy-routing",
+    "topic_name": "代理路由与客户端",
+    "concept_ids": [
+      "rule-based-routing",
+      "proxy-protocols",
+      "network-diagnostics"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 199570071
+  },
+  "browser-use/browser-use": {
+    "kind": "software",
+    "topic_id": "browser-agents",
+    "topic_name": "浏览器智能体",
+    "concept_ids": [
+      "page-observation",
+      "action-selection",
+      "task-verification"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 881458615
+  },
+  "mrdoob/three.js": {
+    "kind": "software",
+    "topic_id": "real-time-3d-rendering",
+    "topic_name": "实时三维渲染",
+    "concept_ids": [
+      "scene-graphs",
+      "camera-projection",
+      "shaders"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 576201
+  },
+  "immich-app/immich": {
+    "kind": "software",
+    "topic_id": "self-hosted-media-management",
+    "topic_name": "自托管照片与视频管理",
+    "concept_ids": [
+      "asset-indexing",
+      "media-pipelines",
+      "backup"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 455229168
+  },
+  "jaywcjlove/awesome-mac": {
+    "kind": "collection",
+    "topic_id": "desktop-software-selection",
+    "topic_name": "桌面软件选型",
+    "concept_ids": [
+      "resource-evaluation",
+      "workflow-fit"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 63539055
+  },
+  "d3/d3": {
+    "kind": "software",
+    "topic_id": "data-driven-visualization",
+    "topic_name": "数据驱动可视化",
+    "concept_ids": [
+      "data-binding",
+      "scales",
+      "visual-encoding"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 943149
+  },
+  "earendil-works/pi": {
+    "kind": "software",
+    "topic_id": "agent-harness-engineering",
+    "topic_name": "智能体执行环境工程",
+    "concept_ids": [
+      "agent-loop",
+      "model-adapters",
+      "tool-use"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1035029907
+  },
+  "tauri-apps/tauri": {
+    "kind": "software",
+    "topic_id": "web-powered-desktop-apps",
+    "topic_name": "Web技术桌面应用",
+    "concept_ids": [
+      "native-webviews",
+      "ipc",
+      "application-packaging"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 196701619
+  },
+  "microsoft/TypeScript": {
+    "kind": "software",
+    "topic_id": "static-types-for-javascript",
+    "topic_name": "JavaScript静态类型系统",
+    "concept_ids": [
+      "type-inference",
+      "structural-typing",
+      "type-erasure"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 20929025
+  },
+  "supabase/supabase": {
+    "kind": "software",
+    "topic_id": "postgres-application-platforms",
+    "topic_name": "Postgres应用平台",
+    "concept_ids": [
+      "relational-models",
+      "row-level-security",
+      "realtime-data"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 214587193
+  },
+  "JuliusBrussee/caveman": {
+    "kind": "software",
+    "topic_id": "agent-context-efficiency",
+    "topic_name": "智能体上下文效率",
+    "concept_ids": [
+      "token-budgeting",
+      "context-compression"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1201173969
+  },
+  "papers-we-love/papers-we-love": {
+    "kind": "collection",
+    "topic_id": "computer-science-paper-reading",
+    "topic_name": "计算机科学论文阅读",
+    "concept_ids": [
+      "paper-evaluation",
+      "experimental-reproduction"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 15204860
+  },
+  "TauricResearch/TradingAgents": {
+    "kind": "software",
+    "topic_id": "multi-agent-decision-systems",
+    "topic_name": "多智能体决策系统",
+    "concept_ids": [
+      "role-decomposition",
+      "evidence-aggregation",
+      "decision-evaluation"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 909213664
+  },
+  "openai/whisper": {
+    "kind": "software",
+    "topic_id": "speech-recognition",
+    "topic_name": "语音识别",
+    "concept_ids": [
+      "audio-features",
+      "sequence-decoding",
+      "multilingual-modeling"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 537603333
+  },
+  "fatedier/frp": {
+    "kind": "software",
+    "topic_id": "reverse-proxy-tunneling",
+    "topic_name": "反向代理与内网穿透",
+    "concept_ids": [
+      "nat",
+      "connection-forwarding",
+      "proxy-protocols"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 48378947
+  },
+  "axios/axios": {
+    "kind": "software",
+    "topic_id": "http-client-design",
+    "topic_name": "HTTP客户端设计",
+    "concept_ids": [
+      "request-interceptors",
+      "cancellation",
+      "error-handling"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 23088740
+  },
+  "denoland/deno": {
+    "kind": "software",
+    "topic_id": "event-driven-javascript-runtime",
+    "topic_name": "事件驱动JavaScript运行时",
+    "concept_ids": [
+      "event-loop",
+      "permissions",
+      "async-execution"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 133442384
+  },
+  "google-gemini/gemini-cli": {
+    "kind": "software",
+    "topic_id": "coding-agents",
+    "topic_name": "代码智能体",
+    "concept_ids": [
+      "agent-loop",
+      "repository-context",
+      "tool-use"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 968197216
+  },
+  "rasbt/LLMs-from-scratch": {
+    "kind": "learning-resource",
+    "topic_id": "language-models-from-scratch",
+    "topic_name": "从零实现语言模型",
+    "concept_ids": [
+      "tokenization",
+      "attention",
+      "language-model-training"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 669879380
+  },
+  "goldbergyoni/nodebestpractices": {
+    "kind": "learning-resource",
+    "topic_id": "production-nodejs-engineering",
+    "topic_name": "Node.js生产工程实践",
+    "concept_ids": [
+      "error-handling",
+      "service-boundaries",
+      "observability"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 103633984
+  },
+  "ruanyf/weekly": {
+    "kind": "collection",
+    "topic_id": "technical-resource-discovery",
+    "topic_name": "技术资源检索与筛选",
+    "concept_ids": [
+      "project-discovery",
+      "resource-evaluation"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 152870372
+  },
+  "microsoft/terminal": {
+    "kind": "software",
+    "topic_id": "terminal-emulator-design",
+    "topic_name": "终端模拟器设计",
+    "concept_ids": [
+      "terminal-protocols",
+      "text-rendering",
+      "process-io"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 100060912
+  },
+  "deepseek-ai/DeepSeek-V3": {
+    "kind": "software",
+    "topic_id": "mixture-of-experts-language-models",
+    "topic_name": "混合专家语言模型",
+    "concept_ids": [
+      "expert-routing",
+      "attention",
+      "distributed-training"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 908531752
+  },
+  "pytorch/pytorch": {
+    "kind": "software",
+    "topic_id": "automatic-differentiation",
+    "topic_name": "自动求导与神经网络训练",
+    "concept_ids": [
+      "dynamic-computational-graphs",
+      "backpropagation",
+      "tensor-operations"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 65600975
+  },
+  "addyosmani/agent-skills": {
+    "kind": "learning-resource",
+    "topic_id": "agent-development-workflows",
+    "topic_name": "智能体辅助开发流程",
+    "concept_ids": [
+      "engineering-practices",
+      "verification",
+      "performance-analysis"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1158722119
+  },
+  "react/create-react-app": {
+    "kind": "software",
+    "topic_id": "web-project-tooling",
+    "topic_name": "Web项目构建工具",
+    "concept_ids": [
+      "bundling",
+      "development-server",
+      "build-configuration"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 63537249
+  },
+  "neovim/neovim": {
+    "kind": "software",
+    "topic_id": "extensible-code-editors",
+    "topic_name": "可扩展代码编辑器",
+    "concept_ids": [
+      "plugin-architecture",
+      "language-server",
+      "editor-architecture"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 16408992
+  },
+  "fastapi/fastapi": {
+    "kind": "software",
+    "topic_id": "typed-web-apis",
+    "topic_name": "类型驱动Web API",
+    "concept_ids": [
+      "validation",
+      "dependency-injection",
+      "async-io"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 160919119
+  },
+  "Anduin2017/HowToCook": {
+    "kind": "learning-resource",
+    "topic_id": "structured-cooking-procedures",
+    "topic_name": "结构化烹饪步骤",
+    "concept_ids": [
+      "procedural-planning",
+      "measurement"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 243950408
+  },
+  "angular/angular": {
+    "kind": "software",
+    "topic_id": "declarative-reactive-ui",
+    "topic_name": "声明式与响应式界面",
+    "concept_ids": [
+      "dependency-injection",
+      "component-composition",
+      "state-driven-ui"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 24195339
+  },
+  "mtdvio/every-programmer-should-know": {
+    "kind": "collection",
+    "topic_id": "computer-science-foundations",
+    "topic_name": "计算机科学基础",
+    "concept_ids": [
+      "systems-design",
+      "engineering-practices"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 101296881
+  },
+  "nexu-io/open-design": {
+    "kind": "software",
+    "topic_id": "agent-assisted-design-tools",
+    "topic_name": "智能体辅助设计工具",
+    "concept_ids": [
+      "tool-use",
+      "design-feedback",
+      "local-first-apps"
+    ],
+    "classification_status": "suggested-needs-user-adjustment",
+    "repo_id": 1223170290
+  }
+}

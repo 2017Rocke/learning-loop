@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>高斯小实验 · 知行</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='14' fill='%232c6e52'/%3E%3Cg fill='none' stroke='%23fffefa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 19a12 12 0 0 1 21-4l3 3M37 10v8h-8M35 29a12 12 0 0 1-21 4l-3-3M11 38v-8h8'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./lab.css">
+  <script src="./lab.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <nav class="topbar" aria-label="页面导航">
+      <a class="back" href="../">← 返回知行</a>
+      <span class="time-pill">小实验 · 约 15 分钟</span>
+    </nav>
+    <header class="page-header">
+      <p class="eyebrow">从一个参数，理解一条原理</p>
+      <h1>把这两团颜色，调得更接近。</h1>
+      <p class="intro">拖动参数，先预测、再观察。试着让右侧画面接近目标，找出位置、尺度、不透明度和遮挡顺序各自的作用。</p>
+      <p class="scope">二维教学简化 · 不是真实 Brush 训练，也没有进行三维重建。</p>
+    </header>
+
+    <section class="images" aria-label="目标画面与当前画面对比">
+      <figure class="image-card">
+        <figcaption><span><span class="tiny-label">01</span> 目标画面</span><span class="tag">观察形状与重叠区域</span></figcaption>
+        <canvas id="target-canvas" width="288" height="200" role="img" aria-label="目标画面：红色和蓝色两个软边高斯部分重叠"></canvas>
+        <p class="caption">蓝色高斯固定。你可以调整红色高斯和前后关系。</p>
+      </figure>
+      <figure class="image-card current">
+        <figcaption><span><span class="tiny-label">02</span> 你的画面</span><span class="tag live-tag"><span class="dot"></span> 实时变化</span></figcaption>
+        <canvas id="current-canvas" width="288" height="200" role="img" aria-label="随下方参数变化的高斯合成画面"></canvas>
+        <p class="caption" id="image-caption">先试着只改变一个参数，看看哪部分画面发生变化。</p>
+      </figure>
+    </section>
+
+    <section class="workbench" aria-label="参数实验台">
+      <div class="controls card">
+        <div class="section-heading"><h2>动手调整</h2><button id="reset" class="text-button" type="button">恢复初始</button></div>
+        <div class="control">
+          <label for="position">水平位置 <output id="position-value" for="position">0.65</output></label>
+          <input id="position" type="range" min="0.05" max="0.95" step="0.01" value="0.65">
+          <div class="range-labels"><span>向左</span><span>向右</span></div>
+        </div>
+        <div class="control">
+          <label for="scale">尺度 <output id="scale-value" for="scale">1.20 ×</output></label>
+          <input id="scale" type="range" min="0.30" max="2.00" step="0.01" value="1.20">
+          <div class="range-labels"><span>更紧凑</span><span>更宽大</span></div>
+        </div>
+        <div class="control">
+          <label for="opacity">不透明度 <output id="opacity-value" for="opacity">0.60</output></label>
+          <input id="opacity" type="range" min="0" max="1" step="0.01" value="0.60">
+          <div class="range-labels"><span>更透明</span><span>更浓</span></div>
+        </div>
+        <div class="control order-control">
+          <label for="order">前后顺序</label>
+          <select id="order">
+            <option value="red-front">红色在前，蓝色在后</option>
+            <option value="blue-front">蓝色在前，红色在后</option>
+          </select>
+          <p class="small-note">顺序改变后，重叠区域的颜色会怎样？</p>
+        </div>
+      </div>
+
+      <div class="insight-column">
+        <section class="metric-card card" aria-label="像素误差">
+          <div class="metric-heading"><h2>与目标的差距</h2><span class="tag">RGB 均方误差</span></div>
+          <div class="metric-value" id="mse-value">—</div>
+          <p class="metric-note" id="error-note">越接近 0，当前画面越接近目标。</p>
+          <div class="metric-baseline">初始误差 <span id="initial-mse">—</span></div>
+          <p class="calculation-note">按 144 × 100 个采样点的 RGB 值计算，颜色范围为 0～1。这里的误差只衡量这一张二维画面。</p>
+        </section>
+        <section class="hint-card card" aria-label="观察提示">
+          <div class="section-heading"><h2>卡住了，再看提示</h2><button id="hint" class="button secondary" type="button">提示一次</button></div>
+          <p id="hint-text" class="hint-text" aria-live="polite">先单独改变一个参数，观察误差是上升还是下降，再决定下一步。</p>
+          <p class="small-note">提示只指出一个可能改善的方向，由你自己调整。</p>
+        </section>
+      </div>
+    </section>
+
+    <section class="principle card">
+      <div><p class="eyebrow">你正在观察的核心逻辑</p><h2>前面的颜色，会影响后面还能透过多少。</h2></div>
+      <div class="principle-body">
+        <p>每个高斯在中心最浓，越靠边缘越透明。按从前到后的顺序，当前颜色的贡献是 <code>剩余透光率 × 当前不透明度 × 颜色</code>；每经过一层，剩余透光率再乘以 <code>1 − 当前不透明度</code>。</p>
+        <p>真实 3DGS 还要加入三维位置、相机投影、多视角约束和可微优化。这里你先用手动调参，感受“改参数 → 比较误差”的核心过程。</p>
+      </div>
+    </section>
+
+    <section class="record card" aria-label="记录实验观察">
+      <div class="record-heading"><div><p class="eyebrow">把观察变成自己的理解</p><h2>留下一条证据，再回到学习主线。</h2></div><button id="copy" class="button primary" type="button">复制实验观察模板</button></div>
+      <p class="record-description">模板会带上此刻的真实参数与误差。补充预测、原因和反例，再回到主应用记录实验。</p>
+      <details id="observation-details">
+        <summary>查看或手动复制模板</summary>
+        <label class="visually-hidden" for="observation">带当前参数的实验观察模板</label>
+        <textarea id="observation" rows="13" readonly spellcheck="false"></textarea>
+      </details>
+      <div class="record-bottom"><p id="copy-status" aria-live="polite">留下自己的解释，让下次复习时能重新想起这次观察。</p><a href="../" class="button secondary">返回主应用记录 →</a></div>
+    </section>
+    <footer>只在当前页面计算 · 无需素材或 GPU · 刷新后恢复初始参数</footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,7 @@
+interface:
+  display_name: "学习循环"
+  short_description: "支持项目与学科的图解听课、动手实验、实际应用与间隔复习"
+  default_prompt: "使用 $learning-loop 检查我的学习进度，准备已选主线的下一步实操和到期复习。"
+
+policy:
+  allow_implicit_invocation: true

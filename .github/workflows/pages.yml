@@ -1,0 +1,47 @@
+name: Publish mobile courses
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/**'
+      - 'web/**'
+      - 'learning_loop.py'
+      - 'scripts/build_site.py'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -B -m unittest discover -s tests
+      - run: node tests/test_mobile.js
+      - run: node tests/test_service_worker.js
+      - run: python scripts/build_site.py --output dist/site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

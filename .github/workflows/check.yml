@@ -1,0 +1,25 @@
+name: Check learning loop
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -B -m unittest discover -s tests
+      - run: node tests/test_mobile.js
+      - run: node tests/test_service_worker.js
+      - run: python learning_loop.py doctor
+      - run: python scripts/build_site.py --output dist/site

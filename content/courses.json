@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "courses": [
+    {
+      "id": "brush-intro",
+      "title": "高斯溅射：从照片到可观看的场景",
+      "topic_id": "gaussian-splatting",
+      "subject": "计算机图形学",
+      "kind": "project",
+      "repo_full_name": "ArthurBrussee/brush",
+      "repo_url": "https://github.com/ArthurBrussee/brush",
+      "lesson_file": "brush.json"
+    },
+    {
+      "id": "bayes-basics",
+      "title": "贝叶斯：看到证据后怎样更新判断",
+      "topic_id": "bayesian-reasoning",
+      "subject": "概率与统计",
+      "kind": "subject",
+      "repo_full_name": "",
+      "repo_url": "",
+      "lesson_file": "bayes.json"
+    }
+  ]
+}

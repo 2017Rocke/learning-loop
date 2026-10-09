@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="三维高斯投影成软边椭圆；红蓝高斯交换前后顺序后重叠区域颜色改变">
+<defs><radialGradient id="cloud"><stop stop-color="#8AE1B4" stop-opacity=".95"/><stop offset="1" stop-color="#8AE1B4" stop-opacity="0"/></radialGradient><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#E5BE84" stroke-width="1.5"/></marker></defs>
+<rect width="960" height="540" rx="24" fill="#102332"/>
+<g font-family="-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif" font-size="30" fill="#F3F3E9"><defs>
+<radialGradient id="red"><stop stop-color="#F47C70" stop-opacity=".94"/><stop offset=".48" stop-color="#F47C70" stop-opacity=".72"/><stop offset="1" stop-color="#F47C70" stop-opacity="0"/></radialGradient>
+<radialGradient id="blue"><stop stop-color="#77B9FC" stop-opacity=".94"/><stop offset=".48" stop-color="#77B9FC" stop-opacity=".72"/><stop offset="1" stop-color="#77B9FC" stop-opacity="0"/></radialGradient>
+</defs>
+<text x="45" y="57">三维高斯 → 屏幕上的软边椭圆</text>
+<rect x="35" y="83" width="890" height="211" rx="20" fill="#173344"/>
+<path d="M68 235H322 M174 264V110 M79 266L286 106" stroke="#416571" stroke-width="2"/>
+<ellipse cx="185" cy="187" rx="116" ry="58" transform="rotate(-24 185 187)" fill="url(#cloud)"/>
+<g transform="rotate(-24 185 187)" fill="none" stroke="#8AE1B4" stroke-width="2">
+<ellipse cx="185" cy="187" rx="93" ry="44"/><ellipse cx="185" cy="187" rx="93" ry="17"/><ellipse cx="185" cy="187" rx="30" ry="44"/></g>
+<path d="M321 187H377 M469 187H541" stroke="#E5BE84" stroke-width="3" marker-end="url(#a)"/>
+<rect x="390" y="161" width="53" height="52" rx="9" fill="#102332" stroke="#E5BE84" stroke-width="3"/>
+<circle cx="416" cy="187" r="14" fill="none" stroke="#E5BE84" stroke-width="3"/>
+<path d="M443 174l22-10v46l-22-10z" fill="#E5BE84"/>
+<rect x="571" y="104" width="306" height="162" rx="10" fill="#102332" stroke="#8FC8ED" stroke-width="3"/>
+<ellipse cx="724" cy="185" rx="103" ry="49" fill="url(#cloud)"/>
+<path d="M724 267v14 M684 281h80" stroke="#8FC8ED" stroke-width="3"/>
+<rect x="35" y="312" width="434" height="205" rx="20" fill="#173344"/>
+<rect x="491" y="312" width="434" height="205" rx="20" fill="#173344"/>
+<text x="252" y="351" text-anchor="middle" fill="#F5C2B8">红在前</text>
+<text x="708" y="351" text-anchor="middle" fill="#B8DAFF">蓝在前</text>
+<!-- Same colors, centers and opacity in both panels. Only draw order changes. -->
+<ellipse cx="279" cy="427" rx="82" ry="67" fill="url(#blue)"/>
+<ellipse cx="225" cy="427" rx="82" ry="67" fill="url(#red)"/>
+<ellipse cx="681" cy="427" rx="82" ry="67" fill="url(#red)"/>
+<ellipse cx="735" cy="427" rx="82" ry="67" fill="url(#blue)"/>
+<path d="M442 427H518" stroke="#E5BE84" stroke-width="3" marker-end="url(#a)"/>
+</g></svg>
