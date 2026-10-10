@@ -73,8 +73,8 @@ final class CalendarController {
         busy = true; callback = result;
         String reviews = pending.reviews.isEmpty() ? "当前没有已排期的复习题，先安排每日复习时段。" : "同时更新 " + pending.reviews.size() + " 门课程各自最早到期的一条提醒，不包含你的答案。";
         dialog = new AlertDialog.Builder(activity).setTitle("同步手机日历提醒？")
-                .setMessage("每天 " + pending.time + " 留 " + pending.minutes + " 分钟主动回忆。" + reviews + "\n\n确认后会请求日历权限，再由你选择日历。只创建或更新知行自己的提醒。系统日历是否响铃取决于手机设置；下次学习计划变化后，可在 App 再同步。")
-                .setPositiveButton("选择日历并同步", (dialog, which) -> ensurePermission())
+                .setMessage("每天 " + pending.time + " 留 " + pending.minutes + " 分钟主动回忆。" + reviews + "\n\n下一步会按需请求日历权限。选择日历后，点击“同步提醒”才会写入。只创建或更新知行自己的提醒。系统日历是否响铃取决于手机设置；下次学习计划变化后，可在 App 再同步。")
+                .setPositiveButton("下一步：选择日历", (dialog, which) -> ensurePermission())
                 .setNegativeButton("暂不设置", (dialog, which) -> finish(false, "未同步日历提醒，可以继续学习"))
                 .setOnCancelListener(dialog -> finish(false, "已取消，日历没有改变")).show();
     }
@@ -97,14 +97,39 @@ final class CalendarController {
             while (cursor != null && cursor.moveToNext()) {
                 String allowed = cursor.getString(3);
                 if (allowed != null && !allowed.isEmpty() && !("," + allowed.replace(" ", "") + ",").contains("," + CalendarContract.Reminders.METHOD_ALERT + ",")) continue;
-                ids.add(cursor.getLong(0)); names.add(cursor.getString(1) + " · " + cursor.getString(2));
+                ids.add(cursor.getLong(0)); names.add(calendarLabel(cursor.getString(1), cursor.getString(2)));
             }
         } catch (Exception error) { finish(false, "无法读取可写日历，请检查日历应用和权限"); return; }
         if (ids.isEmpty()) { finish(false, "手机上没有支持提醒的可写日历。请先在日历应用中添加日历，再重试。"); return; }
-        dialog = new AlertDialog.Builder(activity).setTitle("选择提醒保存到哪个日历")
-                .setItems(names.toArray(new String[0]), (dialog, which) -> sync(ids.get(which)))
+        // Selecting a row only changes the radio selection; the explicit button performs the write.
+        int[] selected = {ids.size() == 1 ? 0 : -1};
+        AlertDialog picker = new AlertDialog.Builder(activity).setTitle("选择保存提醒的日历")
+                .setSingleChoiceItems(names.toArray(new String[0]), selected[0], (choiceDialog, which) -> {
+                    selected[0] = which;
+                    ((AlertDialog) choiceDialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                })
+                .setPositiveButton("同步提醒", (choiceDialog, which) -> {
+                    if (selected[0] >= 0 && selected[0] < ids.size()) sync(ids.get(selected[0]));
+                    else finish(false, "尚未选择日历，提醒未同步");
+                })
                 .setNegativeButton("取消", (dialog, which) -> finish(false, "已取消，日历没有改变"))
-                .setOnCancelListener(dialog -> finish(false, "已取消，日历没有改变")).show();
+                .setOnCancelListener(dialog -> finish(false, "已取消，日历没有改变")).create();
+        dialog = picker;
+        picker.show();
+        picker.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(selected[0] >= 0);
+    }
+    private static String calendarLabel(String displayName, String accountName) {
+        String name = displayName == null ? "" : displayName.trim();
+        String account = accountName == null ? "" : accountName.trim();
+        // Some Xiaomi providers expose these local-calendar resource names verbatim.
+        // Translate only the known placeholders; real calendar/account names still distinguish choices.
+        if ("calendar_displayname_local".equals(name)) name = "本机日历";
+        if ("account_name_local".equals(account)) {
+            if (name.isEmpty()) name = "本机日历";
+            account = "";
+        }
+        if (name.isEmpty()) name = "未命名日历";
+        return account.isEmpty() || name.equals(account) ? name : name + " · " + account;
     }
     private String courseKey(String id) throws Exception {
         byte[] hash = MessageDigest.getInstance("SHA-256").digest(id.getBytes(StandardCharsets.UTF_8)); StringBuilder out = new StringBuilder("course-"); for (byte value : hash) out.append(String.format(java.util.Locale.ROOT, "%02x", value & 255)); return out.toString();

@@ -60,6 +60,8 @@ APK 由 `android-apk.yml` 构建 debug 预览产物。本机构建需 JDK 17、A
 
 全新 CI 运行生成的 debug 签名可能不同，预览 APK 不保证覆盖原安装。换包前先备份；正式版使用用户保管的稳定签名，密钥不进 Git 或聊天。构建完成、远端工作流成功和真机验收分别记录，不混称已完成。
 
+面向手机试用者发布时，将已审核 APK 和 SHA-256 校验文件附到独立的 Android Release（例如 `android-v0.2.1`），不要覆盖 `course-content`。Release 版本须与 APK 的 versionName/versionCode 一致。后续 APK 必须复用上一份 Release 的签名文件，并用 `apksigner verify --print-certs` 比较证书摘要；签名文件由发布者在仓库外保管和备份，不能上传到公开构建产物。若签名不同，须明确这是需备份换装的迁移，而不能声称可直接升级。Actions 的临时 debug 构建仅用于开发验证。
+
 ## 升级
 
 - 保持课程 ID 和 `questions[].id` 稳定，改文字或补媒体不重置用户历史。
