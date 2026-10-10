@@ -26,8 +26,9 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
       - uses: gradle/actions/setup-gradle@v4
-      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - run: python scripts/build_android_content.py --assets android/app/src/main/assets/site
       - run: python scripts/check_android.py
       - name: Build and inspect preview

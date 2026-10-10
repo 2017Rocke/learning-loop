@@ -38,7 +38,7 @@ python3 learning_loop.py serve
 python3 scripts/build_site.py --output dist/site
 ```
 
-将 `dist/site` 部署到 HTTPS 静态网站，例如 GitHub Pages。仓库自带 Pages 工作流；设置好仓库 Pages 后，推送到 `main` 或手动触发工作流。部署成功后打开仓库显示的实际网址。步骤见 [手机使用与部署](docs/mobile.md)。
+将 `dist/site` 部署到 HTTPS 静态网站，例如 GitHub Pages。仓库自带 Pages 工作流，默认构建网页并跳过外部部署。需要自动部署时，先在仓库 Pages 设置中将来源选为 **GitHub Actions**，再添加仓库变量 `ENABLE_PAGES=true`；随后推送相关内容到 `main` 或手动触发工作流。部署成功后打开仓库显示的实际网址。步骤见 [手机使用与部署](docs/mobile.md)。
 
 手机网页可添加到主屏幕，离线准备成功后可查看已缓存图解、音频与练习。记录保存在**当前浏览器**，支持导出和确认后导入手机端 JSON 备份。浏览器、安卓版和电脑端 SQLite 各自独立，当前没有云同步。网页关闭后不发后台推送；网页版本可导出日历文件，安卓版则在确认授权后直接写入日历。
 

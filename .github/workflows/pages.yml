@@ -33,6 +33,7 @@ jobs:
         with:
           path: dist/site
   deploy:
+    if: vars.ENABLE_PAGES == 'true'
     needs: build
     runs-on: ubuntu-latest
     permissions:

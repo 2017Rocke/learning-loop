@@ -25,8 +25,11 @@ python3 learning_loop.py serve
 
 1. 将公开项目放入自己的 GitHub 仓库，确认没有私人数据与机器路径。
 2. 仓库 **Settings → Pages → Build and deployment** 将 Source 设为 **GitHub Actions**。
-3. `.github/workflows/pages.yml` 在 `main` 分支相关内容变化时构建，也能在 Actions 中手动运行 **Publish mobile courses**。使用其他默认分支时调整工作流。
-4. 构建与部署成功后，打开 Pages 设置或部署记录给出的真实网址。常见形式为 `https://用户名.github.io/仓库名/`，以自己的部署结果为准。
+3. 在仓库 **Settings → Secrets and variables → Actions → Variables** 添加仓库变量 `ENABLE_PAGES`，值填写小写 `true`。只有这个变量等于 `true` 时，工作流才会执行 Pages 部署。
+4. `.github/workflows/pages.yml` 在 `main` 分支相关内容变化时构建，也能在 Actions 中手动运行 **Publish mobile courses**。设置好 Pages 和变量后，推送相关内容或手动运行一次。使用其他默认分支时调整工作流。
+5. 构建与部署成功后，打开 Pages 设置或部署记录给出的真实网址。常见形式为 `https://用户名.github.io/仓库名/`，以自己的部署结果为准。
+
+Pages 是可选项。未设置 `ENABLE_PAGES`，或值不是 `true` 时，工作流仍会构建和检查网页，但跳过外部部署；安卓 APK 与课程更新不依赖 Pages。
 
 资源按部署目录解析，支持仓库子路径。也可将同一目录交给其他 HTTPS 静态托管，无需模型 API key 或数据库。
 
