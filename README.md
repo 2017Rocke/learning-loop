@@ -2,7 +2,13 @@
 
 把新知识变成能解释、能操作、能迁移、能回忆的能力。先看图和听讲，再做小实验，最后用自己的回答检验记忆。项目课与学科课共用这个流程，不只适用于编程。
 
-项目包含电脑端本地 App、可部署的手机网页 App，以及给学习助手使用的备课 skill。运行和学习不需要模型 API key；新课可由人工或学习助手核实资料后加入。
+项目包含安卓 APK、电脑端本地 App、可部署的手机网页，以及给学习助手使用的备课 skill。运行和学习不需要模型 API key；新课可由人工或学习助手核实资料后加入。
+
+## 安卓优先体验
+
+安卓版内置教学界面和初始课程，安装 APK 后可离线学习。在 App 填写自己的公开 GitHub `所有者/仓库名`，先检查课程版本，再点击下载更新；一般增加课程无需重装 APK，也不需要 GitHub 登录或 token。
+
+日历提醒在每次确认并获得权限后，由 App 写入用户选择的可写日历；拒绝授权仍可学习。备份通过系统文件选择器保存，个人答案与进度不上传 GitHub。首次上手、空仓库发布步骤和预览 APK 限制见 [安卓安装与更新](docs/android.md)。
 
 ## 本地启动
 
@@ -26,7 +32,7 @@ python3 learning_loop.py serve
 
 观看、听讲、点击图解和选择课程都不会自动记为掌握。第一次保存自己的实验、应用或总结后，核心问题才进入复习计划。
 
-## 手机使用
+## 手机网页作为补充
 
 ```sh
 python3 scripts/build_site.py --output dist/site
@@ -34,7 +40,7 @@ python3 scripts/build_site.py --output dist/site
 
 将 `dist/site` 部署到 HTTPS 静态网站，例如 GitHub Pages。仓库自带 Pages 工作流；设置好仓库 Pages 后，推送到 `main` 或手动触发工作流。部署成功后打开仓库显示的实际网址。步骤见 [手机使用与部署](docs/mobile.md)。
 
-手机端可添加到主屏幕，离线准备成功后可查看已缓存图解、音频与练习。记录保存在**当前浏览器**，支持导出和确认后导入手机端 JSON 备份。它与电脑端 SQLite 独立，当前没有云同步。网页关闭后不发后台推送；可导出每日复习日历，由用户导入手机日历提醒。
+手机网页可添加到主屏幕，离线准备成功后可查看已缓存图解、音频与练习。记录保存在**当前浏览器**，支持导出和确认后导入手机端 JSON 备份。浏览器、安卓版和电脑端 SQLite 各自独立，当前没有云同步。网页关闭后不发后台推送；网页版本可导出日历文件，安卓版则在确认授权后直接写入日历。
 
 ## 学习循环
 
@@ -76,11 +82,12 @@ Codex 定时任务是可选适配，需要在自己的环境单独配置。仅�
 | --- | --- |
 | `learning_loop.py` | 电脑端数据、发现、复习、校验、命令行与本地 API |
 | `web/`、`web/mobile/` | 电脑界面、手机界面与共用教学组件 |
+| `android/` | 安卓 Java 容器、课程更新、日历和系统文件备份 |
 | `content/courses.json`、`content/*.json` | 课库清单、课件与旁白源 |
 | `web/media/`、`web/lab/` | 原创教学媒体与小实验 |
 | `skill/learning-loop/` | 可移植的研究、备课与伴学流程 |
 | `data/` | 本机私人档案，不进入公开仓库或静态构建 |
 
-更多说明：[架构](docs/architecture.md) · [备课](docs/authoring.md) · [手机部署](docs/mobile.md) · [维护](docs/maintenance.md)。许可见 [LICENSE](LICENSE)，外部源码与来源见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+更多说明：[安卓 APK](docs/android.md) · [架构](docs/architecture.md) · [备课](docs/authoring.md) · [手机网页](docs/mobile.md) · [维护](docs/maintenance.md)。许可见 [LICENSE](LICENSE)，外部源码与来源见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 学习记录不自动上传，导出文件也属于私人数据。当前没有多用户登录、跨设备同步、云端全天候备课或自动执行外部仓库代码。

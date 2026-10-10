@@ -35,7 +35,30 @@ python3 learning_loop.py export --output learning-private-backup.json
 
 ## 手机备份
 
-手机导入导出只处理自己的 JSON 格式，与 SQLite 独立。导入经过验证与用户确认，整体替换、不合并、不上传。换域名、浏览器或设备前导出。档案中的课程与问题须仍在当前课库，缺失时应保留原数据并恢复匹配课库。
+手机导入导出只处理自己的 JSON 格式，与 SQLite 独立。安卓版通过系统文件选择器保存和选择备份；浏览器使用下载与文件选择。导入经过验证与用户确认，整体替换、不合并、不上传 GitHub。换域名、浏览器、APK 签名或设备前导出。档案中的课程与问题须仍在当前课库，缺失时应保留原数据并恢复匹配课库。
+
+## 安卓课程与 APK
+
+```sh
+python3 scripts/build_android_content.py --output dist/android-content --assets android/app/src/main/assets/site
+python3 scripts/check_android.py
+```
+
+课程产物为 `manifest.json` 和 `courses-<hash>.zip`，通过 `publish-content.yml` 发布到固定 `course-content` Release。`check_android.py` 使用 JDK 17，在临时目录编译并检查实际课程包、日历时间与媒体 Range，不需要 Android 设备或 SDK；可通过 `JAVA_HOME` 或 PATH 提供 Java 工具。
+
+APK 由 `android-apk.yml` 构建 debug 预览产物。本机构建需 JDK 17、Android SDK 35 和 Build Tools 35.0.0；准备资源后在 `android/` 执行 `./gradlew --no-daemon assembleDebug lintDebug`。支持 Android 8.0+，工具链不是普通学习或 Python 运行依赖。
+
+课程包只有数据和允许的媒体，APK 内置 HTML/JavaScript 和原生代码；修改程序能力时应重新构建 APK，不能混入远程课程更新。`content/reminder.json` 的默认时间和分钟数纳入内容版本，修改后日历也不能静默同步，须再次请求用户确认。
+
+检查更新只读小型清单，下载由用户再次点击触发。维护检查应覆盖校验失败、截断下载、ZIP 路径穿越和异常体积、禁止脚本文件、断电或写入失败后保留旧包，以及更新后个人记录不丢失。完整资源校验成功后才激活新版本。
+
+当前已安装课程版本会保留，让仍打开的旧页面继续读取同一套媒体；多次更新会增加应用占用。进程被系统强制结束也可能留下临时下载。空间不足时更新会停止，先备份学习记录再排查，不能把“清除应用数据”作为默认处理。
+
+日历检查覆盖取消确认、拒绝或撤销权限、没有可写日历、重复设置不产生重复每日事件、按课程最早到期归并、逾期时段处理，以及删除旧事件后重新设置。写入前持久化所有权标记，之后按标记找回事件，覆盖系统已写入但缓存事件 ID 前进程退出的情形。每次写入须重新确认，权限已授予不能代替本次同意；只写必要提醒，不包含私人答案。
+
+当前同步一个每日安排与最多 20 门课程的单次提醒，退出当前复习表的旧单次事件暂不自动删除；不能宣称日历实时跟随每次回答。SAF 文件备份应检查取消、无效 JSON、导入前确认与恢复后的记录一致性。
+
+全新 CI 运行生成的 debug 签名可能不同，预览 APK 不保证覆盖原安装。换包前先备份；正式版使用用户保管的稳定签名，密钥不进 Git 或聊天。构建完成、远端工作流成功和真机验收分别记录，不混称已完成。
 
 ## 升级
 

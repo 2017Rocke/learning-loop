@@ -20,3 +20,11 @@ node_modules/
 **/generation-record.json
 *.aiff
 *.caf
+/android/.gradle/
+/android/**/build/
+/android/local.properties
+/android/.local/
+/android/app/src/main/assets/site/
+*.keystore
+*.jks
+*.apk

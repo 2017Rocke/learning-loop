@@ -1,0 +1,43 @@
+name: Publish Android courses
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/**'
+      - 'web/media/**'
+      - 'web/mobile/**'
+      - 'web/lesson-visuals.*'
+      - 'scripts/build*.py'
+      - 'learning_loop.py'
+      - '.github/workflows/publish-content.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: android-course-content
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -B -m unittest discover -s tests
+      - run: python scripts/build_android_content.py
+      - name: Publish immutable course archive before the channel manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! gh release view course-content >/dev/null 2>&1; then
+            gh release create course-content --target "$GITHUB_SHA" --title "Android course content" --notes "Data-only course updates for Learning Loop Android. Configure this public repository in the app." --latest=false
+          fi
+          COURSE_ARCHIVE=$(python -c 'import json; print(json.load(open("dist/android-content/manifest.json"))["archive"]["name"])')
+          if ! gh release view course-content --json assets --jq '.assets[].name' | grep -Fxq "$COURSE_ARCHIVE"; then
+            gh release upload course-content "dist/android-content/$COURSE_ARCHIVE"
+          fi
+          gh release upload course-content dist/android-content/manifest.json --clobber

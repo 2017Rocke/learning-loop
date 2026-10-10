@@ -41,6 +41,9 @@
     ].map(fold).join('\r\n');
   }
   function download(options = {}) {
+    if (root.LearningLoopNative && /\bLearningLoopAndroid\//.test(root.navigator.userAgent)) {
+      return root.LearningLoopNative.submitSchedule({ title: '知行 · 回忆复习', time: options.time || '20:00', minutes: options.minutes || 5, due_at: options.due_at || null, reviews: options.reviews || [] });
+    }
     const current = new URL(root.location.href);
     current.hash = 'review';
     const text = create({...options, url: current.href});

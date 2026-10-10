@@ -1,6 +1,33 @@
 'use strict';
 
 (() => {
+  const NATIVE = /\bLearningLoopAndroid\//.test(navigator.userAgent) && location.origin === 'https://appassets.androidplatform.net';
+  let nativePort = null;
+  let nativeReady = null;
+  const nativeReadyPromise = new Promise(resolve => { nativeReady = resolve; });
+  const nativeRequests = new Map();
+  let nativeReminder = { time: '20:00', minutes: 5 };
+  async function nativeCall(action, payload = {}) {
+    if (!NATIVE) throw new Error('当前环境没有原生功能。');
+    await nativeReadyPromise;
+    const id = `request-${crypto.randomUUID()}`;
+    return new Promise((resolve, reject) => { nativeRequests.set(id, { resolve, reject }); nativePort.postMessage(JSON.stringify({ id, action, payload })); });
+  }
+  if (NATIVE) {
+    window.LearningLoopNative = { submitSchedule: payload => storageError ? Promise.reject(new Error('请先恢复学习记录，再同步日历。')) : nativeCall('schedule', payload), request: nativeCall };
+    window.addEventListener('message', event => {
+      if (event.source !== null || !event.ports?.[0] || typeof event.data !== 'string') return;
+      let hello;
+      try { hello = JSON.parse(event.data); } catch { if (event.data !== 'learning-loop-native-ready') return; hello = { type: 'learning-loop-native-ready' }; }
+      if (hello.type !== 'learning-loop-native-ready') return;
+      if (nativePort) nativePort.close();
+      nativePort = event.ports[0];
+      if (hello.reminder && /^([01]\d|2[0-3]):[0-5]\d$/.test(hello.reminder.time) && Number.isInteger(hello.reminder.minutes) && hello.reminder.minutes >= 1 && hello.reminder.minutes <= 60) nativeReminder = hello.reminder;
+      nativePort.onmessage = response => { try { const message = JSON.parse(response.data); const request = nativeRequests.get(message.id); if (!request) return; nativeRequests.delete(message.id); if (message.ok) request.resolve(message.data || { message: message.message }); else request.reject(new Error(message.error || '操作已取消。')); } catch { /* Ignore unrelated port messages. */ } };
+      nativePort.start(); nativeReady();
+      if (state) { if (!storedRaw && !storageError) state.settings.review_minutes = nativeReminder.minutes; if (route().view === 'settings') render(); reportSchedule(); }
+    });
+  }
   const STORE_KEY = `zhixing.mobile.learning.v1:${new URL('.', document.baseURI).pathname}`;
   const L = window.LearningState;
   const root = document.getElementById('app');
@@ -50,6 +77,19 @@
   function dayKey(value) { const d = new Date(value); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`; }
   function uid(prefix) { return `${prefix}-${crypto.randomUUID()}`; }
   function courseByID(id) { return courses.find(course => course.id === id); }
+  function schedulePayload() {
+    const grouped = new Map();
+    for (const review of state.reviews) {
+      const course = courseByID(review.course_id); if (!course) continue;
+      const row = grouped.get(course.id);
+      if (!row) grouped.set(course.id, { course_id: course.id, title: course.title, due_at: review.due_at, count: 1 });
+      else { row.count++; if (Date.parse(review.due_at) < Date.parse(row.due_at)) row.due_at = review.due_at; }
+    }
+    const reviews = [...grouped.values()].sort((a, b) => Date.parse(a.due_at) - Date.parse(b.due_at)).slice(0, 20);
+    const minutes = storedRaw ? state.settings.review_minutes : nativeReminder.minutes;
+    return { title: '知行 · 回忆复习', time: nativeReminder.time, minutes, due_at: reviews[0]?.due_at || null, reviews };
+  }
+  function reportSchedule() { if (NATIVE && nativePort && state && !storageError) nativeCall('scheduleState', schedulePayload()).catch(() => {}); }
   function panel(title, ...children) { return el('section', { class: 'panel' }, title ? el('h2', {}, title) : null, ...children); }
   function commit(next, message, allowRecovery = false) {
     try {
@@ -57,7 +97,7 @@
       const checked = L.validateState(next, courses);
       // One atomic localStorage write: keep the previous state on validation/quota errors.
       localStorage.setItem(STORE_KEY, JSON.stringify(checked));
-      state = checked; storedRaw = JSON.stringify(checked); storageError = ''; if (message) toast(message); render(); return true;
+      state = checked; storedRaw = JSON.stringify(checked); storageError = ''; if (message) toast(message); render(); reportSchedule(); return true;
     } catch (error) { toast(error.message || '记录未保存，请导出备份后重试。', true); return false; }
   }
   function safeAction(action) { try { action(); } catch (error) { toast(error.message || '操作没有完成。', true); } }
@@ -76,7 +116,7 @@
     const bottom = el('nav', { class: 'bottom-nav', 'aria-label': '主导航' }, navItems.map(([key, label, glyph]) => el('button', { type: 'button', class: current.view === key || current.view === 'course' && key === 'courses' ? 'active' : '', 'aria-current': current.view === key ? 'page' : null, on: { click: () => navigate(key) } }, el('span', { class: 'nav-glyph', 'aria-hidden': 'true' }, glyph), el('span', {}, label), key === 'review' && L.due(state).length ? el('b', {}, L.due(state).length) : null)));
     root.replaceChildren(header, el('div', { id: 'update-notice' }), page, bottom); showUpdateNotice();
   }
-  function connectionText() { return navigator.onLine ? offlineReady ? '已保存离线课程' : '联网可学习' : offlineReady ? '离线学习中' : '当前离线'; }
+  function connectionText() { return NATIVE ? '本机课程 · 可离线' : navigator.onLine ? offlineReady ? '已保存离线课程' : '联网可学习' : offlineReady ? '离线学习中' : '当前离线'; }
   function updateConnection() { const label = document.getElementById('connection-state'); if (label) label.textContent = connectionText(); }
   function showUpdateNotice() {
     const node = document.getElementById('update-notice');
@@ -99,6 +139,7 @@
     registration.addEventListener('updatefound', watchInstalling); watchInstalling(); noticeWaiting();
   }
   async function checkUpdates() {
+    if (NATIVE) { try { await nativeCall('update'); } catch (error) { toast(error.message, true); } return; }
     if (!navigator.onLine) { toast('请联网后检查课程更新。', true); return; }
     if (!workerRegistration) { toast('离线应用尚在准备，请稍后再试。'); return; }
     try { await workerRegistration.update(); if (workerRegistration.waiting) { updateReady = true; showUpdateNotice(); } toast(updateReady ? '新版本已就绪，点击顶部“刷新课程”即可使用。' : '已检查更新；发现新版本后会完整下载，再提示刷新。'); } catch { toast('暂时无法检查更新，请稍后重试。', true); }
@@ -205,8 +246,13 @@
     return page;
   }
 
-  function downloadText(text, filename) { const url = URL.createObjectURL(new Blob([text], { type: 'application/json;charset=utf-8' })); const anchor = el('a', { href: url, download: filename }); document.body.append(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
-  function exportState() { downloadText(JSON.stringify(state, null, 2), `zhixing-mobile-${new Date().toISOString().slice(0, 10)}.json`); toast('备份已交给浏览器下载，请妥善保存。'); }
+  async function downloadText(text, filename) {
+    if (NATIVE) { await nativeCall('export', { text, filename }); toast('备份已保存到你选择的位置。'); return; }
+    const url = URL.createObjectURL(new Blob([text], { type: 'application/json;charset=utf-8' })); const anchor = el('a', { href: url, download: filename }); document.body.append(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('备份已交给浏览器下载，请妥善保存。');
+  }
+  function exportState() { downloadText(JSON.stringify(state, null, 2), `zhixing-mobile-${new Date().toISOString().slice(0, 10)}.json`).catch(error => toast(error.message, true)); }
+  async function importNative() { try { const result = await nativeCall('import'); pendingImport = L.importBackup(result.text, courses); render(); } catch (error) { pendingImport = null; toast(error.message, true); } }
   async function importFile(file) {
     if (!file) return;
     try { if (file.size > 10000000) throw new Error('请选择 10 MB 以内的备份。'); pendingImport = L.importBackup(await file.text(), courses); render(); }
@@ -219,10 +265,16 @@
     const review = el('input', { type: 'number', min: '1', max: '60', value: state.settings.review_minutes, required: true, id: 'review-minutes' });
     page.append(el('form', { class: 'panel', on: { submit: event => { event.preventDefault(); const next = JSON.parse(JSON.stringify(state)); next.settings = { daily_minutes: Number(daily.value), review_minutes: Number(review.value) }; next.updated_at = new Date().toISOString(); commit(next, '学习节奏已保存。'); } } }, el('h2', {}, '每天留几分钟'), el('div', { class: 'settings-fields' }, el('label', { for: 'daily-minutes' }, '学习 / 分钟', daily), el('label', { for: 'review-minutes' }, '复习 / 分钟', review)), el('button', { class: 'button primary', type: 'submit' }, '保存节奏')));
     const fileInput = el('input', { type: 'file', accept: 'application/json,.json', id: 'import-file', on: { change: event => importFile(event.target.files?.[0]) } });
-    page.append(panel('备份与换设备', el('p', { class: 'prose' }, '记录只保存在当前浏览器，电脑端与其他手机不会自动同步。清除浏览器数据会失去本机记录，请定期导出。'), el('div', { class: 'action-row' }, button('导出学习记录', exportState, 'outline'), storageError && storedRaw ? button('导出原始记录', () => downloadText(storedRaw, 'zhixing-recovery-original.json'), 'outline') : null), el('label', { class: 'file-import', for: 'import-file' }, '选择知行手机端 JSON 备份', fileInput), el('p', { class: 'helper' }, '导入会先检查格式、课程、问题与记录关联；确认后一次性替换本机记录。不会合并或上传。')));
+    page.append(panel('备份与换设备', el('p', { class: 'prose' }, NATIVE ? '记录保存在此设备的 App 中，电脑端与其他手机不会自动同步。卸载 App 或清除应用数据会失去记录，请定期导出。' : '记录只保存在当前浏览器，电脑端与其他手机不会自动同步。清除浏览器数据会失去本机记录，请定期导出。'), el('div', { class: 'action-row' }, button('导出学习记录', exportState, 'outline'), storageError && storedRaw ? button('导出原始记录', () => downloadText(storedRaw, 'zhixing-recovery-original.json').catch(error => toast(error.message, true)), 'outline') : null), NATIVE ? button('从手机文件恢复备份', importNative, 'outline') : el('label', { class: 'file-import', for: 'import-file' }, '选择知行手机端 JSON 备份', fileInput), el('p', { class: 'helper' }, '导入会先检查格式、课程、问题与记录关联；确认后一次性替换本机记录。不会合并或上传。')));
     if (pendingImport) page.append(el('section', { class: 'panel import-confirm' }, el('h2', {}, '备份有效，确认后替换'), el('p', { class: 'prose' }, `将恢复 ${pendingImport.enrollments.length} 门课程、${pendingImport.evidence.length} 条实践记录和 ${pendingImport.review_history.length} 次复习回答。原记录不会与它合并。`), el('div', { class: 'action-row' }, button('先导出当前记录', exportState, 'outline'), button('确认替换本机记录', () => { const candidate = pendingImport; if (commit(candidate, '已完整恢复备份。', true)) { pendingImport = null; selectedReview = null; revealed.clear(); drafts.clear(); render(); } }, 'primary'), button('取消', () => { pendingImport = null; render(); }, 'ghost'))));
-    page.append(panel('手机日历提醒', el('p', { class: 'prose' }, '导出每天 20:00 的复习日历，再由你导入手机日历。日历是否提醒取决于手机设置。'), button('导出每日复习提醒', () => safeAction(() => { if (!window.LearningCalendar) throw new Error('日历功能暂未加载，请联网刷新。'); window.LearningCalendar.download({ time: '20:00', minutes: state.settings.review_minutes }); }), 'outline'), el('p', { class: 'helper' }, '这会下载日历文件；导入后才能提醒，并非浏览器后台推送。')));
-    page.append(panel('安装与离线', el('p', { class: 'prose' }, offlineReady ? '课程已保存在此设备，可以离线查看图解、音频与练习。新课程需要联网更新。' : '第一次联网打开时会准备离线课程。完成前请保持页面打开，准备好后顶部会显示“已保存离线课程”。'), installPrompt ? button('安装知行到主屏幕', installApp, 'primary') : el('p', { class: 'helper' }, 'iPhone：Safari 的分享菜单 → 添加到主屏幕。Android：浏览器菜单 → 安装应用 / 添加到主屏幕。'), el('p', { class: 'helper' }, '语音需你点播放；浏览器或系统可能在后台暂停媒体。复习提醒在打开应用时显示，关闭网页后不提供推送。'), button('检查课程更新', checkUpdates, 'outline')));
+    if (NATIVE) {
+      const schedule = schedulePayload();
+      page.append(panel('手机日历提醒', el('p', { class: 'prose' }, `每天 ${schedule.time} 留 ${schedule.minutes} 分钟回忆，并按课程同步最多 20 个最早到期提醒。每次同步都会先征求确认，再选择可写日历。`), button('同步到手机日历', async () => { try { const result = await window.LearningCalendar.download(schedule); toast(result.message || '日历同步已完成，请检查手机日历通知设置。'); } catch (error) { toast(error.message, true); } }, 'outline', null, Boolean(storageError)), el('p', { class: 'helper' }, storageError ? '请先恢复学习记录，再同步原来的复习计划。' : '权限拒绝仍可学习。日历不含你的回答；计划变化后请再次同步，手机日历是否提醒取决于系统设置。')));
+      page.append(panel('课程更新与离线', el('p', { class: 'prose' }, '课程和语音保存在此设备，断网也能学习。配置公开 GitHub 课程仓库后，打开 App 会轻量检查新课程，由你确认下载。'), button('检查课程更新', checkUpdates, 'outline'), el('p', { class: 'helper' }, '只更新课程数据，不更新 App 程序。无需 GitHub 账号、密码或令牌。新课程准备完成后，由你确认刷新。')));
+    } else {
+      page.append(panel('手机日历提醒', el('p', { class: 'prose' }, '导出每天 20:00 的复习日历，再由你导入手机日历。日历是否提醒取决于手机设置。'), button('导出每日复习提醒', () => safeAction(() => { if (!window.LearningCalendar) throw new Error('日历功能暂未加载，请联网刷新。'); window.LearningCalendar.download({ time: '20:00', minutes: state.settings.review_minutes }); }), 'outline'), el('p', { class: 'helper' }, '这会下载日历文件；导入后才能提醒，并非浏览器后台推送。')));
+      page.append(panel('安装与离线', el('p', { class: 'prose' }, offlineReady ? '课程已保存在此设备，可以离线查看图解、音频与练习。新课程需要联网更新。' : '第一次联网打开时会准备离线课程。完成前请保持页面打开，准备好后顶部会显示“已保存离线课程”。'), installPrompt ? button('安装知行到主屏幕', installApp, 'primary') : el('p', { class: 'helper' }, 'iPhone：Safari 的分享菜单 → 添加到主屏幕。Android：浏览器菜单 → 安装应用 / 添加到主屏幕。'), el('p', { class: 'helper' }, '语音需你点播放；浏览器或系统可能在后台暂停媒体。复习提醒在打开应用时显示，关闭网页后不提供推送。'), button('检查课程更新', checkUpdates, 'outline')));
+    }
     page.append(el('p', { class: 'privacy-note' }, el('a', { href: './credits.html' }, '项目许可与素材来源')));
     page.append(el('p', { class: 'privacy-note' }, '不设账户 · 学习记录不上传 · 无云端同步'));
     return page;
@@ -236,8 +288,9 @@
       if (catalog.schema_version !== 1 || !Array.isArray(catalog.courses) || catalog.courses.length > 2000 || !catalog.courses.every(course => course && typeof course.id === 'string' && typeof course.title === 'string' && course.lesson && Array.isArray(course.lesson.questions)) || new Set(catalog.courses.map(course => course.id)).size !== catalog.courses.length) throw new Error('课程包格式不正确，请更新应用。');
       courses = catalog.courses;
       try { storedRaw = localStorage.getItem(STORE_KEY); state = storedRaw ? L.importBackup(storedRaw, courses) : L.fresh(); } catch (error) { storageError = error.message || '浏览器暂时无法读取本机记录。'; state = L.fresh(); }
-      render();
-      if ('serviceWorker' in navigator) {
+      if (NATIVE && nativePort && !storedRaw && !storageError) state.settings.review_minutes = nativeReminder.minutes;
+      render(); reportSchedule();
+      if (!NATIVE && 'serviceWorker' in navigator) {
         navigator.serviceWorker.register(new URL('sw.js', document.baseURI), { scope: new URL('.', document.baseURI).pathname }).then(async registration => {
           workerRegistration = registration; observeWorker(registration); await navigator.serviceWorker.ready; offlineReady = Boolean(registration.active); updateConnection();
         }).catch(() => { offlineReady = false; updateConnection(); });
@@ -248,7 +301,7 @@
   window.addEventListener('online', updateConnection); window.addEventListener('offline', updateConnection);
   window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPrompt = event; if (route().view === 'settings') render(); });
   window.addEventListener('pagehide', stopMedia);
-  if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('controllerchange', () => {
+  if (!NATIVE && 'serviceWorker' in navigator) navigator.serviceWorker.addEventListener('controllerchange', () => {
     offlineReady = true; updateConnection();
     if (reloadAfterUpdate) { location.reload(); return; }
     if (hadController) { updateReady = true; showUpdateNotice(); }

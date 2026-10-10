@@ -1,0 +1,40 @@
+name: Build Android preview APK
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - 'web/**'
+      - 'content/**'
+      - 'scripts/build*.py'
+      - 'scripts/check_android.py'
+      - 'learning_loop.py'
+      - '.github/workflows/android-apk.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - run: python scripts/build_android_content.py --assets android/app/src/main/assets/site
+      - run: python scripts/check_android.py
+      - name: Build and inspect preview
+        working-directory: android
+        run: ./gradlew --no-daemon assembleDebug lintDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: learning-loop-android-preview
+          path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 30
