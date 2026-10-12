@@ -62,6 +62,12 @@ APK 由 `android-apk.yml` 构建 debug 预览产物。本机构建需 JDK 17、A
 
 面向手机试用者发布时，将已审核 APK 和 SHA-256 校验文件附到独立的 Android Release（例如 `android-v0.2.1`），不要覆盖 `course-content`。Release 版本须与 APK 的 versionName/versionCode 一致。后续 APK 必须复用上一份 Release 的签名文件，并用 `apksigner verify --print-certs` 比较证书摘要；签名文件由发布者在仓库外保管和备份，不能上传到公开构建产物。若签名不同，须明确这是需备份换装的迁移，而不能声称可直接升级。Actions 的临时 debug 构建仅用于开发验证。
 
+### 安卓媒体分段读取
+
+`WebViewMediaResponse` 专用于 `shouldInterceptRequest` 返回的流，不能当成普通 HTTP 服务器的已裁剪响应。Chromium 会先以流的 `available()` 计算完整资源范围，再按 Range 起点 `skip()`；App 不能提前跳过起点。保持 206 / Content-Range / Content-Length 的正确语义，把零位置的流交给 WebView，并在读取时限制闭区间终点。范围回归检查使用真实课件音频重放这个消费顺序，对完整播放、非零偏移、后缀范围、闭区间与分片重组逐字节验证；桌面 Python 服务器和 service worker 的普通 HTTP Range 实现不采用这个适配方式。
+
+依据为 [Chromium 130 固定提交的 InputStreamReader](https://chromium.googlesource.com/chromium/src/+/3a50e012e4c9b8a410a4e2b12bf577e69ee8f755/components/embedder_support/android/util/input_stream_reader.cc) 与 [AndroidStreamReaderURLLoader](https://chromium.googlesource.com/chromium/src/+/3a50e012e4c9b8a410a4e2b12bf577e69ee8f755/components/embedder_support/android/util/android_stream_reader_url_loader.cc)；不据此推断用户手机的具体 WebView 版本。原生范围回归和音频完整解码不能代替真机播放；播放错误提示的 MediaError 编号用于后续区分读取失败、解码失败和格式不可用。
+
 ## 升级
 
 - 保持课程 ID 和 `questions[].id` 稳定，改文字或补媒体不重置用户历史。

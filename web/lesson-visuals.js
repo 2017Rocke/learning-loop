@@ -41,19 +41,42 @@ window.LessonVisuals = (() => {
       const duration = el('span', { class: 'narration-duration' }, Number.isFinite(clip.duration_seconds) && clip.duration_seconds > 0 ? timeLabel(clip.duration_seconds) : '中文讲解');
       const speed = el('select', { class: 'narration-speed', 'aria-label': '语音播放速度', on: { change: event => { preferredAudioRate = Number(event.target.value); player.playbackRate = preferredAudioRate; } } }, [0.8, 1, 1.25, 1.5].map(rate => el('option', { value: rate }, `${rate} ×`))); speed.value = String(preferredAudioRate);
       const status = el('p', { class: 'narration-status', role: 'status' });
+      let retryAt = null;
+      const retry = button('重新加载这段语音', () => {
+        if (disposed) return;
+        retryAt = Number.isFinite(player.currentTime) ? player.currentTime : 0;
+        status.textContent = '正在重新读取语音…'; retry.hidden = true;
+        player.load();
+        const attempt = player.play();
+        attempt?.catch(() => { if (!disposed && !player.error) { status.textContent = '语音已重新加载，请点击播放继续。'; retry.hidden = false; } });
+      }, 'small outline');
+      retry.hidden = true;
       const transcript = clip.transcript ? fold('展开旁白全文', el('p', { class: 'narration-transcript' }, clip.transcript)) : null;
       const card = el('section', { class: `narration-card${walkthroughID === null ? '' : ' snippet-narration'}`, 'aria-label': walkthroughID === null ? '听这一节的中文讲解' : '听这个代码片段的逐行讲解' },
         el('div', { class: 'narration-heading' }, el('div', { class: 'narration-title-group' }, el('span', { class: 'narration-icon', 'aria-hidden': 'true' }, '◖♪◗'), el('strong', {}, clip.title || '听一遍中文讲解')), duration),
         el('div', { class: 'narration-controls' }, player, el('label', { class: 'narration-speed-label' }, '语速', speed)),
-        el('p', { class: 'narration-note' }, audioLesson.voice || '本机合成中文语音', ' · 点击播放，可以暂时移开视线'), status, transcript);
+        el('p', { class: 'narration-note' }, audioLesson.voice || '本机合成中文语音', ' · 点击播放，可以暂时移开视线'), status, retry, transcript);
       const stopExclusive = exclusivePlayback(player);
       let disposed = false;
-      const failed = () => { if (disposed) return; player.pause(); status.textContent = '语音暂时无法播放，可阅读下方旁白全文。'; if (transcript) transcript.open = true; };
-      const metadata = () => { if (Number.isFinite(player.duration) && player.duration > 0) duration.textContent = timeLabel(player.duration); player.playbackRate = Number(speed.value); };
-      player.addEventListener('error', failed); source.addEventListener('error', failed); player.addEventListener('loadedmetadata', metadata);
+      const failed = () => {
+        if (disposed) return;
+        player.pause();
+        const code = player.error?.code || 0;
+        const reason = ({ 1: '语音播放被中断', 2: '语音读取中断', 3: '语音解码失败', 4: '当前设备无法读取这段语音' })[code] || '语音暂时无法播放';
+        status.textContent = `${reason}，可以重新加载；仍失败时请把此提示截图反馈（音频 ${code || '未知'}）。旁白全文仍可阅读。`;
+        retry.hidden = false;
+        if (transcript) transcript.open = true;
+      };
+      const metadata = () => {
+        if (Number.isFinite(player.duration) && player.duration > 0) duration.textContent = timeLabel(player.duration);
+        player.playbackRate = Number(speed.value);
+        if (retryAt !== null) { player.currentTime = Math.min(retryAt, Math.max(0, (player.duration || 0) - .1)); retryAt = null; }
+      };
+      const playing = () => { status.textContent = ''; retry.hidden = true; };
+      player.addEventListener('error', failed); source.addEventListener('error', failed); player.addEventListener('loadedmetadata', metadata); player.addEventListener('playing', playing);
       const dispose = () => {
         if (disposed) return;
-        disposed = true; stopExclusive(); player.removeEventListener('error', failed); source.removeEventListener('error', failed); player.removeEventListener('loadedmetadata', metadata); player.pause(); source.removeAttribute('src'); player.removeAttribute('src'); player.load();
+        disposed = true; stopExclusive(); player.removeEventListener('error', failed); source.removeEventListener('error', failed); player.removeEventListener('loadedmetadata', metadata); player.removeEventListener('playing', playing); player.pause(); source.removeAttribute('src'); player.removeAttribute('src'); player.load();
       };
       audioDisposers.set(card, dispose); onCleanup(dispose);
       return card;

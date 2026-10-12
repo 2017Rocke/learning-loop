@@ -36,9 +36,9 @@ def main():
         raise SystemExit("Invalid archive name in local manifest")
     native = ROOT / "android/app/src/main/java/cn/learningloop/app"
     files = [native / (name + ".java") for name in
-             ("ContentJson", "CourseContentRules", "ByteRanges", "CalendarTimes")]
+             ("ContentJson", "CourseContentRules", "ByteRanges", "CalendarTimes", "WebViewMediaResponse")]
     files.extend(ROOT / "android/tests" / name for name in
-                 ("CourseContentRulesTest.java", "NativeUtilityCheck.java"))
+                 ("CourseContentRulesTest.java", "NativeUtilityCheck.java", "WebViewMediaResponseCheck.java"))
     with tempfile.TemporaryDirectory(prefix="learning-loop-native-check-") as folder:
         subprocess.run([java_tool("javac"), "-encoding", "UTF-8", "-d", folder,
                         *map(str, files)], check=True)
@@ -47,6 +47,8 @@ def main():
                         str(manifest_path), str(args.content / archive_name)], check=True)
         subprocess.run([java_tool("java"), "-cp", folder,
                         "cn.learningloop.app.NativeUtilityCheck"], check=True)
+        subprocess.run([java_tool("java"), "-cp", folder,
+                        "cn.learningloop.app.WebViewMediaResponseCheck", str(args.assets)], check=True)
 
 
 if __name__ == "__main__":

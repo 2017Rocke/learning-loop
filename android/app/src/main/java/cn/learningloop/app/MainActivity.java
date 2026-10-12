@@ -26,7 +26,6 @@ import android.widget.Toast;
 import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -96,7 +95,7 @@ public final class MainActivity extends Activity {
         settings.setAllowFileAccess(false); settings.setAllowContentAccess(false); settings.setAllowFileAccessFromFileURLs(false); settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW); settings.setJavaScriptCanOpenWindowsAutomatically(false); settings.setSupportMultipleWindows(false);
         settings.setMediaPlaybackRequiresUserGesture(true); settings.setGeolocationEnabled(false); settings.setSaveFormData(false); settings.setSafeBrowsingEnabled(true);
-        settings.setUserAgentString(settings.getUserAgentString() + " LearningLoopAndroid/0.2.0");
+        settings.setUserAgentString(settings.getUserAgentString() + " LearningLoopAndroid/" + BuildConfig.VERSION_NAME);
         CookieManager.getInstance().setAcceptCookie(false); CookieManager.getInstance().setAcceptThirdPartyCookies(web, false);
         WebView.setWebContentsDebuggingEnabled(false);
         web.setWebViewClient(new WebViewClient() {
@@ -152,28 +151,15 @@ public final class MainActivity extends Activity {
             }
             Map<String, String> headers = new HashMap<>(); headers.put("X-Content-Type-Options", "nosniff"); headers.put("Cache-Control", "no-store"); headers.put("Accept-Ranges", "bytes");
             headers.put("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; worker-src 'none'");
-            int code = 200; String reason = "OK"; long start = 0, end = length - 1;
             String range = request.getRequestHeaders().get("Range");
             if (range == null) range = request.getRequestHeaders().get("range");
-            if (range != null) {
-                try {
-                    long[] parsed = ByteRanges.parse(range, length); start = parsed[0]; end = parsed[1];
-                    long remaining = start; while (remaining > 0) { long skipped = stream.skip(remaining); if (skipped <= 0) { if (stream.read() < 0) throw new IOException("Short stream"); skipped = 1; } remaining -= skipped; }
-                    code = 206; reason = "Partial Content"; headers.put("Content-Range", "bytes " + start + "-" + end + "/" + length);
-                } catch (IllegalArgumentException invalid) { stream.close(); headers.put("Content-Range", "bytes */" + length); return new WebResourceResponse(type, null, 416, "Range Not Satisfiable", headers, new ByteArrayInputStream(new byte[0])); }
-            }
-            long count = Math.max(0, end - start + 1); headers.put("Content-Length", Long.toString(count));
-            if (request.getMethod().equals("HEAD")) { stream.close(); stream = new ByteArrayInputStream(new byte[0]); } else stream = new BoundedInputStream(stream, count);
-            return new WebResourceResponse(type, type.startsWith("text/") || type.contains("javascript") || type.contains("json") ? "UTF-8" : null, code, reason, headers, stream);
+            WebViewMediaResponse response = WebViewMediaResponse.prepare(stream, length, range, request.getMethod().equals("HEAD"));
+            headers.put("Content-Length", Long.toString(response.contentLength));
+            if (response.contentRange != null) headers.put("Content-Range", response.contentRange);
+            return new WebResourceResponse(type, type.startsWith("text/") || type.contains("javascript") || type.contains("json") ? "UTF-8" : null, response.status, response.reason, headers, response.stream);
         } catch (Exception ignored) { return error(404, "Not Found", "Local resource unavailable"); }
     }
     private WebResourceResponse error(int code, String reason, String text) { return new WebResourceResponse("text/plain", "UTF-8", code, reason, java.util.Collections.singletonMap("X-Content-Type-Options", "nosniff"), new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8))); }
-    private static final class BoundedInputStream extends FilterInputStream {
-        private long remaining;
-        BoundedInputStream(InputStream stream, long remaining) { super(stream); this.remaining = remaining; }
-        @Override public int read() throws IOException { if (remaining <= 0) return -1; int value = super.read(); if (value >= 0) remaining--; return value; }
-        @Override public int read(byte[] data, int offset, int length) throws IOException { if (remaining <= 0) return -1; int count = super.read(data, offset, (int) Math.min(length, remaining)); if (count > 0) remaining -= count; return count; }
-    }
     private void loadLearning(String requestedURL, boolean offerCalendar) {
         if (!alive()) return;
         try { snapshot = updater.captureSnapshot(); } catch (Exception error) { setStatus("课程资源无法读取，请重新打开应用"); toast("课程资源无法读取，请重新打开应用。"); return; }
