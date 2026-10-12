@@ -22,15 +22,20 @@ videos remain on their original sites; their links do not relicense those works.
 
 ## Narration
 
-Packaged narration is locally synthesized from the project's original Chinese
-scripts using the installed macOS Tingting voice. Voice model files are not
-included. Playback uses normal browser media support; regenerating this narration
-requires a compatible local voice and audio encoder. Duration and voice details
-are recorded in the lesson metadata.
+Packaged narration is synthesized from the project's original Chinese scripts.
+Brush and VoiceStudio use the installed macOS Tingting voice; the refreshed Bayes
+course uses Microsoft Edge's `zh-CN-XiaoxiaoNeural` voice through the optional
+`edge-tts` authoring tool. Its public lesson scripts are sent for online synthesis
+during explicit authoring, and the resulting files are bundled for offline
+playback. No model files or third-party recordings are included. Regeneration
+requires the appropriate optional tools and, for neural narration, an available
+online service. Duration and actual voice provenance are recorded in each lesson.
 
 ## Bayes course
 
-The factory example uses synthetic teaching assumptions and original diagrams.
+The factory and email examples use synthetic teaching assumptions and original
+cartoon-style diagrams. Characters guide attention; only labeled counts or
+explicitly scaled dots represent quantities.
 The source references link to Stanford and OpenStax explanations; no textbook
 page scans, copied lecture recordings, or third-party video files are bundled.
 

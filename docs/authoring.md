@@ -22,7 +22,7 @@ python3 learning_loop.py draft-lesson --track-id TRACK_ID --output content/my-to
 
 先设计 3～5 幅因果图，每幅一个机制、一句结论和一个预测问题，提供替代文字。动态过程可加短视频和字幕，但不是每课必须有视频。只使用已实现且适合本课的交互；没有合适组件就设 `interactive: null`。
 
-尽量提供真实生成的中文音频，用口语说明变量角色和因果，提醒暂停后看图或动手。部分课程只有核心音频时标明覆盖范围。声音不能替代文字稿，文字稿也不能冒充声音。
+优先采用自然、温柔甜美而清晰的中文女声，用口语说明变量角色和因果，提醒暂停后看图或动手。先用数字与术语做短试听，不能只升调或机械念公式。图解可用多彩原创漫画角色建立兴趣，但概念配色、数字和符号必须一致，角色不冒充真实实验。部分课程只有核心音频时标明覆盖范围。声音不能替代文字稿，文字稿也不能冒充声音。
 
 资产在 `web/media/课程名/`，引用 `/media/课程名/文件名`。静态 SVG 不含外部引用、脚本或 HTML。音视频生成后实际解码、测时长和核对文字稿，不预填虚拟数字。原理示意不能声称真实重建成果。
 
@@ -42,13 +42,21 @@ python3 learning_loop.py draft-lesson --track-id TRACK_ID --output content/my-to
 
 ## 可选音频制作
 
-App 播放不需要制作工具。macOS 可复用本地生成器；先确认已有音色，不假定其他机器安装 Tingting，也不自动下载：
+App 播放使用打包音频，不需要制作工具、语音账号或 API key。自然女声可在备课环境显式调用可选的在线制作工具；仅发送可公开旁白，不发送学习记录。准备 Python 3.9+、`edge-tts`（本次使用 7.2.8）和 FFmpeg，然后运行：
 
 ```sh
-python3 scripts/generate_brush_audio.py --input content/bayes-narration.json --output-dir web/media/bayes/audio
+python3 scripts/generate_neural_audio.py --input content/bayes-narration.json --output-dir web/media/bayes/audio --ffmpeg ffmpeg
 ```
 
-核对输出 `metadata.json` 的实测时长、文字稿、章节和路径，再合并到 `audio_lesson`。不公开本机路径与生成记录。
+脚本不自动安装依赖；服务不可用时停止，不无限重试或修改鉴权。旁白源格式见教学包规范。它逐段生成 MP3，并完整解码验证非静音和时长；全部通过后才替换目标文件。输入和音频哈希匹配时可复用，失败不会留下半套新课。制作过程完成后再构建或发布，不能在它运行中抓取目录。
+
+无在线条件时可用已安装系统音色作为明确说明的备用方式，例如 macOS 上已有的 Tingting：
+
+```sh
+python3 scripts/generate_brush_audio.py --input content/brush-narration.json --output-dir web/media/brush/audio
+```
+
+两种输入格式不同，不把神经语音 JSON 交给系统音色生成器。不假定其他机器安装 Tingting，也不自动下载。核对输出 `metadata.json` 的实测时长、文字稿、章节和路径，再合并到 `audio_lesson`。保留真实音色来源，不公开本机路径与生成记录。
 
 ## 校验与共享
 
