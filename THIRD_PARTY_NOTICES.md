@@ -23,8 +23,8 @@ videos remain on their original sites; their links do not relicense those works.
 ## Narration
 
 Packaged narration is synthesized from the project's original Chinese scripts.
-Brush and VoiceStudio use the installed macOS Tingting voice; the refreshed Bayes
-course uses Microsoft Edge's `zh-CN-XiaoxiaoNeural` voice through the optional
+Brush uses the installed macOS Tingting voice; the refreshed Bayes and VoiceStudio
+courses use Microsoft Edge's `zh-CN-XiaoxiaoNeural` voice through the optional
 `edge-tts` authoring tool. Its public lesson scripts are sent for online synthesis
 during explicit authoring, and the resulting files are bundled for offline
 playback. No model files or third-party recordings are included. Regeneration
@@ -59,7 +59,7 @@ page scans, copied lecture recordings, or third-party video files are bundled.
   corresponding source references, so data-only Android course updates include
   the notices even though they do not replace an installed APK's credits page.
 
-The four diagrams and the punctuation listening exercise are original teaching
-illustrations. All ten narration clips use the installed system Tingting voice;
+The four colorful cartoon diagrams and the punctuation listening exercise are
+original teaching materials. All ten narration clips use Xiaoxiao neural synthesis;
 none is presented as a VoiceStudio model-quality demonstration. No VoiceStudio
 application, model weights, or third-party voice recordings are bundled.
