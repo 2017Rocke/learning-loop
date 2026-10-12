@@ -49,7 +49,7 @@ window.LessonVisuals = (() => {
         player.load();
         const attempt = player.play();
         attempt?.catch(() => { if (!disposed && !player.error) { status.textContent = '语音已重新加载，请点击播放继续。'; retry.hidden = false; } });
-      }, 'small outline');
+      }, 'small outline narration-retry');
       retry.hidden = true;
       const transcript = clip.transcript ? fold('展开旁白全文', el('p', { class: 'narration-transcript' }, clip.transcript)) : null;
       const card = el('section', { class: `narration-card${walkthroughID === null ? '' : ' snippet-narration'}`, 'aria-label': walkthroughID === null ? '听这一节的中文讲解' : '听这个代码片段的逐行讲解' },

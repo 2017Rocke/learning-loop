@@ -65,14 +65,14 @@ public final class MainActivity extends Activity {
         preferences = getSharedPreferences("native_settings", MODE_PRIVATE);
         updater = new CourseUpdater(this);
         calendar = new CalendarController(this);
-        LinearLayout layout = new LinearLayout(this); layout.setOrientation(LinearLayout.VERTICAL); layout.setBackgroundColor(Color.rgb(246, 245, 239));
+        LinearLayout layout = new LinearLayout(this); layout.setOrientation(LinearLayout.VERTICAL); layout.setBackgroundColor(Color.rgb(245, 245, 245));
         layout.setOnApplyWindowInsetsListener((v, insets) -> { v.setPadding(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(), insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom()); return insets; });
         LinearLayout bar = new LinearLayout(this); bar.setPadding(dp(8), dp(5), dp(8), 0); bar.setGravity(android.view.Gravity.CENTER_VERTICAL);
         Button repo = smallButton("课程仓库", v -> configureRepository());
         checkButton = smallButton("检查更新", v -> checkUpdates());
         downloadButton = smallButton("下载新课程", v -> downloadUpdate()); downloadButton.setVisibility(View.GONE);
         bar.addView(repo, new LinearLayout.LayoutParams(0, dp(42), 1)); bar.addView(checkButton, new LinearLayout.LayoutParams(0, dp(42), 1)); bar.addView(downloadButton, new LinearLayout.LayoutParams(0, dp(42), 1));
-        status = new TextView(this); status.setTextColor(Color.rgb(114, 135, 99)); status.setTextSize(10); status.setPadding(dp(15), dp(3), dp(15), dp(7));
+        status = new TextView(this); status.setTextColor(Color.rgb(96, 103, 111)); status.setTextSize(10); status.setPadding(dp(15), dp(3), dp(15), dp(7));
         layout.addView(bar); layout.addView(status);
         web = new WebView(this); configureWeb(); layout.addView(web, new LinearLayout.LayoutParams(-1, 0, 1)); setContentView(layout);
         offerCalendarAfterLoad = !preferences.getBoolean("calendar_intro_shown", false);
@@ -89,7 +89,7 @@ public final class MainActivity extends Activity {
         message = message.replaceAll("[\\p{Cntrl}]+", " ");
         return message.substring(0, Math.min(180, message.length()));
     }
-    private Button smallButton(String text, View.OnClickListener listener) { Button button = new Button(this); button.setText(text); button.setTextSize(11); button.setAllCaps(false); button.setTextColor(Color.rgb(53, 101, 74)); button.setPadding(dp(5), 0, dp(5), 0); button.setOnClickListener(listener); return button; }
+    private Button smallButton(String text, View.OnClickListener listener) { Button button = new Button(this); button.setText(text); button.setTextSize(11); button.setAllCaps(false); button.setTextColor(Color.rgb(0, 126, 65)); button.setPadding(dp(5), 0, dp(5), 0); button.setOnClickListener(listener); return button; }
     private void configureWeb() {
         WebSettings settings = web.getSettings(); settings.setJavaScriptEnabled(true); settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(false); settings.setAllowContentAccess(false); settings.setAllowFileAccessFromFileURLs(false); settings.setAllowUniversalAccessFromFileURLs(false);
