@@ -1,0 +1,714 @@
+{
+  "summary": "把一段知识说明变成可核验的中文旁白。借助 VoiceStudio 看懂“文字与音色条件 → 语音模型 → 分段生成 → 拼接验收”，先做手机听辨，再规划自己的 30～60 秒声音作品。",
+  "mental_model": "可以把 VoiceStudio 类比成有多台设备可选的声音工作台：文字是要说什么，音色与语言设置是怎么说，引擎调用的预训练模型负责生成声音。工作台负责组织、调用和编辑，并不意味着每次生成都重新训练模型。长文分块像分批处理任务，但字符与标点规则不等于理解语义；接缝平滑也不代表每句话都读全。模型能力、硬件、文本和验收共同决定可用性。",
+  "visual_lesson": {
+    "hook": "一篇课文能生成声音，为什么还可能漏掉最后一句？从四幅图找出该检查的环节。",
+    "duration_minutes": 15,
+    "video": null,
+    "steps": [
+      {
+        "id": "voicestudio-input-output",
+        "title": "谁在把文字变成声音？",
+        "caption": "应用组织流程；语音模型负责生成。",
+        "image": "/media/voicestudio/pipeline.svg",
+        "alt": "文字块与音色条件一起进入已训练的语音模型，得到分开的音频段。分段声音还需要顺序组装成章节文件。图中波形仅为示意。",
+        "question": {
+          "prompt": "同一段文字换一个语音引擎，哪项判断更可靠？",
+          "options": [
+            "文字一样，读音与节奏就一定相同",
+            "读音与节奏可能改变，仍需对照验收",
+            "工作台会为每段文字重新训练模型"
+          ],
+          "correct_index": 1,
+          "explanation": "引擎调用的模型与可用控制条件可能不同。输入文字相同并不保证声音相同；通常是在已有模型上推理。"
+        }
+      },
+      {
+        "id": "voicestudio-chunk-budget",
+        "title": "长文怎样分成可处理的小块？",
+        "caption": "预算内优先找句末，找不到再逐级回退。",
+        "image": "/media/voicestudio/chunking.svg",
+        "alt": "在当前字符预算内，切分规则依次尝试句末、分句标点、空格，最后才硬切。此版本的分句层只识别半角逗号、分号、冒号或破折号，且其后必须是空白或当前窗口结尾；中文全角逗号和分号不在这一层规则中。优先句末不保证每块都是完整句子；超长句仍需继续切分。",
+        "question": {
+          "prompt": "预算窗口里既没有标点，也没有空格，当前源码会怎样？",
+          "options": [
+            "永远等待下一个完整句子",
+            "自动理解句义后选择最佳断点",
+            "继续尝试保护标签的硬切规则"
+          ],
+          "correct_index": 2,
+          "explanation": "真实代码按句末、分句标点、空格、硬切的顺序回退。硬切解决继续推进的问题，但不保证保留词义；纯标点合并等边界还可能略超预算。"
+        }
+      },
+      {
+        "id": "voicestudio-audio-join",
+        "title": "接缝怎样变得平滑？",
+        "caption": "在短重叠内，前段淡出、后段淡入。",
+        "image": "/media/voicestudio/assembly.svg",
+        "alt": "两段相邻音频在重叠区对齐：第一段尾部的权重线性减小，第二段头部的权重线性增大，再把两者加权相加。源码默认重叠50毫秒，可以调整；这不是额外插入静音，也不能补回失败或缺失的句子。发现失败段应先核验和修复，是制作建议，并非自动重试功能。",
+        "question": {
+          "prompt": "把两段音频交叉淡化，就能补回中间漏掉的一句吗？",
+          "options": [
+            "不能；它只处理已有声音的连接",
+            "可以；重叠区会生成漏掉的文字",
+            "可以；输出文件长度会自动补足"
+          ],
+          "correct_index": 0,
+          "explanation": "交叉淡化对已有样本加权相加，不调用语音模型重新合成。默认短重叠也不是添加静音，内容缺失须另行定位和修复。"
+        }
+      },
+      {
+        "id": "voicestudio-quality-check",
+        "title": "声音能播放，就能交付吗？",
+        "caption": "信号检查、文字对照、接缝试听各有职责。",
+        "image": "/media/voicestudio/quality.svg",
+        "alt": "同一文字以两种停顿方式呈现：A的示意波形连续，B在句末留出停顿。右侧三个独立验收框分别检查能否发声、术语是否读对、内容是否完整；框没有预先勾选，实际结果仍需试听验证。",
+        "question": {
+          "prompt": "文件通过静音和削波检查，却读错了“高斯溅射”，最需要哪项补查？",
+          "options": [
+            "再次确认文件后缀是 WAV",
+            "对照文字试听术语与内容",
+            "只提高导出位深"
+          ],
+          "correct_index": 1,
+          "explanation": "官方 Check audio 检测部分信号问题，不证明术语、自然度或内容完整性。提高导出位深也不能恢复模型已经遗漏的词。"
+        }
+      }
+    ],
+    "interactive": null,
+    "takeaways": [
+      "把应用、引擎与模型的职责拆开，才能定位问题。",
+      "用输入预算和边界规则分块；块更短不保证更自然。",
+      "交叉淡化减少突兀接缝，不能修复缺句。",
+      "先预测、只改一个因素，再以真实观察决定是否可交付。"
+    ],
+    "watch_more": [
+      {
+        "title": "VoiceStudio 官方说明与演示入口",
+        "url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/README.md",
+        "description": "查看生成流程、支持的引擎与安装条件。带着“哪一步调用模型，哪一步负责编辑”的问题看；外链为补充资料。"
+      }
+    ]
+  },
+  "core_ideas": [
+    {
+      "title": "应用与模型分工",
+      "explanation": "VoiceStudio 提供文字、声音配置和生成编辑流程；所选引擎调用模型产生波形。这个版本默认使用 OmniVoice，也可选择其他引擎。开源应用不代表所有模型、声音素材和输出使用条件相同。先用短句确认环境和音色，再做长文。"
+    },
+    {
+      "title": "预算内优先保留边界",
+      "explanation": "此版本 chunked_tts 的默认预算为 800 字符；中日韩密集文字达到比例阈值时会缩小预算，默认值通常变为 320。它按句末→分句标点→空格→硬切回退，随后合并纯标点碎块；此版本分句规则匹配半角逗号、分号、冒号或破折号，并要求后接空白或窗口末尾，中文全角逗号分号不走这一层。字符数是工程近似，不是所有模型统一上限，也不是精确发声秒数。"
+    },
+    {
+      "title": "保留顺序，还要记录缺失",
+      "explanation": "输入文本块与生成音频应能相互对应。源码会报告并过滤空结果，部分块失败时仍可能返回其他块的音频。因此“有文件”“能播放”不能证明完整；非空音频里的漏词也可能绕过空块检查。验收要逐句对照原稿。"
+    },
+    {
+      "title": "短重叠处理接缝",
+      "explanation": "拼接前先算总样本数和接缝重叠长度，再一次分配输出缓冲区。接缝前段由强到弱、后段由弱到强，加权合成。默认 50 毫秒，但会受可用样本数限制；这既不是补静音，也不是语义修复，过渡是否自然仍须试听。"
+    },
+    {
+      "title": "控制变量与分层验收",
+      "explanation": "同时换文字、音色和模型，很难解释变化。先只改标点或一处难读词，并保留输入、设置与输出。信号检查发现静音或削波，文字对照发现漏句错读，目标手机播放检查交付路径；三类证据不能互相替代。"
+    }
+  ],
+  "source_refs": [
+    {
+      "title": "VoiceStudio 固定版本 README：引擎、功能与环境",
+      "url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/README.md"
+    },
+    {
+      "title": "真实分块、空结果处理与交叉淡化源码",
+      "url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/backend/services/chunked_tts.py"
+    },
+    {
+      "title": "生成入口：分块、模型调用及效果链",
+      "url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/backend/api/routers/generation.py"
+    },
+    {
+      "title": "官方音频质量说明：Check audio 的检测边界",
+      "url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/docs/audio-quality.md"
+    },
+    {
+      "title": "VoiceStudio AGPL-3.0 许可全文",
+      "url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/LICENSE",
+      "license_text": "                    GNU AFFERO GENERAL PUBLIC LICENSE\n                       Version 3, 19 November 2007\n\n Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>\n Everyone is permitted to copy and distribute verbatim copies\n of this license document, but changing it is not allowed.\n\n                            Preamble\n\n  The GNU Affero General Public License is a free, copyleft license for\nsoftware and other kinds of works, specifically designed to ensure\ncooperation with the community in the case of network server software.\n\n  The licenses for most software and other practical works are designed\nto take away your freedom to share and change the works.  By contrast,\nour General Public Licenses are intended to guarantee your freedom to\nshare and change all versions of a program--to make sure it remains free\nsoftware for all its users.\n\n  When we speak of free software, we are referring to freedom, not\nprice.  Our General Public Licenses are designed to make sure that you\nhave the freedom to distribute copies of free software (and charge for\nthem if you wish), that you receive source code or can get it if you\nwant it, that you can change the software or use pieces of it in new\nfree programs, and that you know you can do these things.\n\n  Developers that use our General Public Licenses protect your rights\nwith two steps: (1) assert copyright on the software, and (2) offer\nyou this License which gives you legal permission to copy, distribute\nand/or modify the software.\n\n  A secondary benefit of defending all users' freedom is that\nimprovements made in alternate versions of the program, if they\nreceive widespread use, become available for other developers to\nincorporate.  Many developers of free software are heartened and\nencouraged by the resulting cooperation.  However, in the case of\nsoftware used on network servers, this result may fail to come about.\nThe GNU General Public License permits making a modified version and\nletting the public access it on a server without ever releasing its\nsource code to the public.\n\n  The GNU Affero General Public License is designed specifically to\nensure that, in such cases, the modified source code becomes available\nto the community.  It requires the operator of a network server to\nprovide the source code of the modified version running there to the\nusers of that server.  Therefore, public use of a modified version, on\na publicly accessible server, gives the public access to the source\ncode of the modified version.\n\n  An older license, called the Affero General Public License and\npublished by Affero, was designed to accomplish similar goals.  This is\na different license, not a version of the Affero GPL, but Affero has\nreleased a new version of the Affero GPL which permits relicensing under\nthis license.\n\n  The precise terms and conditions for copying, distribution and\nmodification follow.\n\n                       TERMS AND CONDITIONS\n\n  0. Definitions.\n\n  \"This License\" refers to version 3 of the GNU Affero General Public License.\n\n  \"Copyright\" also means copyright-like laws that apply to other kinds of\nworks, such as semiconductor masks.\n\n  \"The Program\" refers to any copyrightable work licensed under this\nLicense.  Each licensee is addressed as \"you\".  \"Licensees\" and\n\"recipients\" may be individuals or organizations.\n\n  To \"modify\" a work means to copy from or adapt all or part of the work\nin a fashion requiring copyright permission, other than the making of an\nexact copy.  The resulting work is called a \"modified version\" of the\nearlier work or a work \"based on\" the earlier work.\n\n  A \"covered work\" means either the unmodified Program or a work based\non the Program.\n\n  To \"propagate\" a work means to do anything with it that, without\npermission, would make you directly or secondarily liable for\ninfringement under applicable copyright law, except executing it on a\ncomputer or modifying a private copy.  Propagation includes copying,\ndistribution (with or without modification), making available to the\npublic, and in some countries other activities as well.\n\n  To \"convey\" a work means any kind of propagation that enables other\nparties to make or receive copies.  Mere interaction with a user through\na computer network, with no transfer of a copy, is not conveying.\n\n  An interactive user interface displays \"Appropriate Legal Notices\"\nto the extent that it includes a convenient and prominently visible\nfeature that (1) displays an appropriate copyright notice, and (2)\ntells the user that there is no warranty for the work (except to the\nextent that warranties are provided), that licensees may convey the\nwork under this License, and how to view a copy of this License.  If\nthe interface presents a list of user commands or options, such as a\nmenu, a prominent item in the list meets this criterion.\n\n  1. Source Code.\n\n  The \"source code\" for a work means the preferred form of the work\nfor making modifications to it.  \"Object code\" means any non-source\nform of a work.\n\n  A \"Standard Interface\" means an interface that either is an official\nstandard defined by a recognized standards body, or, in the case of\ninterfaces specified for a particular programming language, one that\nis widely used among developers working in that language.\n\n  The \"System Libraries\" of an executable work include anything, other\nthan the work as a whole, that (a) is included in the normal form of\npackaging a Major Component, but which is not part of that Major\nComponent, and (b) serves only to enable use of the work with that\nMajor Component, or to implement a Standard Interface for which an\nimplementation is available to the public in source code form.  A\n\"Major Component\", in this context, means a major essential component\n(kernel, window system, and so on) of the specific operating system\n(if any) on which the executable work runs, or a compiler used to\nproduce the work, or an object code interpreter used to run it.\n\n  The \"Corresponding Source\" for a work in object code form means all\nthe source code needed to generate, install, and (for an executable\nwork) run the object code and to modify the work, including scripts to\ncontrol those activities.  However, it does not include the work's\nSystem Libraries, or general-purpose tools or generally available free\nprograms which are used unmodified in performing those activities but\nwhich are not part of the work.  For example, Corresponding Source\nincludes interface definition files associated with source files for\nthe work, and the source code for shared libraries and dynamically\nlinked subprograms that the work is specifically designed to require,\nsuch as by intimate data communication or control flow between those\nsubprograms and other parts of the work.\n\n  The Corresponding Source need not include anything that users\ncan regenerate automatically from other parts of the Corresponding\nSource.\n\n  The Corresponding Source for a work in source code form is that\nsame work.\n\n  2. Basic Permissions.\n\n  All rights granted under this License are granted for the term of\ncopyright on the Program, and are irrevocable provided the stated\nconditions are met.  This License explicitly affirms your unlimited\npermission to run the unmodified Program.  The output from running a\ncovered work is covered by this License only if the output, given its\ncontent, constitutes a covered work.  This License acknowledges your\nrights of fair use or other equivalent, as provided by copyright law.\n\n  You may make, run and propagate covered works that you do not\nconvey, without conditions so long as your license otherwise remains\nin force.  You may convey covered works to others for the sole purpose\nof having them make modifications exclusively for you, or provide you\nwith facilities for running those works, provided that you comply with\nthe terms of this License in conveying all material for which you do\nnot control copyright.  Those thus making or running the covered works\nfor you must do so exclusively on your behalf, under your direction\nand control, on terms that prohibit them from making any copies of\nyour copyrighted material outside their relationship with you.\n\n  Conveying under any other circumstances is permitted solely under\nthe conditions stated below.  Sublicensing is not allowed; section 10\nmakes it unnecessary.\n\n  3. Protecting Users' Legal Rights From Anti-Circumvention Law.\n\n  No covered work shall be deemed part of an effective technological\nmeasure under any applicable law fulfilling obligations under article\n11 of the WIPO copyright treaty adopted on 20 December 1996, or\nsimilar laws prohibiting or restricting circumvention of such\nmeasures.\n\n  When you convey a covered work, you waive any legal power to forbid\ncircumvention of technological measures to the extent such circumvention\nis effected by exercising rights under this License with respect to\nthe covered work, and you disclaim any intention to limit operation or\nmodification of the work as a means of enforcing, against the work's\nusers, your or third parties' legal rights to forbid circumvention of\ntechnological measures.\n\n  4. Conveying Verbatim Copies.\n\n  You may convey verbatim copies of the Program's source code as you\nreceive it, in any medium, provided that you conspicuously and\nappropriately publish on each copy an appropriate copyright notice;\nkeep intact all notices stating that this License and any\nnon-permissive terms added in accord with section 7 apply to the code;\nkeep intact all notices of the absence of any warranty; and give all\nrecipients a copy of this License along with the Program.\n\n  You may charge any price or no price for each copy that you convey,\nand you may offer support or warranty protection for a fee.\n\n  5. Conveying Modified Source Versions.\n\n  You may convey a work based on the Program, or the modifications to\nproduce it from the Program, in the form of source code under the\nterms of section 4, provided that you also meet all of these conditions:\n\n    a) The work must carry prominent notices stating that you modified\n    it, and giving a relevant date.\n\n    b) The work must carry prominent notices stating that it is\n    released under this License and any conditions added under section\n    7.  This requirement modifies the requirement in section 4 to\n    \"keep intact all notices\".\n\n    c) You must license the entire work, as a whole, under this\n    License to anyone who comes into possession of a copy.  This\n    License will therefore apply, along with any applicable section 7\n    additional terms, to the whole of the work, and all its parts,\n    regardless of how they are packaged.  This License gives no\n    permission to license the work in any other way, but it does not\n    invalidate such permission if you have separately received it.\n\n    d) If the work has interactive user interfaces, each must display\n    Appropriate Legal Notices; however, if the Program has interactive\n    interfaces that do not display Appropriate Legal Notices, your\n    work need not make them do so.\n\n  A compilation of a covered work with other separate and independent\nworks, which are not by their nature extensions of the covered work,\nand which are not combined with it such as to form a larger program,\nin or on a volume of a storage or distribution medium, is called an\n\"aggregate\" if the compilation and its resulting copyright are not\nused to limit the access or legal rights of the compilation's users\nbeyond what the individual works permit.  Inclusion of a covered work\nin an aggregate does not cause this License to apply to the other\nparts of the aggregate.\n\n  6. Conveying Non-Source Forms.\n\n  You may convey a covered work in object code form under the terms\nof sections 4 and 5, provided that you also convey the\nmachine-readable Corresponding Source under the terms of this License,\nin one of these ways:\n\n    a) Convey the object code in, or embodied in, a physical product\n    (including a physical distribution medium), accompanied by the\n    Corresponding Source fixed on a durable physical medium\n    customarily used for software interchange.\n\n    b) Convey the object code in, or embodied in, a physical product\n    (including a physical distribution medium), accompanied by a\n    written offer, valid for at least three years and valid for as\n    long as you offer spare parts or customer support for that product\n    model, to give anyone who possesses the object code either (1) a\n    copy of the Corresponding Source for all the software in the\n    product that is covered by this License, on a durable physical\n    medium customarily used for software interchange, for a price no\n    more than your reasonable cost of physically performing this\n    conveying of source, or (2) access to copy the\n    Corresponding Source from a network server at no charge.\n\n    c) Convey individual copies of the object code with a copy of the\n    written offer to provide the Corresponding Source.  This\n    alternative is allowed only occasionally and noncommercially, and\n    only if you received the object code with such an offer, in accord\n    with subsection 6b.\n\n    d) Convey the object code by offering access from a designated\n    place (gratis or for a charge), and offer equivalent access to the\n    Corresponding Source in the same way through the same place at no\n    further charge.  You need not require recipients to copy the\n    Corresponding Source along with the object code.  If the place to\n    copy the object code is a network server, the Corresponding Source\n    may be on a different server (operated by you or a third party)\n    that supports equivalent copying facilities, provided you maintain\n    clear directions next to the object code saying where to find the\n    Corresponding Source.  Regardless of what server hosts the\n    Corresponding Source, you remain obligated to ensure that it is\n    available for as long as needed to satisfy these requirements.\n\n    e) Convey the object code using peer-to-peer transmission, provided\n    you inform other peers where the object code and Corresponding\n    Source of the work are being offered to the general public at no\n    charge under subsection 6d.\n\n  A separable portion of the object code, whose source code is excluded\nfrom the Corresponding Source as a System Library, need not be\nincluded in conveying the object code work.\n\n  A \"User Product\" is either (1) a \"consumer product\", which means any\ntangible personal property which is normally used for personal, family,\nor household purposes, or (2) anything designed or sold for incorporation\ninto a dwelling.  In determining whether a product is a consumer product,\ndoubtful cases shall be resolved in favor of coverage.  For a particular\nproduct received by a particular user, \"normally used\" refers to a\ntypical or common use of that class of product, regardless of the status\nof the particular user or of the way in which the particular user\nactually uses, or expects or is expected to use, the product.  A product\nis a consumer product regardless of whether the product has substantial\ncommercial, industrial or non-consumer uses, unless such uses represent\nthe only significant mode of use of the product.\n\n  \"Installation Information\" for a User Product means any methods,\nprocedures, authorization keys, or other information required to install\nand execute modified versions of a covered work in that User Product from\na modified version of its Corresponding Source.  The information must\nsuffice to ensure that the continued functioning of the modified object\ncode is in no case prevented or interfered with solely because\nmodification has been made.\n\n  If you convey an object code work under this section in, or with, or\nspecifically for use in, a User Product, and the conveying occurs as\npart of a transaction in which the right of possession and use of the\nUser Product is transferred to the recipient in perpetuity or for a\nfixed term (regardless of how the transaction is characterized), the\nCorresponding Source conveyed under this section must be accompanied\nby the Installation Information.  But this requirement does not apply\nif neither you nor any third party retains the ability to install\nmodified object code on the User Product (for example, the work has\nbeen installed in ROM).\n\n  The requirement to provide Installation Information does not include a\nrequirement to continue to provide support service, warranty, or updates\nfor a work that has been modified or installed by the recipient, or for\nthe User Product in which it has been modified or installed.  Access to a\nnetwork may be denied when the modification itself materially and\nadversely affects the operation of the network or violates the rules and\nprotocols for communication across the network.\n\n  Corresponding Source conveyed, and Installation Information provided,\nin accord with this section must be in a format that is publicly\ndocumented (and with an implementation available to the public in\nsource code form), and must require no special password or key for\nunpacking, reading or copying.\n\n  7. Additional Terms.\n\n  \"Additional permissions\" are terms that supplement the terms of this\nLicense by making exceptions from one or more of its conditions.\nAdditional permissions that are applicable to the entire Program shall\nbe treated as though they were included in this License, to the extent\nthat they are valid under applicable law.  If additional permissions\napply only to part of the Program, that part may be used separately\nunder those permissions, but the entire Program remains governed by\nthis License without regard to the additional permissions.\n\n  When you convey a copy of a covered work, you may at your option\nremove any additional permissions from that copy, or from any part of\nit.  (Additional permissions may be written to require their own\nremoval in certain cases when you modify the work.)  You may place\nadditional permissions on material, added by you to a covered work,\nfor which you have or can give appropriate copyright permission.\n\n  Notwithstanding any other provision of this License, for material you\nadd to a covered work, you may (if authorized by the copyright holders of\nthat material) supplement the terms of this License with terms:\n\n    a) Disclaiming warranty or limiting liability differently from the\n    terms of sections 15 and 16 of this License; or\n\n    b) Requiring preservation of specified reasonable legal notices or\n    author attributions in that material or in the Appropriate Legal\n    Notices displayed by works containing it; or\n\n    c) Prohibiting misrepresentation of the origin of that material, or\n    requiring that modified versions of such material be marked in\n    reasonable ways as different from the original version; or\n\n    d) Limiting the use for publicity purposes of names of licensors or\n    authors of the material; or\n\n    e) Declining to grant rights under trademark law for use of some\n    trade names, trademarks, or service marks; or\n\n    f) Requiring indemnification of licensors and authors of that\n    material by anyone who conveys the material (or modified versions of\n    it) with contractual assumptions of liability to the recipient, for\n    any liability that these contractual assumptions directly impose on\n    those licensors and authors.\n\n  All other non-permissive additional terms are considered \"further\nrestrictions\" within the meaning of section 10.  If the Program as you\nreceived it, or any part of it, contains a notice stating that it is\ngoverned by this License along with a term that is a further\nrestriction, you may remove that term.  If a license document contains\na further restriction but permits relicensing or conveying under this\nLicense, you may add to a covered work material governed by the terms\nof that license document, provided that the further restriction does\nnot survive such relicensing or conveying.\n\n  If you add terms to a covered work in accord with this section, you\nmust place, in the relevant source files, a statement of the\nadditional terms that apply to those files, or a notice indicating\nwhere to find the applicable terms.\n\n  Additional terms, permissive or non-permissive, may be stated in the\nform of a separately written license, or stated as exceptions;\nthe above requirements apply either way.\n\n  8. Termination.\n\n  You may not propagate or modify a covered work except as expressly\nprovided under this License.  Any attempt otherwise to propagate or\nmodify it is void, and will automatically terminate your rights under\nthis License (including any patent licenses granted under the third\nparagraph of section 11).\n\n  However, if you cease all violation of this License, then your\nlicense from a particular copyright holder is reinstated (a)\nprovisionally, unless and until the copyright holder explicitly and\nfinally terminates your license, and (b) permanently, if the copyright\nholder fails to notify you of the violation by some reasonable means\nprior to 60 days after the cessation.\n\n  Moreover, your license from a particular copyright holder is\nreinstated permanently if the copyright holder notifies you of the\nviolation by some reasonable means, this is the first time you have\nreceived notice of violation of this License (for any work) from that\ncopyright holder, and you cure the violation prior to 30 days after\nyour receipt of the notice.\n\n  Termination of your rights under this section does not terminate the\nlicenses of parties who have received copies or rights from you under\nthis License.  If your rights have been terminated and not permanently\nreinstated, you do not qualify to receive new licenses for the same\nmaterial under section 10.\n\n  9. Acceptance Not Required for Having Copies.\n\n  You are not required to accept this License in order to receive or\nrun a copy of the Program.  Ancillary propagation of a covered work\noccurring solely as a consequence of using peer-to-peer transmission\nto receive a copy likewise does not require acceptance.  However,\nnothing other than this License grants you permission to propagate or\nmodify any covered work.  These actions infringe copyright if you do\nnot accept this License.  Therefore, by modifying or propagating a\ncovered work, you indicate your acceptance of this License to do so.\n\n  10. Automatic Licensing of Downstream Recipients.\n\n  Each time you convey a covered work, the recipient automatically\nreceives a license from the original licensors, to run, modify and\npropagate that work, subject to this License.  You are not responsible\nfor enforcing compliance by third parties with this License.\n\n  An \"entity transaction\" is a transaction transferring control of an\norganization, or substantially all assets of one, or subdividing an\norganization, or merging organizations.  If propagation of a covered\nwork results from an entity transaction, each party to that\ntransaction who receives a copy of the work also receives whatever\nlicenses to the work the party's predecessor in interest had or could\ngive under the previous paragraph, plus a right to possession of the\nCorresponding Source of the work from the predecessor in interest, if\nthe predecessor has it or can get it with reasonable efforts.\n\n  You may not impose any further restrictions on the exercise of the\nrights granted or affirmed under this License.  For example, you may\nnot impose a license fee, royalty, or other charge for exercise of\nrights granted under this License, and you may not initiate litigation\n(including a cross-claim or counterclaim in a lawsuit) alleging that\nany patent claim is infringed by making, using, selling, offering for\nsale, or importing the Program or any portion of it.\n\n  11. Patents.\n\n  A \"contributor\" is a copyright holder who authorizes use under this\nLicense of the Program or a work on which the Program is based.  The\nwork thus licensed is called the contributor's \"contributor version\".\n\n  A contributor's \"essential patent claims\" are all patent claims\nowned or controlled by the contributor, whether already acquired or\nhereafter acquired, that would be infringed by some manner, permitted\nby this License, of making, using, or selling its contributor version,\nbut do not include claims that would be infringed only as a\nconsequence of further modification of the contributor version.  For\npurposes of this definition, \"control\" includes the right to grant\npatent sublicenses in a manner consistent with the requirements of\nthis License.\n\n  Each contributor grants you a non-exclusive, worldwide, royalty-free\npatent license under the contributor's essential patent claims, to\nmake, use, sell, offer for sale, import and otherwise run, modify and\npropagate the contents of its contributor version.\n\n  In the following three paragraphs, a \"patent license\" is any express\nagreement or commitment, however denominated, not to enforce a patent\n(such as an express permission to practice a patent or covenant not to\nsue for patent infringement).  To \"grant\" such a patent license to a\nparty means to make such an agreement or commitment not to enforce a\npatent against the party.\n\n  If you convey a covered work, knowingly relying on a patent license,\nand the Corresponding Source of the work is not available for anyone\nto copy, free of charge and under the terms of this License, through a\npublicly available network server or other readily accessible means,\nthen you must either (1) cause the Corresponding Source to be so\navailable, or (2) arrange to deprive yourself of the benefit of the\npatent license for this particular work, or (3) arrange, in a manner\nconsistent with the requirements of this License, to extend the patent\nlicense to downstream recipients.  \"Knowingly relying\" means you have\nactual knowledge that, but for the patent license, your conveying the\ncovered work in a country, or your recipient's use of the covered work\nin a country, would infringe one or more identifiable patents in that\ncountry that you have reason to believe are valid.\n\n  If, pursuant to or in connection with a single transaction or\narrangement, you convey, or propagate by procuring conveyance of, a\ncovered work, and grant a patent license to some of the parties\nreceiving the covered work authorizing them to use, propagate, modify\nor convey a specific copy of the covered work, then the patent license\nyou grant is automatically extended to all recipients of the covered\nwork and works based on it.\n\n  A patent license is \"discriminatory\" if it does not include within\nthe scope of its coverage, prohibits the exercise of, or is\nconditioned on the non-exercise of one or more of the rights that are\nspecifically granted under this License.  You may not convey a covered\nwork if you are a party to an arrangement with a third party that is\nin the business of distributing software, under which you make payment\nto the third party based on the extent of your activity of conveying\nthe work, and under which the third party grants, to any of the\nparties who would receive the covered work from you, a discriminatory\npatent license (a) in connection with copies of the covered work\nconveyed by you (or copies made from those copies), or (b) primarily\nfor and in connection with specific products or compilations that\ncontain the covered work, unless you entered into that arrangement,\nor that patent license was granted, prior to 28 March 2007.\n\n  Nothing in this License shall be construed as excluding or limiting\nany implied license or other defenses to infringement that may\notherwise be available to you under applicable patent law.\n\n  12. No Surrender of Others' Freedom.\n\n  If conditions are imposed on you (whether by court order, agreement or\notherwise) that contradict the conditions of this License, they do not\nexcuse you from the conditions of this License.  If you cannot convey a\ncovered work so as to satisfy simultaneously your obligations under this\nLicense and any other pertinent obligations, then as a consequence you may\nnot convey it at all.  For example, if you agree to terms that obligate you\nto collect a royalty for further conveying from those to whom you convey\nthe Program, the only way you could satisfy both those terms and this\nLicense would be to refrain entirely from conveying the Program.\n\n  13. Remote Network Interaction; Use with the GNU General Public License.\n\n  Notwithstanding any other provision of this License, if you modify the\nProgram, your modified version must prominently offer all users\ninteracting with it remotely through a computer network (if your version\nsupports such interaction) an opportunity to receive the Corresponding\nSource of your version by providing access to the Corresponding Source\nfrom a network server at no charge, through some standard or customary\nmeans of facilitating copying of software.  This Corresponding Source\nshall include the Corresponding Source for any work covered by version 3\nof the GNU General Public License that is incorporated pursuant to the\nfollowing paragraph.\n\n  Notwithstanding any other provision of this License, you have\npermission to link or combine any covered work with a work licensed\nunder version 3 of the GNU General Public License into a single\ncombined work, and to convey the resulting work.  The terms of this\nLicense will continue to apply to the part which is the covered work,\nbut the work with which it is combined will remain governed by version\n3 of the GNU General Public License.\n\n  14. Revised Versions of this License.\n\n  The Free Software Foundation may publish revised and/or new versions of\nthe GNU Affero General Public License from time to time.  Such new versions\nwill be similar in spirit to the present version, but may differ in detail to\naddress new problems or concerns.\n\n  Each version is given a distinguishing version number.  If the\nProgram specifies that a certain numbered version of the GNU Affero General\nPublic License \"or any later version\" applies to it, you have the\noption of following the terms and conditions either of that numbered\nversion or of any later version published by the Free Software\nFoundation.  If the Program does not specify a version number of the\nGNU Affero General Public License, you may choose any version ever published\nby the Free Software Foundation.\n\n  If the Program specifies that a proxy can decide which future\nversions of the GNU Affero General Public License can be used, that proxy's\npublic statement of acceptance of a version permanently authorizes you\nto choose that version for the Program.\n\n  Later license versions may give you additional or different\npermissions.  However, no additional obligations are imposed on any\nauthor or copyright holder as a result of your choosing to follow a\nlater version.\n\n  15. Disclaimer of Warranty.\n\n  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\nAPPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT\nHOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY\nOF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,\nTHE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\nPURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM\nIS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF\nALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n\n  16. Limitation of Liability.\n\n  IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING\nWILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS\nTHE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY\nGENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE\nUSE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF\nDATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD\nPARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),\nEVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF\nSUCH DAMAGES.\n\n  17. Interpretation of Sections 15 and 16.\n\n  If the disclaimer of warranty and limitation of liability provided\nabove cannot be given local legal effect according to their terms,\nreviewing courts shall apply local law that most closely approximates\nan absolute waiver of all civil liability in connection with the\nProgram, unless a warranty or assumption of liability accompanies a\ncopy of the Program in return for a fee.\n\n                     END OF TERMS AND CONDITIONS\n\n            How to Apply These Terms to Your New Programs\n\n  If you develop a new program, and you want it to be of the greatest\npossible use to the public, the best way to achieve this is to make it\nfree software which everyone can redistribute and change under these terms.\n\n  To do so, attach the following notices to the program.  It is safest\nto attach them to the start of each source file to most effectively\nstate the exclusion of warranty; and each file should have at least\nthe \"copyright\" line and a pointer to where the full notice is found.\n\n    <one line to give the program's name and a brief idea of what it does.>\n    Copyright (C) <year>  <name of author>\n\n    This program is free software: you can redistribute it and/or modify\n    it under the terms of the GNU Affero General Public License as published by\n    the Free Software Foundation, either version 3 of the License, or\n    (at your option) any later version.\n\n    This program is distributed in the hope that it will be useful,\n    but WITHOUT ANY WARRANTY; without even the implied warranty of\n    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n    GNU Affero General Public License for more details.\n\n    You should have received a copy of the GNU Affero General Public License\n    along with this program.  If not, see <https://www.gnu.org/licenses/>.\n\nAlso add information on how to contact you by electronic and paper mail.\n\n  If your software can interact with users remotely through a computer\nnetwork, you should also make sure that it provides a way for users to\nget its source.  For example, if your program is a web application, its\ninterface could display a \"Source\" link that leads users to an archive\nof the code.  There are many ways you could offer source, and different\nsolutions will be better for different programs; see section 13 for the\nspecific requirements.\n\n  You should also get your employer (if you work as a programmer) or school,\nif any, to sign a \"copyright disclaimer\" for the program, if necessary.\nFor more information on this, and how to apply and follow the GNU AGPL, see\n<https://www.gnu.org/licenses/>.\n"
+    },
+    {
+      "title": "改编来源 voicebox 的 MIT 许可全文",
+      "url": "https://github.com/jamiepine/voicebox/blob/8af7efe62fab8d33e2a5dfbedabaa45f68a5184f/LICENSE",
+      "license_text": "MIT License\n\nCopyright (c) 2026 Voicebox Contributors\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    }
+  ],
+  "questions": [
+    {
+      "id": "voicestudio-app-model",
+      "prompt": "不用看图，解释 VoiceStudio、引擎和语音模型各做什么。生成一段话是在重新训练吗？",
+      "answer": "应用组织输入、选择与编辑流程；引擎接入模型；预训练模型根据文字和声音条件生成音频。通常是推理，不能把点击生成解释为重新训练。"
+    },
+    {
+      "id": "voicestudio-boundary-fallback",
+      "prompt": "长中文句超出分块预算且没有标点或空格，会发生什么？这个规则能证明程序理解了语义吗？",
+      "answer": "按句末、分句标点、空格查找均失败后进入硬切回退，尽量考虑方括号标签。它保证继续分块，不是语义理解，可能切开不理想的位置。"
+    },
+    {
+      "id": "voicestudio-missing-chunk",
+      "prompt": "三个文本块分别生成音频，第二块为空，最终文件可以正常播放。为什么仍不能交付？",
+      "answer": "此实现可报告并过滤空块后返回剩余音频，文件因此可能只含第一、三块。必须把失败索引对应回原文，并修复后逐句验收。非空段也可能漏词，仍须试听。"
+    },
+    {
+      "id": "voicestudio-crossfade",
+      "prompt": "两段各一秒、采样率 24000 Hz 的音频，重叠 50 毫秒拼接，理论长度是多少？这 50 毫秒是静音吗？",
+      "answer": "这是合成算例：每段 24000 样本，重叠 1200 样本，总计 46800 样本，即 1.95 秒。重叠区对两段样本交叉淡化，不是新增静音；忽略其他裁剪或效果处理。"
+    },
+    {
+      "id": "voicestudio-signal-content",
+      "prompt": "通过静音、削波检查，是否能证明读全和术语正确？你会补什么证据？",
+      "answer": "不能；信号检查与文字内容不同。对照稿件逐句收听、检查首尾与关键术语，再听接缝和目标手机完整播放，记录实际问题与修正。"
+    },
+    {
+      "id": "voicestudio-one-variable",
+      "prompt": "想比较标点是否改善听感，哪些条件应该保持相同？没有明显差别算不算有效观察？",
+      "answer": "保持字词、模型、音色及其他设置相同，只改变标点；若支持种子则固定并记录。没有明显差别也是观察，可能是引擎本来就推断了停顿，不应编造改善。"
+    },
+    {
+      "id": "voicestudio-phone-role",
+      "prompt": "为什么知行手机可以播放课程，却不等于手机上已经运行了 VoiceStudio 的模型？",
+      "answer": "手机课程包保存制作好的数据、图解和音频，由手机播放器读取。VoiceStudio 模型推理在另行配置的电脑或后端完成，环境、模型下载与硬件需求须单独核实。"
+    },
+    {
+      "id": "voicestudio-transfer",
+      "prompt": "把 30 秒知识讲解换成长篇有声书，哪些原则可复用，哪些检查要加强？",
+      "answer": "复用可追溯输入、预算内分块、顺序对应、局部返工和分层验收；加强跨章角色音色一致性、接缝、遗漏定位与长时间目标设备播放，不把更短分块当成万能解法。"
+    }
+  ],
+  "case_study": {
+    "title": "把三句高斯溅射说明变成一段旁白",
+    "scenario": "教学样稿：使用三维高斯溅射之前，先拍摄清楚的照片。相机要改变位置，物体尽量静止。结果可用于观看，但不能直接当成精确的打印模型。目标是让初学者听懂，并能检查是否读全；这不是已生成的 VoiceStudio 实验成果。",
+    "steps": [
+      "标出最容易误读的词“高斯溅射”；写下预期读音与含义，确认文字没有因好念而改错事实。",
+      "保留同一模型、音色与语言设置，先用一小句试音。环境和模型准备在电脑上完成，手机可先做下方听辨练习。",
+      "需要分块时保留文本顺序及对应结果；发现难读词，只改这一处做对照，避免一次换多个因素。",
+      "合并后对照三句原稿，检查首句、末句、术语和接缝。反例：只剩第一、三句的文件可能仍能播放，却不满足交付要求。"
+    ]
+  },
+  "code_insight": {
+    "title": "从文本块到音频样本：逐行拆解",
+    "explanation": "以下先用教学伪代码说明主链路，再展示 VoiceStudio 固定提交 7703ca66da77b8d130e6d1d3b2e67d979fa5a77f 的连续原文。真实片段位于 backend/services/chunked_tts.py；分块上限在片段之前按文字类别调整，模型生成调用位于 backend/api/routers/generation.py。伪代码省略全空、单块、声道、引擎适配和完整错误处理，不是可直接调用的 API。空块片段来自底层 concatenate_audio_chunks：全空返回长度为一的零值张量；其包装层 join_rendered_chunks 的全空路径返回 None，不应混淆。引用代码保留上游许可，VoiceStudio 为 AGPL-3.0；该模块注明 Adapted from voicebox (https://github.com/jamiepine/voicebox), MIT License, Copyright (c) voicebox contributors。中文旁注和图解为本课原创，许可全文见来源链接与项目 licenses 目录。",
+    "snippet": "limit = adjust_limit_for_script(text, requested_limit)\nchunks = split_by_boundary_priority(text, limit)\nchunks = merge_punctuation_only_chunks(chunks, limit)\nrendered = []\nfor index, chunk in enumerate(chunks):\n    rendered.append(engine_generate(chunk, voice, seed_for(index)))\nmissing = indices_of_empty_audio(rendered)\nreport_missing_text(missing, chunks)\nkept = keep_nonempty_audio(rendered)\naudio = join_with_short_crossfade(kept, sample_rate, overlap_ms)\naudio = apply_selected_effects(audio)\nreturn audio, missing",
+    "language": "pseudocode",
+    "source_url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/backend/api/routers/generation.py",
+    "walkthroughs": [
+      {
+        "id": "voicestudio-pipeline-pseudocode",
+        "title": "先看长文生成链路（教学伪代码）",
+        "kind": "pseudocode",
+        "language": "pseudocode",
+        "snippet": "limit = adjust_limit_for_script(text, requested_limit)\nchunks = split_by_boundary_priority(text, limit)\nchunks = merge_punctuation_only_chunks(chunks, limit)\nrendered = []\nfor index, chunk in enumerate(chunks):\n    rendered.append(engine_generate(chunk, voice, seed_for(index)))\nmissing = indices_of_empty_audio(rendered)\nreport_missing_text(missing, chunks)\nkept = keep_nonempty_audio(rendered)\naudio = join_with_short_crossfade(kept, sample_rate, overlap_ms)\naudio = apply_selected_effects(audio)\nreturn audio, missing",
+        "source_url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/backend/api/routers/generation.py",
+        "source_path": null,
+        "source_commit": null,
+        "source_start_line": null,
+        "notes": [
+          {
+            "line": 1,
+            "comment": "根据文字类别调整每块字符预算。",
+            "why": "教学概括：真实实现统计中日韩密集文字比例；默认预算 800 在达到比例阈值时通常变为 320。字符数只是发声长度的代理，并非精确音频时长。"
+          },
+          {
+            "line": 2,
+            "comment": "在预算内依次寻找句末、分句标点、空格和硬切位置。",
+            "why": "教学函数名不是真实 API；真实规则在 split_text_into_chunks 中，不调用模型理解语义，也不保证永远在完整句末切开。"
+          },
+          {
+            "line": 3,
+            "comment": "把只含标点、不能独立发声的小块并回邻块。",
+            "why": "真实分块函数返回前已执行这一步；此处拆开便于看清职责。保留标点内容，避免用一次模型生成处理没有可说文字的碎片。"
+          },
+          {
+            "line": 4,
+            "comment": "创建按原文顺序收集音频的列表。",
+            "why": "分块数量和生成结果必须保持对应，后续才能把缺失音频定位回具体文字。"
+          },
+          {
+            "line": 5,
+            "comment": "按索引遍历每一个文本块。",
+            "why": "索引既联系原文，也可用于构造每块的随机种子；这段伪代码概括所核实的串行生成路径。"
+          },
+          {
+            "line": 6,
+            "comment": "让已有语音引擎生成当前块，并把结果放入列表。",
+            "why": "这是推理而非训练；模型、音色和可用控制项取决于引擎。seed_for 是教学占位，实际只有设置种子且引擎支持时才向它传递。"
+          },
+          {
+            "line": 7,
+            "comment": "收集没有音频或样本数为零的块索引。",
+            "why": "非空音频也可能念错或漏词，所以空块检查只能发现这一类失败，不能证明转述完整。"
+          },
+          {
+            "line": 8,
+            "comment": "把缺失索引关联到原文并发出报告。",
+            "why": "真实实现记录警告并可写入调用者提供的收集列表，不会自动重新合成，也不会自动修复缺句。"
+          },
+          {
+            "line": 9,
+            "comment": "只保留可用于拼接的非空音频。",
+            "why": "保留其原来顺序。伪代码省略全空、单块、形状与声道兼容等分支；真实实现对这些情况分别处理。"
+          },
+          {
+            "line": 10,
+            "comment": "按采样率把交叉淡化时长换成样本数，再拼接音频。",
+            "why": "短重叠使前段逐渐退出、后段逐渐进入；它改变接缝，不保证音色一致，也无法补回漏掉的文字。"
+          },
+          {
+            "line": 11,
+            "comment": "应用选定的音频效果。",
+            "why": "真实生成路径在拼接后调用效果链；部分引擎已有自己的母带处理，会跳过应用的对应前级处理。"
+          },
+          {
+            "line": 12,
+            "comment": "交付音频及遗漏信息供检查。",
+            "why": "此返回结构仅为教学概括。真实返回和报告通道分开；仍需对照稿件试听，不能把成功保存文件当作内容验收。"
+          }
+        ]
+      },
+      {
+        "id": "voicestudio-boundary-source",
+        "title": "真实源码：预算内逐级寻找切分点",
+        "kind": "source",
+        "language": "python",
+        "snippet": "    while remaining:\n        remaining = remaining.lstrip()\n        if not remaining:\n            break\n        if len(remaining) <= max_chars:\n            chunks.append(remaining)\n            break\n\n        segment = remaining[:max_chars]\n\n        split_pos = _find_last_sentence_end(segment)\n        if split_pos == -1:\n            split_pos = _find_last_clause_boundary(segment)\n        if split_pos == -1:\n            split_pos = segment.rfind(\" \")\n        if split_pos == -1:\n            split_pos = _safe_hard_cut(segment, max_chars)\n\n        chunk = remaining[: split_pos + 1].strip()\n        if chunk:\n            chunks.append(chunk)\n        remaining = remaining[split_pos + 1:]\n\n    return _merge_unspeakable(chunks, max_chars)",
+        "source_url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/backend/services/chunked_tts.py",
+        "source_path": "backend/services/chunked_tts.py",
+        "source_commit": "7703ca66da77b8d130e6d1d3b2e67d979fa5a77f",
+        "source_start_line": 153,
+        "notes": [
+          {
+            "line": 1,
+            "comment": "只要仍有尚未处理的文字，就继续分块。",
+            "why": "remaining 在上文初始化为完整文本；循环必须在每轮消费一部分文字，才能逐步得到有序块列表。"
+          },
+          {
+            "line": 2,
+            "comment": "移除剩余文字开头的空白。",
+            "why": "上一轮切完后可能留下空格；先清理，可避免下一块只因前导空白占用预算。"
+          },
+          {
+            "line": 3,
+            "comment": "检查清理后的剩余文本是否已为空。",
+            "why": "原来只剩空白时，上一行会把它清空，不能再生成一个空文本块。"
+          },
+          {
+            "line": 4,
+            "comment": "没有内容就退出循环。",
+            "why": "这条分支不调用模型；它结束的是文本分块过程。"
+          },
+          {
+            "line": 5,
+            "comment": "判断剩余全文是否已经放得进当前预算。",
+            "why": "max_chars 已在上文按文字密度调整；能整体容纳时无需再寻找更早的断点。"
+          },
+          {
+            "line": 6,
+            "comment": "把最后一段剩余文字加入结果。",
+            "why": "保留尾部内容，避免只处理满预算的块而漏掉结尾。"
+          },
+          {
+            "line": 7,
+            "comment": "保存尾段后结束循环。",
+            "why": "若继续处理同一 remaining 而不推进，就可能重复添加尾段。"
+          },
+          {
+            "line": 9,
+            "comment": "截取当前预算内的文本窗口。",
+            "why": "随后只在这个窗口内找断点，以限制当前块的文本长度；这里按字符切片，并非按模型 token 或秒数。"
+          },
+          {
+            "line": 11,
+            "comment": "优先选取窗口里最后一个合格的句末。",
+            "why": "辅助函数识别句末标点并对部分缩写、小数和标签做保护；它是规则判断，不是语义模型。"
+          },
+          {
+            "line": 12,
+            "comment": "负一表示没有找到句末边界。",
+            "why": "只有首选边界缺失时，才启用下一层回退，避免明明有句末却随意在中间切。"
+          },
+          {
+            "line": 13,
+            "comment": "退到最后一个符合规则的半角分句标点或破折号。",
+            "why": "此版本匹配半角分号、冒号、逗号或破折号，且其后必须是空白或窗口末尾；全角中文逗号、分号不在本层规则内。这样切出的块也不保证是一句完整的话。"
+          },
+          {
+            "line": 14,
+            "comment": "检查分句标点是否也没有找到。",
+            "why": "这一条件决定是否继续降低对边界质量的要求。"
+          },
+          {
+            "line": 15,
+            "comment": "再尝试窗口中的最后一个空格。",
+            "why": "带空格语言可尽量避免切断单词；没有空格的中文长句通常无法依靠此层回退。"
+          },
+          {
+            "line": 16,
+            "comment": "检查连空格也找不到的情况。",
+            "why": "必须保留最终回退，否则没有任何标点的长文本可能无法被逐步消费。"
+          },
+          {
+            "line": 17,
+            "comment": "使用考虑方括号标签的硬切规则。",
+            "why": "这是最后手段；辅助函数会尽量绕开窗口内完整的标签，但不等于理解词义，也不保证各种异常标签都完整。"
+          },
+          {
+            "line": 19,
+            "comment": "取出断点及其之前的文字，并去掉两端空白。",
+            "why": "加一使断点标点保留在当前块内，避免它意外变成下一块的开头。"
+          },
+          {
+            "line": 20,
+            "comment": "确认当前块确实有内容。",
+            "why": "空字符串没有可合成文字，不应加入待生成列表。"
+          },
+          {
+            "line": 21,
+            "comment": "按顺序保存这个文本块。",
+            "why": "顺序决定后续音频顺序，不能为了长度排序而打乱原稿。"
+          },
+          {
+            "line": 22,
+            "comment": "把剩余文本推进到刚才断点之后。",
+            "why": "这一步消费已处理前缀，既防止重复，也保证下一轮从正确位置继续。"
+          },
+          {
+            "line": 24,
+            "comment": "返回前合并只含标点的碎块。",
+            "why": "_merge_unspeakable 尽量维持预算并保留文字内容；极端情况下会接受少量纯标点导致的超限，因此不要把预算讲成无条件严格上限。"
+          }
+        ]
+      },
+      {
+        "id": "voicestudio-empty-check-source",
+        "title": "真实源码：空块告警与失败边界",
+        "kind": "source",
+        "language": "python",
+        "snippet": "    kept, dropped = [], []\n    for i, c in enumerate(chunks):\n        if c is not None and c.shape[-1] > 0:\n            kept.append(c)\n        else:\n            dropped.append(i)\n    if dropped:\n        report_dropped_chunks(dropped, len(chunks), texts, sink)\n    chunks = kept\n    if not chunks:\n        return torch.zeros(1, dtype=torch.float32)\n    if len(chunks) == 1:\n        return chunks[0]\n    chunks = _normalize_chunk_shapes(chunks)\n\n    crossfade_samples = int(sample_rate * crossfade_ms / 1000)\n    first = chunks[0]",
+        "source_url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/backend/services/chunked_tts.py",
+        "source_path": "backend/services/chunked_tts.py",
+        "source_commit": "7703ca66da77b8d130e6d1d3b2e67d979fa5a77f",
+        "source_start_line": 451,
+        "notes": [
+          {
+            "line": 1,
+            "comment": "准备两个列表，分别保存可拼接音频和被丢弃的索引。",
+            "why": "显式保留索引，才能把音频失败对应回原来的文本块。"
+          },
+          {
+            "line": 2,
+            "comment": "按原顺序遍历传入的每块音频。",
+            "why": "索引来自完整输入列表，而不是过滤后的列表，避免报告错认缺失文字。"
+          },
+          {
+            "line": 3,
+            "comment": "检查音频不为 None，且时间轴上至少有一个样本。",
+            "why": "这只能排除没有输出和零长度输出；全静音、漏词和读错仍可能通过。"
+          },
+          {
+            "line": 4,
+            "comment": "把满足条件的音频保留。",
+            "why": "后续只拼接这些结果，顺序与原稿中的存活块一致。"
+          },
+          {
+            "line": 5,
+            "comment": "其余输入进入丢弃分支。",
+            "why": "该分支是空结果的处理路径，不是在判断音色或语义。"
+          },
+          {
+            "line": 6,
+            "comment": "记录失败块的原始索引。",
+            "why": "只扔掉音频会隐瞒内容缺失，保留索引才能发出有定位依据的警告。"
+          },
+          {
+            "line": 7,
+            "comment": "只在确实有丢弃块时报告。",
+            "why": "没有空块不等于朗读正确，只表示本项检查未发现缺失输出。"
+          },
+          {
+            "line": 8,
+            "comment": "把缺失索引、原数量、对应文字及可选收集列表交给报告函数。",
+            "why": "报告函数记录警告并可保存缺失文字；这里没有自动重试、补音频或阻止后续拼接。"
+          },
+          {
+            "line": 9,
+            "comment": "以后续保留列表替换待拼接列表。",
+            "why": "空结果从拼接运算中移除，但输出因此可能缺少整块内容。"
+          },
+          {
+            "line": 10,
+            "comment": "检查是否所有结果都被过滤掉了。",
+            "why": "这与还有部分可用音频是两种情况，不能进入需要首块音频的普通路径。"
+          },
+          {
+            "line": 11,
+            "comment": "全空时返回一个值为 0 的 float32 样本占位。",
+            "why": "这是长度为一的静音张量，不是一段有效朗读；不能据此把返回非空张量当作合成成功。"
+          },
+          {
+            "line": 12,
+            "comment": "如果只剩一个音频块，进入单块快路径。",
+            "why": "单块没有相邻接缝，无需交叉淡化，也不必分配完整拼接缓冲区。"
+          },
+          {
+            "line": 13,
+            "comment": "直接返回唯一保留的音频。",
+            "why": "若其他块丢失，前面已经报告；这个返回结果仍可能只是原稿的一部分。"
+          },
+          {
+            "line": 14,
+            "comment": "把多块音频整理成可以一起运算的形状。",
+            "why": "辅助函数调整维度和可兼容的声道数；它不重新采样，也不替冲突的声道结构虚构解释。"
+          },
+          {
+            "line": 16,
+            "comment": "把交叉淡化毫秒数换算为样本数。",
+            "why": "同样 50 毫秒在不同采样率下对应不同样本数量；24 千赫下是 1200 个样本。"
+          },
+          {
+            "line": 17,
+            "comment": "保存第一块，用作后续输出形状、类型和设备的参照。",
+            "why": "后面的分配与开头复制依赖这个基准；它不会改变音频内容。"
+          }
+        ]
+      },
+      {
+        "id": "voicestudio-crossfade-source",
+        "title": "真实源码：一次分配与交叉淡化拼接",
+        "kind": "source",
+        "language": "python",
+        "snippet": "    lengths = [chunk.shape[-1] for chunk in chunks]\n    joined = lengths[0]\n    overlaps: list[int] = []\n    for length in lengths[1:]:\n        overlap = max(0, min(crossfade_samples, joined, length))\n        overlaps.append(overlap)\n        joined += length - overlap\n\n    out = torch.empty(*first.shape[:-1], joined, dtype=first.dtype, device=first.device)\n    out[..., :lengths[0]] = first\n    filled = lengths[0]\n\n    for chunk, overlap in zip(chunks[1:], overlaps, strict=True):\n        chunk = chunk.to(device=out.device, dtype=out.dtype)\n        if overlap > 0:\n            fade_out = torch.linspace(1.0, 0.0, overlap, dtype=out.dtype, device=out.device)\n            fade_in = torch.linspace(0.0, 1.0, overlap, dtype=out.dtype, device=out.device)\n            tail = out[..., filled - overlap:filled]\n            tail.mul_(fade_out).add_(chunk[..., :overlap] * fade_in)\n        remainder = chunk.shape[-1] - overlap\n        if remainder > 0:\n            out[..., filled:filled + remainder] = chunk[..., overlap:]\n        filled += remainder",
+        "source_url": "https://github.com/debpalash/VoiceStudio/blob/7703ca66da77b8d130e6d1d3b2e67d979fa5a77f/backend/services/chunked_tts.py",
+        "source_path": "backend/services/chunked_tts.py",
+        "source_commit": "7703ca66da77b8d130e6d1d3b2e67d979fa5a77f",
+        "source_start_line": 484,
+        "notes": [
+          {
+            "line": 1,
+            "comment": "读取每块音频最后一维的样本数。",
+            "why": "进入本段前已过滤空块并统一可兼容形状；最后一维是时间轴，不能拿声道数当音频长度。"
+          },
+          {
+            "line": 2,
+            "comment": "把第一块长度作为当前已拼接长度。",
+            "why": "先有前面的音频长度，才能限制下一次最多重叠多少样本。"
+          },
+          {
+            "line": 3,
+            "comment": "创建保存每个接缝重叠长度的列表。",
+            "why": "先算尺寸、后写音频，使结果数组可以只分配一次。"
+          },
+          {
+            "line": 4,
+            "comment": "从第二块开始逐个检查长度。",
+            "why": "第一块直接作为开头，不需要与不存在的前块交叉淡化。"
+          },
+          {
+            "line": 5,
+            "comment": "重叠取设定值、已拼长度和当前块长度中最小的非负值。",
+            "why": "避免索引超出任何一侧；这里限制的是已拼结果整体长度，不仅是紧邻上一块的原始长度。"
+          },
+          {
+            "line": 6,
+            "comment": "记录当前接缝的实际重叠样本数。",
+            "why": "第二轮真正混合音频时复用同一结果，防止计算总长度与写入时使用不同边界。"
+          },
+          {
+            "line": 7,
+            "comment": "总长度只增加当前块未重叠的部分。",
+            "why": "两段重叠后占用同一段时间；全长应减掉这部分，否则会留下空洞或多余空间。"
+          },
+          {
+            "line": 9,
+            "comment": "按算出的总长度一次性分配结果张量。",
+            "why": "保持第一块的声道形状、数值类型和设备；empty 不初始化样本，后续必须把每个位置都写满。"
+          },
+          {
+            "line": 10,
+            "comment": "先把第一块写入结果开头。",
+            "why": "这是后续接缝的左侧基底，也初始化最前面一段样本。"
+          },
+          {
+            "line": 11,
+            "comment": "记录当前已经写到的位置。",
+            "why": "filled 是写入游标，不是块数量；新块的重叠区位于游标之前。"
+          },
+          {
+            "line": 13,
+            "comment": "把其余音频和先前算好的接缝长度逐一配对。",
+            "why": "strict=True 要求两组数量匹配，避免无声地丢掉多出来的项。"
+          },
+          {
+            "line": 14,
+            "comment": "让当前块的设备和数值类型匹配输出。",
+            "why": "张量运算需要相容的数据位置与类型；这不是重新采样，也不改变音高。"
+          },
+          {
+            "line": 15,
+            "comment": "只有正的重叠长度才执行混合。",
+            "why": "零重叠时跳过淡化，后续逻辑自然变成直接接在末尾。"
+          },
+          {
+            "line": 16,
+            "comment": "生成从一降到零的前段权重。",
+            "why": "前段在重叠区逐渐减弱，避免整段同时保持满音量。"
+          },
+          {
+            "line": 17,
+            "comment": "生成从零升到一的后段权重。",
+            "why": "后段逐渐进入，与前段形成线性交叉过渡；它并不理解词语是否完整。"
+          },
+          {
+            "line": 18,
+            "comment": "取出已经写好的音频尾部作为混合区域。",
+            "why": "这里是输出张量的切片，后续原地修改会直接改变输出中的接缝。"
+          },
+          {
+            "line": 19,
+            "comment": "把前段尾部淡出后的值加上后段头部淡入后的值。",
+            "why": "两侧波形在同一重叠区相加；这能调整接缝突变，但不能补回遗漏内容或保证听感自然。"
+          },
+          {
+            "line": 20,
+            "comment": "计算当前块还没有写入的样本数。",
+            "why": "头部已参加混合，不应再次整段追加，否则会重复这部分声音。"
+          },
+          {
+            "line": 21,
+            "comment": "检查是否还有未重叠的尾部。",
+            "why": "若当前块已全部用作重叠，就没有剩余样本需要复制。"
+          },
+          {
+            "line": 22,
+            "comment": "把当前块剩余尾部写到输出游标之后。",
+            "why": "起点跳过重叠样本，目标位置紧接已写区域，避免重复和留洞。"
+          },
+          {
+            "line": 23,
+            "comment": "把写入游标向后推进新增的样本数。",
+            "why": "只有未重叠部分增加总时长；循环结束时游标应与预先计算的总长度一致。"
+          }
+        ]
+      }
+    ]
+  },
+  "experiment": {
+    "title": "手机 3～5 分钟听辨；电脑 15～30 分钟进阶",
+    "steps": [
+      "先用手机：打开“动手实验”中文旁白，听到预测提示先暂停。写下一个预期停顿位置，再听甲乙两份文字。它们使用相同系统 Tingting 音色，不代表 VoiceStudio 模型的表现。",
+      "甲：语音生成结束后先听开头中段结尾确认没有漏句再检查术语如果发现问题只改有问题的段落重新生成。",
+      "乙：语音生成结束后，先听开头、中段、结尾。确认没有漏句，再检查术语。如果发现问题，只改有问题的段落，重新生成。",
+      "记录一处可听差别或“未听出差别”，对照你的预测；不把无标点等同于没有停顿。再用纸笔标出你希望保留的分句边界。",
+      "可选电脑进阶：先阅读固定版本官方 README，检查操作系统、可用硬件及模型许可并准备环境。模型下载和安装不计入操作预算；不想安装时保留手机练习即可。当前官方说明支持 NVIDIA CUDA 和 Apple Silicon MPS，CPU 较慢；Intel Mac 界面需连接远程后端。",
+      "环境就绪后，在 VoiceStudio 选择同一引擎、模型、音色和其他设置（支持种子时固定），分别生成甲乙并保存输入和输出。仅比较这一项变化，再核对首尾、术语和段落衔接。未实际生成时不要填写成功结果。"
+    ],
+    "acceptance": [
+      "手机路径：保存一条事前预测、一条真实听辨观察和一处建议分句，并说明这只是同一系统音色的对照。",
+      "电脑路径仅在执行后记录：两份输入与音频、相同设置、观察结果及一次修正。能指出信号检查仍不能证明的内容问题。"
+    ]
+  },
+  "application": {
+    "prompt": "制作一段你自己会使用的 30～60 秒中文知识讲解，交付音频、完整文字稿、生成设置与验收记录。可以使用已有的合法语音工具；选择 VoiceStudio 时先准备电脑环境，不能把本课系统旁白当成它的模型效果。",
+    "acceptance": [
+      "输入文字和音色有可用权限，保存模型或工具、音色及文本版本；参考录音仅使用自己或已获允许的声音。",
+      "逐句对照确认没有漏句，关键术语正确；记录至少一个检查点，若发现问题保存修正前后的差别。",
+      "在目标手机完整播放到结尾，检查接缝和文件可用性；如需分块能把每段音频对应回原文。没有电脑环境可先提交文本设计与验收计划，明确尚未生成作品。"
+    ]
+  },
+  "recap_prompts": [
+    "不看材料，用一分钟串起“文字、引擎、模型、文本块、音频块、验收”，解释每步的职责。",
+    "用“第二段生成为空”解释为什么文件能播放却不能交付，再说出交叉淡化修复不了什么。",
+    "复述一次预测与真实观察；把方法迁移到产品说明或有声书，指出一项需要加强的检查。"
+  ],
+  "audio_lesson": {
+    "voice": "本机合成中文语音（Tingting）",
+    "clips": [
+      {
+        "chapter": "logic",
+        "walkthrough_id": null,
+        "title": "看懂原理：工作台、模型与声音",
+        "src": "/media/voicestudio/audio/logic.m4a",
+        "duration_seconds": 92.037,
+        "transcript": "一篇课文交给语音软件，为什么有时能出声，却读错术语，或者句子衔接很奇怪？这节课借助 VoiceStudio，拆开从文字到章节音频的过程。它是组织语音工作的应用，可以选择不同引擎；真正把文字变成声音的是所选引擎调用的语音模型。打开软件，不等于重新训练一个模型。\n\n可以把输入分成三类。第一类是要说的内容，也就是文字。第二类是怎么说，例如音色条件和语言设置。第三类是由谁生成，也就是引擎与模型。相同文字换了模型，读音和节奏可能不同。声音像某个人，也不代表每个字都读对。\n\n长课文还要考虑分段。分段是在模型输入限制、句子连贯和失败后返工之间找平衡。按标点组织文字是规则处理，并不说明程序理解了句子的意思。块太大可能超出限制，块太碎也可能破坏衔接。具体上限随引擎变化。\n\n最后，把生成的音频按原文顺序组织成章节，并检查漏句、术语和段落接缝。请暂停，看第一幅流程图，试着说出哪一步决定内容、哪一步产生声音、哪一步负责验收。本课旁白使用系统已安装的中文音色制作，用来讲解原理，不是 VoiceStudio 模型的音质演示。"
+      },
+      {
+        "chapter": "case",
+        "walkthrough_id": null,
+        "title": "跟着案例：把三句说明做成一段课件",
+        "src": "/media/voicestudio/audio/case.m4a",
+        "duration_seconds": 96.542,
+        "transcript": "我们的案例是一段给知行准备的说明：使用三维高斯溅射之前，先拍摄清楚的照片。相机要改变位置，物体尽量静止。结果可用于观看，但不能直接当成精确的打印模型。这是教学样稿，还没有代表你完成了作品。\n\n先确认听众和用途。如果是第一次接触这个词的人，就把英文缩写展开，并保留术语与日常解释的对应关系。改写是为了准确传达含义，不能为了好念而改变事实。准备文字以后，先用一小句试音，检查模型、音色和语言是否合适。\n\n再按句子组织长文，保留顺序。同一章的声音设置尽量一致，发现难读词时先改这一句，比较前后两次。只改变一个因素，才知道差异来自文本、音色还是模型；同时换三样，即使听起来更好，也很难解释原因。\n\n合成完成后，从文字和声音两个方向检查。逐句对照确认没有漏句，再听段落连接处是否突兀，最后核对首句和末句。音频时长正常，不等于内容完整；文件能打开，也不等于术语正确。\n\n请暂停，挑出样稿中最需要核对的一个词，再写出你的验收方式。完整操作需要电脑上的工作环境，安装与模型下载另行准备；手机端先用本课的图解、旁白和样稿练习判断。"
+      },
+      {
+        "chapter": "code",
+        "walkthrough_id": null,
+        "title": "拆解代码：用数据流理解分块与合并",
+        "src": "/media/voicestudio/audio/code.m4a",
+        "duration_seconds": 101.571,
+        "transcript": "读这个项目的源码，先找数据怎样流动，不必从整个桌面界面开始。输入端是一段文字和生成设置，中间得到若干文字块，随后产生若干音频段，输出端得到可以保存的音频。每一步都要区分当前处理的是字符串，还是代表声音的采样数值。\n\n第一段教学伪代码把主链路压缩出来。里面的名字用于说明职责，不是可以直接调用的 VoiceStudio 接口。后面的真实片段来自页面标明的固定提交，保留原来的连续代码，旁边逐行解释变量与分支。代码片段精讲单列，可以按需要再听。\n\n看分块代码时，先问三个问题：在哪里寻找边界，用什么量判断块是否过长，遇到超长单句怎样处理。按规则遇到一个标点，和语言模型理解完整语义，是两种不同的事情。不要把一个分块阈值当成所有模型都适用的标准。\n\n看音频组织代码时，追踪列表中的顺序，以及哪些数值表示声音、哪些表示重叠过渡。样本数量除以采样率才是时间。源码会在接缝做交叉淡化，也就是前段淡出、后段淡入；这种平滑处理不能自动补回漏句、改正错读或统一音色。\n\n请暂停，挑一条判断分支，先用自己的话预测输入改变后会走哪条路，再看中文旁注。源码展示的是这个固定版本的行为；换了引擎或版本，应重新核对实现。"
+      },
+      {
+        "chapter": "experiment",
+        "walkthrough_id": null,
+        "title": "动手实验：先预测，再听两种标点",
+        "src": "/media/voicestudio/audio/experiment.m4a",
+        "duration_seconds": 94.532,
+        "transcript": "先做一个三到五分钟的听辨实验，不用安装 VoiceStudio。下面两份文字只有标点和句子组织不同，使用同一个系统中文音色合成。这是用来观察停顿的教学对照，不是两个语音模型的性能比赛。\n\n先预测：加入句号与逗号，会让哪些位置更容易听懂？暂停声音，写下一处预期，然后继续。\n\n样例甲。语音生成结束后先听开头中段结尾确认没有漏句再检查术语如果发现问题只改有问题的段落重新生成。\n\n样例乙。语音生成结束后，先听开头、中段、结尾。确认没有漏句，再检查术语。如果发现问题，只改有问题的段落，重新生成。\n\n现在暂停，回想两次听到的停顿。哪些差异符合预测？有没有标点变化了，但你听不出明显差别的地方？只记录真实观察，不把预期当作结果。系统音色也可能根据文字自行安排停顿，所以没有标点不等于完全不停。\n\n进阶实验在电脑上进行：环境准备好后，用 VoiceStudio 的同一模型和音色生成这两份样稿，保存输入与输出，再比较一次。安装和模型下载时间不计入十五到三十分钟的操作预算。暂时没有环境，就先完成听辨和分句练习，记录它能说明什么、还不能说明什么。"
+      },
+      {
+        "chapter": "application",
+        "walkthrough_id": null,
+        "title": "用到实际：交付一段能复用的中文旁白",
+        "src": "/media/voicestudio/audio/application.m4a",
+        "duration_seconds": 100.348,
+        "transcript": "把这一课用到自己的任务，可以从一段三十到六十秒的知识讲解开始。例如解释相机为什么要移动，或者解释看到新证据后怎样更新判断。目标是一段别人能听懂、你能核验的声音作品，而不是一次点生成成功的提示。\n\n先写清输入、输出和验收。输入是一份你有权使用的短文，以及允许使用的音色。输出是一份音频和与声音一致的文字稿。验收至少包括内容读全、关键术语正确、接缝可接受，并且文件能在目标手机完整播放。\n\n准备电脑环境后，先用一小句选择合适的引擎，再生成整段。VoiceStudio 应用开源，不表示所有语音模型、声音素材和生成结果都适用同一许可；选择时要查看对应模型说明。需要参考录音时，只使用自己或已获允许的声音。\n\n保存文本版本、模型和音色设置，以及你发现并修正的问题。如果一个词读错，先只改那个词的表达，再对照收听；如果末句缺失，优先检查输入分块和输出完整性。不要把所有问题都归因于声音不好听。\n\n发布到知行时，电脑负责制作，手机负责播放。已有课程包支持数据、图解和音频，不需要把语音模型装进手机。请先暂停完成自己的作品，再记录实际成果；这段旁白不会替你提交实操或改变掌握状态。"
+      },
+      {
+        "chapter": "summary",
+        "walkthrough_id": null,
+        "title": "回想总结：解释链路、失败与迁移",
+        "src": "/media/voicestudio/audio/summary.m4a",
+        "duration_seconds": 100.047,
+        "transcript": "现在不看页面，先试着解释：VoiceStudio 和语音模型是什么关系？请暂停，自己说一遍。核对时抓住一点：应用负责组织工作与调用引擎，模型负责把条件与文字变成声音；使用预训练模型推理，不等于每次都重新训练。\n\n第二问：长文本为什么要分块？再暂停思考。答案要同时提到输入限制、语句连贯与返工范围。按标点切分只是规则，不保证理解语义；块越短也不保证越自然。遇到一个特别长的句子，还要看实际实现怎样继续拆分。\n\n第三问：一份音频能播放，为什么还不能交付？请举一个具体反例。它可能遗漏最后一句，可能把术语读错，也可能在两段连接处突然改变音色。长度检查、逐句对照、接缝试听分别发现不同问题，不能互相替代。\n\n最后做一次迁移。把知识讲解换成产品说明，什么原则还成立？输入可追溯、只改一个因素做对照、保留完整文字稿和在目标设备验收，这些方法仍然有用。如果换成多人对话或长篇有声书，还需要考虑角色一致性和跨段连接。\n\n回顾刚才的听辨实验，写下一条预测、一条真实观察和一个仍不确定的点。想不起来可以回听，但复习评分由你依据实际回忆选择。听过、点过、看完一段源码，都不自动代表已经掌握。"
+      },
+      {
+        "chapter": "code",
+        "walkthrough_id": "voicestudio-pipeline-pseudocode",
+        "title": "先看长文生成链路（教学伪代码）",
+        "src": "/media/voicestudio/audio/voicestudio-pipeline-pseudocode.m4a",
+        "duration_seconds": 122.219,
+        "transcript": "这一段是教学伪代码，帮助你把长文生成的职责串起来。函数名字和最后的返回形式都是概括，不是可以直接调用的接口。它省略了停顿标签、单块快路径、缓存和异常处理。\n第一行，按文字类别调整字符预算。同样八百个汉字和八百个英文字母，发声长度并不相同，所以真实实现会缩小密集文字的预算。\n第二行，在预算内按句末、分句标点、空格、硬切的顺序找边界。这是规则，不是模型理解语义。\n第三行，把纯标点的小块并回邻居。这样既保留标点，也避免让没有可说文字的碎片独立生成。\n第四行，准备保存音频的列表。顺序要与原文对应。\n第五行，依次处理每个块，保留索引，方便追踪。\n第六行，调用已有语音引擎进行推理，再收集结果。这不要求为本次朗读重新训练模型；音色和控制项仍取决于引擎，随机种子也只在设置且受支持时传递。\n第七行，找到没有音频或样本数为零的块。非空音频仍可能念错或漏词。\n第八行，报告这些块对应的文字。报告不会自动补齐缺句。\n第九行，保留能拼接的音频，并保持顺序。真实代码还处理全空、单块和声道形状。\n第十行，用短交叉淡化接起音频，让前段退出、后段进入。这种接缝处理无法补回遗漏内容。\n第十一行，应用选定的效果。已有自己母带处理的引擎会走不同设置。\n第十二行，交付音频和遗漏信息。实际程序的报告通道与返回不同；人仍需对照稿件试听。请暂停，用自己的话分清生成、检查和拼接三件事。"
+      },
+      {
+        "chapter": "code",
+        "walkthrough_id": "voicestudio-boundary-source",
+        "title": "真实源码：预算内逐级寻找切分点",
+        "src": "/media/voicestudio/audio/voicestudio-boundary-source.m4a",
+        "duration_seconds": 140.11,
+        "transcript": "这一段真实源码位于长文本分块函数的中间。进入片段前，程序已经按文字密度调整预算，并准备好了剩余文本和结果列表。需要看变量时，可以暂停声音对照代码。\n第一行，只要还有剩余文字就继续。\n第二行，去掉开头空白，让空格不占下一块预算。\n第三行，判断清理后是否为空；第四行，若为空就退出，避免空块。\n第五行，看剩余文字能否整体放进预算；第六行，能放下就保存尾段；第七行，保存后结束，避免重复处理。\n第九行，只截取预算内的窗口。这里数的是字符，不是模型词元或音频秒数。\n第十一行，优先找窗口中最后一个合格句末。辅助函数用标点规则，也处理部分缩写和小数。\n第十二行，负一表示找不到；第十三行，才退到半角分号、冒号、逗号或破折号，而且后面要接空白或窗口末尾。全角中文逗号、分号不走这一层；切出的块也未必是完整句子。\n第十四行，再检查是否仍找不到；第十五行，退到最后一个空格。中文无空格长句常常用不上这层。\n第十六行，若连空格也没有；第十七行，就使用考虑方括号标签的硬切。它只是在缺少好边界时保证前进，不会理解词义。\n第十九行，取出断点之前的内容，加一让标点留在本块，再去掉两端空白。\n第二十行，确认块非空；第二十一行，按原文顺序保存。\n第二十二行，把剩余文本推进到断点之后。这防止重复，也让下一轮从正确位置继续。\n第二十四行，返回前合并只有标点的碎块。极端情况下，为避免碎块独立发声，程序允许少量标点导致超限。于是，预算是工程约束，不能讲成对所有输入都严格成立的定理。请预测：一段没有空格和标点的超长中文，最终会走哪条回退？"
+      },
+      {
+        "chapter": "code",
+        "walkthrough_id": "voicestudio-empty-check-source",
+        "title": "真实源码：空块告警与失败边界",
+        "src": "/media/voicestudio/audio/voicestudio-empty-check-source.m4a",
+        "duration_seconds": 116.24,
+        "transcript": "这一段展示一个容易被忽略的事实：拼出了声音，并不等于全文都读出来。我们逐行看空音频怎样被处理。\n第一行，准备保留音频和丢弃索引两个列表。第二行，按原始顺序遍历，索引才能对应正确的文字。\n第三行，要求音频存在而且至少有一个样本。这只查有无输出，不能识别漏词、读错或全静音。\n第四行，把通过的结果保留。第五行，其余情况走失败分支；第六行，保存它在原列表里的位置，避免失败没有记录。\n第七行，只有发现空块才报告。第八行，把索引、总数、文字和可选收集列表交给报告函数。这里会发出警告，却没有自动重试或补齐语音。\n第九行，把待拼列表换成存活结果，所以接下来的音频可能已经缺少原文的一部分。\n第十行，检查是否一个块也没留下。第十一行，全空时返回长度为一的静音张量。这只是占位，不能拿返回了张量来证明生成成功。\n第十二行，检查是否只剩一个块；第十三行，单块直接返回，因为没有相邻接缝。假如别的块丢了，返回的就只是部分内容，但此前已经报告。\n第十四行，多块情况下先整理维度和可兼容的声道形状。这一步不重新采样，也不改变音高。\n第十六行，把淡化毫秒数换成样本数。二十四千赫采样率下，五十毫秒是一千二百个样本。\n第十七行，记住第一块，作为后续输出形状、类型和设备的基准。请暂停，解释为什么没有空块警告，仍然需要对照原稿试听。"
+      },
+      {
+        "chapter": "code",
+        "walkthrough_id": "voicestudio-crossfade-source",
+        "title": "真实源码：一次分配与交叉淡化拼接",
+        "src": "/media/voicestudio/audio/voicestudio-crossfade-source.m4a",
+        "duration_seconds": 135.338,
+        "transcript": "这一段真实源码负责把已经保留的音频接起来。进入片段前，空块已过滤，形状已整理，淡化时长已换成样本数。\n第一行，读取每块在时间轴上的样本数。\n第二行，总长度先取第一块。第三行，准备记录每个接缝的重叠量。第四行，从第二块开始计算。\n第五行，重叠量不能超过设定值、已拼长度和当前块长度，并且不能小于零。这里看的是已经拼好的整体长度，不只是紧邻上一块。\n第六行，记住这个重叠量。第七行，总长度只增加当前块减去重叠的部分，因为重叠区共用一段时间。\n第九行，按总长度一次分配输出，保留第一块的声道形状、类型和设备。空数组尚未初始化，所以每处都必须写入。\n第十行，先复制第一块。第十一行，用游标记录写到哪里。\n第十三行，将后续音频与接缝长度逐一配对，严格模式要求数量一致。\n第十四行，让当前块匹配输出设备和类型，这不是重新采样。\n第十五行，只有存在重叠才混合。零重叠会直接拼接。\n第十六行，建立从一到零的旧音频权重。第十七行，建立从零到一的新音频权重，让一边退出、另一边进入。\n第十八行，取出已经写好的尾部。第十九行，在原位置把淡出的旧尾部与淡入的新头部相加。这处理接缝，但不补漏词，也不保证自然听感。\n第二十行，算当前块还有多少样本没写。第二十一行，判断是否确有剩余；第二十二行，把剩下的尾部紧接游标写入，跳过已经重叠的头部。\n第二十三行，游标只前进新增长度。最终它应等于先前预算的总长度，没有重复，也没有留洞。请用两张部分重叠的纸条作类比，再指出类比的边界：这里重叠处是波形加权相加，不是覆盖删除。"
+      }
+    ]
+  }
+}

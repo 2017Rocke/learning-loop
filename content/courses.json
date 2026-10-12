@@ -20,6 +20,16 @@
       "repo_full_name": "",
       "repo_url": "",
       "lesson_file": "bayes.json"
+    },
+    {
+      "id": "voicestudio-intro",
+      "title": "VoiceStudio：从文字到可听的课程",
+      "topic_id": "text-to-speech-workflows",
+      "subject": "语音技术与AI工程",
+      "kind": "project",
+      "repo_full_name": "debpalash/VoiceStudio",
+      "repo_url": "https://github.com/debpalash/VoiceStudio",
+      "lesson_file": "voicestudio.json"
     }
   ]
 }

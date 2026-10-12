@@ -33,3 +33,28 @@ are recorded in the lesson metadata.
 The factory example uses synthetic teaching assumptions and original diagrams.
 The source references link to Stanford and OpenStax explanations; no textbook
 page scans, copied lecture recordings, or third-party video files are bundled.
+
+## VoiceStudio source excerpts
+
+- Project: [debpalash/VoiceStudio](https://github.com/debpalash/VoiceStudio)
+- Fixed revision used in `content/voicestudio.json`:
+  `7703ca66da77b8d130e6d1d3b2e67d979fa5a77f`
+- Continuous excerpts: `backend/services/chunked_tts.py`, lines 153–176,
+  451–467 and 484–506. Chinese annotations are separate original explanations.
+- Upstream repository license: GNU Affero General Public License v3.0;
+  full text in [`licenses/voicestudio-AGPL-3.0.txt`](licenses/voicestudio-AGPL-3.0.txt).
+- The source module additionally states: “Adapted from voicebox
+  (https://github.com/jamiepine/voicebox), MIT License,
+  Copyright (c) voicebox contributors.” This attribution is retained here and in
+  the course; excerpts are not relicensed under Learning Loop's MIT license.
+- Voicebox's complete MIT notice is preserved in
+  [`licenses/voicebox-MIT.txt`](licenses/voicebox-MIT.txt), obtained from fixed
+  revision `8af7efe62fab8d33e2a5dfbedabaa45f68a5184f`, `LICENSE`.
+- Both license texts are also carried as plain `license_text` data on the course's
+  corresponding source references, so data-only Android course updates include
+  the notices even though they do not replace an installed APK's credits page.
+
+The four diagrams and the punctuation listening exercise are original teaching
+illustrations. All ten narration clips use the installed system Tingting voice;
+none is presented as a VoiceStudio model-quality demonstration. No VoiceStudio
+application, model weights, or third-party voice recordings are bundled.

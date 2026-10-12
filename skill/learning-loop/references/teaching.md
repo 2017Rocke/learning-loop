@@ -133,6 +133,8 @@
 
 示例只展示结构，不能作为课程直接导入。正式课程提供 3～5 个视觉步骤、3～5 个核心思想及足够的具体问题，不保留“实际读取的 URL”等占位文字。主屏文案短，解释细节保留在文字原理区。
 
+引用开源源码时保留归属、固定来源与适用许可；不要用本项目许可覆盖上游摘录。许可证来源项可额外包含 `license_text` 字符串（最多 60000 字符），存放已核实的许可原文，让纯数据课程包携带许可副本。界面仍显示 `title` 和 `url`，不保证旧版 App 能展开该全文；可见归属说明放在 `code_insight.explanation`。仓库同时在 `licenses/` 和 `THIRD_PARTY_NOTICES.md` 保留许可与出处，不能假定这些文件会随旧 APK 的课程更新下发。
+
 ### 逐行代码解读字段与取证
 
 每段 `walkthroughs` 只含以下字段：`id`、`title`、`kind`、`language`、`snippet`、`source_url`、`source_path`、`source_commit`、`source_start_line`、`notes`。段 ID 在课程内唯一并保持稳定。

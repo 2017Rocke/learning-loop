@@ -208,6 +208,16 @@ class LearningLoopTests(unittest.TestCase):
     def test_lesson_validation_accepts_complete_contract(self):
         self.assertEqual(ll.validate_lesson(lesson_fixture()), lesson_fixture())
 
+    def test_source_license_is_preserved_and_bounded_plain_text(self):
+        data = lesson_fixture()
+        data['source_refs'][0]['license_text'] = 'MIT License\nCopyright example\nPermission is granted.'
+        self.assertEqual(ll.validate_lesson(data), data)
+        for invalid in ('', None, {}, 'x' * 60001):
+            data['source_refs'][0]['license_text'] = invalid
+            with self.subTest(value_type=type(invalid).__name__):
+                with self.assertRaises(ValueError):
+                    ll.validate_lesson(data)
+
     def test_lesson_validation_rejects_missing_duplicate_and_unsafe_fields(self):
         invalid = []
         data = lesson_fixture(); del data['application']; invalid.append(data)

@@ -30,6 +30,8 @@ python3 learning_loop.py draft-lesson --track-id TRACK_ID --output content/my-to
 
 代码课先用短伪代码建立全局，再展示真实连续片段。保留原文、准确起始行号与完整提交 ID；逐行中文解释存在 `notes`，每个非空行都讲“做什么”和“为什么”。不能把自己的改写冒充源代码。
 
+摘录保留上游许可，在 `licenses/` 与 `THIRD_PARTY_NOTICES.md` 记录归属。安卓课程包不包含这些独立文件；需要随包携带的许可全文，写入对应 `source_refs` 项的可选 `license_text`（上限 60000 字符）。旧版界面显示来源标题与链接，归属说明仍写入课程正文；完整字段约定见教学包规范。
+
 无代码的学科课设 `code_insight: null`，用推理、例题、反例和纸笔操作承载思想，不硬套程序。
 
 ## 实验与回忆

@@ -420,6 +420,8 @@ def validate_lesson(lesson):
             raise ValueError('资料引用必须是对象')
         require_text(ref.get('title'), '资料标题')
         safe_url(require_text(ref.get('url'), '资料链接'))
+        if 'license_text' in ref:
+            require_text(ref['license_text'], '来源许可全文', 60000)
     ids = set()
     for question in lesson['questions']:
         if not isinstance(question, dict):

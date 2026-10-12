@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">02 先守预算，再依次找边界</title><desc id="desc">在当前字符预算内，切分规则依次尝试句末、分句标点、空格，最后才硬切。此版本的分句层只识别半角逗号、分号、冒号或破折号，且其后必须是空白或当前窗口结尾；中文全角逗号和分号不在这一层规则中。优先句末不保证每块都是完整句子；超长句仍需继续切分。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#60676F"/></marker></defs>
+<rect width="960" height="540" rx="24" fill="#F5F5F5"/>
+<g font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif">
+<text x="42" y="62" font-size="38" fill="#1F2329" font-weight="600" text-anchor="start">02 先守预算，再依次找边界</text>
+<rect x="42" y="105" width="876" height="125" rx="18" fill="#FFFFFF" stroke="#DCE3E8" stroke-width="2"/>
+<text x="66" y="150" font-size="31" fill="#2467A3" font-weight="600" text-anchor="start">本次字符预算</text>
+<path d="M66 184H782" fill="none" stroke="#2467A3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M786 126V207" fill="none" stroke="#A75E16" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 8"/>
+<text x="813" y="180" font-size="30" fill="#A75E16" font-weight="400" text-anchor="start">上限</text>
+<text x="66" y="213" font-size="26" fill="#60676F" font-weight="400" text-anchor="start">只在预算范围内寻找优先边界</text>
+<rect x="42" y="263" width="186" height="154" rx="18" fill="#FFFFFF" stroke="#DCE3E8" stroke-width="2"/>
+<text x="60" y="300" font-size="28" fill="#007E41" font-weight="600" text-anchor="start">1</text>
+<text x="135" y="352" font-size="38" fill="#007E41" font-weight="600" text-anchor="middle">。!?</text>
+<text x="135" y="393" font-size="29" fill="#007E41" font-weight="500" text-anchor="middle">句末</text>
+<path d="M234 341H260" fill="none" stroke="#60676F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="272" y="263" width="186" height="154" rx="18" fill="#FFFFFF" stroke="#DCE3E8" stroke-width="2"/>
+<text x="290" y="300" font-size="28" fill="#007E41" font-weight="600" text-anchor="start">2</text>
+<text x="365" y="352" font-size="38" fill="#007E41" font-weight="600" text-anchor="middle">, ;</text>
+<text x="365" y="393" font-size="29" fill="#007E41" font-weight="500" text-anchor="middle">分句标点</text>
+<text x="365" y="440" font-size="22" fill="#60676F" font-weight="400" text-anchor="middle">半角 / 边界条件</text>
+<path d="M464 341H490" fill="none" stroke="#60676F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="502" y="263" width="186" height="154" rx="18" fill="#FFFFFF" stroke="#DCE3E8" stroke-width="2"/>
+<text x="520" y="300" font-size="28" fill="#2467A3" font-weight="600" text-anchor="start">3</text>
+<text x="595" y="352" font-size="38" fill="#2467A3" font-weight="600" text-anchor="middle">词  词</text>
+<text x="595" y="393" font-size="29" fill="#2467A3" font-weight="500" text-anchor="middle">空格</text>
+<path d="M694 341H720" fill="none" stroke="#60676F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="732" y="263" width="186" height="154" rx="18" fill="#FFFFFF" stroke="#DCE3E8" stroke-width="2"/>
+<text x="750" y="300" font-size="28" fill="#A75E16" font-weight="600" text-anchor="start">4</text>
+<text x="825" y="352" font-size="38" fill="#A75E16" font-weight="600" text-anchor="middle">字│字</text>
+<text x="825" y="393" font-size="29" fill="#A75E16" font-weight="500" text-anchor="middle">硬切</text>
+<text x="42" y="474" font-size="29" fill="#1F2329" font-weight="500" text-anchor="start">预算内优先找句末；超长句仍会再切。</text>
+<text x="42" y="518" font-size="18" fill="#60676F" font-weight="400" text-anchor="start">原创原理示意 · 波形为示意，不是实测音频</text>
+</g></svg>

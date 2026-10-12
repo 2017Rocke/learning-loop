@@ -31,7 +31,13 @@ class AndroidContentTests(unittest.TestCase):
                     data = package.read(item['path'])
                     self.assertEqual(len(data), item['size'])
                     self.assertEqual(hashlib.sha256(data).hexdigest(), item['sha256'])
-                self.assertEqual(len(json.loads(package.read('courses.json'))['courses']), 2)
+                actual_courses = json.loads(package.read('courses.json'))['courses']
+                expected_courses = []
+                for entry in content.build_site.app.load_courses()['courses']:
+                    course = {key: value for key, value in entry.items() if key != 'lesson_file'}
+                    course['lesson'] = json.loads((ROOT / 'content' / entry['lesson_file']).read_text())
+                    expected_courses.append(course)
+                self.assertEqual(actual_courses, expected_courses)
             before = (target / 'manifest.json').read_bytes()
             self.assertEqual(result['version'], content.build(target)['version'])
             self.assertEqual(before, (target / 'manifest.json').read_bytes())

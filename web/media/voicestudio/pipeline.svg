@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">01 文字怎样变成可听课程？</title>
+<desc id="desc">文字块与音色条件一起进入已训练的语音模型，得到分开的音频段。分段声音还需要顺序组装成章节文件。图中波形仅为示意。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#60676F"/></marker></defs>
+<rect width="960" height="540" rx="24" fill="#F5F5F5"/>
+<g font-family="PingFang SC, Noto Sans CJK SC, Microsoft YaHei, sans-serif">
+<text x="42" y="62" font-size="38" fill="#1F2329" font-weight="600" text-anchor="start">01 文字怎样变成可听课程？</text>
+<rect x="42" y="112" width="212" height="132" rx="18" fill="#EDF5FC" stroke="#C4D8EB" stroke-width="2"/>
+<text x="62" y="153" font-size="31" fill="#2467A3" font-weight="600" text-anchor="start">文字块</text>
+<path d="M62 177H212" fill="none" stroke="#2467A3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M62 197H235" fill="none" stroke="#2467A3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M62 217H186" fill="none" stroke="#2467A3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<rect x="42" y="275" width="212" height="117" rx="18" fill="#EDF5FC" stroke="#C4D8EB" stroke-width="2"/>
+<text x="62" y="315" font-size="31" fill="#2467A3" font-weight="600" text-anchor="start">音色条件</text>
+<polyline points="67.0,354.0 70.4,356.7 73.7,352.7 77.1,346.9 80.4,358.3 83.8,360.3 87.1,349.3 90.5,349.8 93.8,361.8 97.2,358.9 100.5,340.1 103.9,351.9 107.2,365.2 110.6,353.0 114.0,344.4 117.3,358.7 120.7,368.7 124.0,343.6 127.4,342.7 130.7,363.3 134.1,359.4 137.4,343.2 140.8,349.4 144.1,372.4 147.5,354.7 150.9,339.1 154.2,356.5 157.6,363.8 160.9,348.1 164.3,340.4 167.6,366.2 171.0,364.7 174.3,343.4 177.7,349.8 181.0,363.3 184.4,356.3 187.8,339.2 191.1,355.0 194.5,366.3 197.8,351.1 201.2,347.6 204.5,358.2 207.9,361.0 211.2,346.5 214.6,349.1 217.9,359.5 221.3,355.3 224.6,351.7 228.0,354.0" fill="none" stroke="#2467A3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M263 178H294V234H325" fill="none" stroke="#60676F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M263 333H294V270H325" fill="none" stroke="#60676F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="339" y="166" width="244" height="177" rx="18" fill="#E8F8EE" stroke="#07C160" stroke-width="2"/>
+<text x="461" y="214" font-size="34" fill="#007E41" font-weight="600" text-anchor="middle">已训练</text>
+<text x="461" y="259" font-size="34" fill="#007E41" font-weight="600" text-anchor="middle">语音模型</text>
+<circle cx="400" cy="303" r="9" fill="#07C160"/>
+<circle cx="461" cy="303" r="9" fill="#07C160"/>
+<circle cx="522" cy="303" r="9" fill="#07C160"/>
+<path d="M410 303H451M471 303H512" fill="none" stroke="#007E41" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M594 254H641" fill="none" stroke="#60676F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="655" y="111" width="264" height="66" rx="11" fill="#FFFFFF" stroke="#DCE3E8" stroke-width="2"/>
+<text x="672" y="151" font-size="28" fill="#007E41" font-weight="500" text-anchor="start">段 1</text>
+<polyline points="742.0,143.0 745.3,145.8 748.5,141.6 751.8,135.6 755.1,147.5 758.4,149.7 761.6,138.1 764.9,138.6 768.2,151.2 771.4,148.2 774.7,128.4 778.0,140.8 781.2,154.8 784.5,142.0 787.8,132.9 791.1,148.0 794.3,158.5 797.6,132.1 800.9,131.1 804.1,152.8 807.4,148.7 810.7,131.6 814.0,138.1 817.2,162.4 820.5,143.8 823.8,127.3 827.0,145.6 830.3,153.4 833.6,136.8 836.9,128.7 840.1,155.8 843.4,154.3 846.7,131.8 849.9,138.6 853.2,152.7 856.5,145.4 859.8,127.4 863.0,144.1 866.3,155.9 869.6,139.9 872.8,136.2 876.1,147.4 879.4,150.3 882.6,135.2 885.9,137.8 889.2,148.8 892.5,144.3 895.7,140.6 899.0,143.0" fill="none" stroke="#007E41" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="655" y="190" width="264" height="66" rx="11" fill="#FFFFFF" stroke="#DCE3E8" stroke-width="2"/>
+<text x="672" y="230" font-size="28" fill="#007E41" font-weight="500" text-anchor="start">段 2</text>
+<polyline points="742.0,222.0 745.3,223.2 748.5,216.8 751.8,220.5 755.1,231.1 758.4,221.4 761.6,215.1 764.9,224.3 768.2,230.6 771.4,214.7 774.7,210.6 778.0,232.9 781.2,228.6 784.5,213.4 787.8,218.6 791.1,235.6 794.3,223.3 797.6,203.3 800.9,225.0 804.1,234.0 807.4,217.4 810.7,211.5 814.0,232.7 817.2,235.3 820.5,206.2 823.8,214.7 827.0,233.2 830.3,224.4 833.6,208.5 836.9,222.6 840.1,240.9 843.4,217.0 846.7,209.8 849.9,227.4 853.2,230.0 856.5,212.6 859.8,212.8 863.0,235.9 866.3,226.8 869.6,212.7 872.8,221.1 876.1,230.0 879.4,220.6 882.6,211.9 885.9,225.6 889.2,227.6 892.5,219.6 895.7,220.3 899.0,222.0" fill="none" stroke="#007E41" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="655" y="269" width="264" height="66" rx="11" fill="#FFFFFF" stroke="#DCE3E8" stroke-width="2"/>
+<text x="672" y="309" font-size="28" fill="#007E41" font-weight="500" text-anchor="start">段 3</text>
+<polyline points="742.0,301.0 745.3,299.5 748.5,296.7 751.8,306.9 755.1,306.3 758.4,293.7 761.6,298.5 764.9,307.9 768.2,302.0 771.4,287.9 774.7,303.3 778.0,314.9 781.2,296.3 784.5,292.7 787.8,307.4 791.1,310.7 794.3,286.9 797.6,291.8 800.9,316.1 804.1,304.2 807.4,290.3 810.7,301.0 814.0,317.4 817.2,296.0 820.5,283.1 823.8,308.8 827.0,310.6 830.3,293.3 833.6,292.6 836.9,315.9 840.1,308.6 843.4,284.3 846.7,299.0 849.9,311.3 853.2,299.9 856.5,288.5 859.8,306.6 863.0,314.9 866.3,293.3 869.6,294.0 872.8,306.8 876.1,305.2 879.4,292.2 882.6,297.9 885.9,310.1 889.2,301.3 892.5,297.0 895.7,301.5 899.0,301.0" fill="none" stroke="#007E41" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M788 341V359" fill="none" stroke="#60676F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="671" y="374" width="232" height="55" rx="12" fill="#E8F8EE" stroke="#07C160" stroke-width="2"/>
+<text x="787" y="412" font-size="31" fill="#007E41" font-weight="600" text-anchor="middle">章节文件</text>
+<text x="42" y="474" font-size="29" fill="#1F2329" font-weight="500" text-anchor="start">模型生成各段声音，章节文件还需要按序组装。</text>
+<text x="42" y="518" font-size="18" fill="#60676F" font-weight="400" text-anchor="start">原创原理示意 · 波形为示意，不是实测音频</text>
+</g>
+</svg>
