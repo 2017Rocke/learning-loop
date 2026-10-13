@@ -29,7 +29,31 @@ window.LessonVisuals = (() => {
       return () => player.removeEventListener('play', stopOthers);
     }
 
-    function audioNarration(lesson, chapter, walkthroughID = null) {
+    // Playback position is a convenience setting, separate from learning evidence.
+    // Keep the key tied to the local media path so a course update cannot mix two clips.
+    const audioProgressPrefix = 'zhixing.audio-progress.v1:';
+    function audioProgressStore() {
+      try { return window.localStorage; } catch { return null; }
+    }
+    function audioProgressKey(sourceURL, chapter, walkthroughID) {
+      try {
+        const url = new URL(sourceURL, location.href);
+        return `${audioProgressPrefix}${url.pathname}${url.search}|${chapter}|${walkthroughID ?? ''}`;
+      } catch { return `${audioProgressPrefix}${sourceURL}|${chapter}|${walkthroughID ?? ''}`; }
+    }
+    function readAudioProgress(key, signature) {
+      const store = audioProgressStore();
+      if (!store) return null;
+      try {
+        const value = JSON.parse(store.getItem(key) || 'null');
+        return value && value.signature === signature && Number.isFinite(value.time) && value.time > 3 ? value : null;
+      } catch { return null; }
+    }
+    function forgetAudioProgress(key) {
+      try { audioProgressStore()?.removeItem(key); } catch { /* A full/private store must not block playback. */ }
+    }
+
+    function audioNarration(lesson, chapter, walkthroughID = null, chapterNavigation = null) {
       const audioLesson = lesson.audio_lesson;
       const clip = audioLesson?.clips?.find(item => item.chapter === chapter && (item.walkthrough_id ?? null) === walkthroughID);
       const sourceURL = resolveMedia(clip?.src);
@@ -41,6 +65,61 @@ window.LessonVisuals = (() => {
       const duration = el('span', { class: 'narration-duration' }, Number.isFinite(clip.duration_seconds) && clip.duration_seconds > 0 ? timeLabel(clip.duration_seconds) : '中文讲解');
       const speed = el('select', { class: 'narration-speed', 'aria-label': '语音播放速度', on: { change: event => { preferredAudioRate = Number(event.target.value); player.playbackRate = preferredAudioRate; } } }, [0.8, 1, 1.25, 1.5].map(rate => el('option', { value: rate }, `${rate} ×`))); speed.value = String(preferredAudioRate);
       const status = el('p', { class: 'narration-status', role: 'status' });
+      const progressKey = audioProgressKey(sourceURL, chapter, walkthroughID);
+      const progressSignature = JSON.stringify([clip.src, clip.duration_seconds, clip.transcript]);
+      let savedProgress = readAudioProgress(progressKey, progressSignature);
+      let lastPersistedAt = 0;
+      let progressDirty = false;
+      const progress = el('span', { class: 'narration-progress' }, '尚未播放');
+      const resume = button('继续上次', () => {
+        const time = Number(savedProgress?.time);
+        if (!Number.isFinite(time) || time <= 3) return;
+        try { player.currentTime = Math.min(time, Math.max(0, (player.duration || time) - .1)); } catch { status.textContent = '音频还在准备，请稍后再继续。'; return; }
+        progressDirty = true;
+        resume.hidden = true;
+        const attempt = player.play();
+        attempt?.catch(() => { status.textContent = '已定位到上次位置，请点击播放器的播放键继续。'; });
+      }, 'small primary', null, false);
+      resume.hidden = true;
+      const rewind = button('↶ 后退 10 秒', () => {
+        try { player.currentTime = Math.max(0, (Number(player.currentTime) || 0) - 10); } catch { status.textContent = '音频还在准备，请稍后再定位。'; return; }
+        progressDirty = true;
+        persistProgress(true);
+        updateProgress();
+      }, 'small outline', null, false);
+      const restart = button('从头播放', () => {
+        try { player.currentTime = 0; } catch { status.textContent = '音频还在准备，请稍后再播放。'; return; }
+        progressDirty = true;
+        savedProgress = null;
+        forgetAudioProgress(progressKey);
+        resume.hidden = true;
+        updateProgress();
+        const attempt = player.play();
+        attempt?.catch(() => { status.textContent = '已回到开头，请点击播放器的播放键继续。'; });
+      }, 'small outline', null, false);
+      const chapterNav = chapterNavigation && (chapterNavigation.previous || chapterNavigation.next)
+        ? el('div', { class: 'narration-chapter-nav', 'aria-label': '课程章节播放列表' },
+          chapterNavigation.previous ? button(`← ${chapterNavigation.previous.label || '上一节'}`, chapterNavigation.previous.onClick, 'small ghost', null, false) : el('span', {}, ''),
+          chapterNavigation.next ? button(`${chapterNavigation.next.label || '下一节'} →`, chapterNavigation.next.onClick, 'small outline', null, false) : null)
+        : null;
+      function updateProgress() {
+        const current = Number(player.currentTime);
+        const total = Number(player.duration);
+        progress.textContent = Number.isFinite(current) && current > 0
+          ? `已听 ${timeLabel(current)}${Number.isFinite(total) && total > 0 ? ` / ${timeLabel(total)}` : ''}`
+          : '尚未播放';
+      }
+      function persistProgress(force = false) {
+        const store = audioProgressStore();
+        const current = Number(player.currentTime);
+        const total = Number(player.duration);
+        if (!store || !Number.isFinite(current) || !progressDirty) return;
+        if (current <= 3 || (Number.isFinite(total) && total > 0 && current >= total - 2)) { forgetAudioProgress(progressKey); savedProgress = null; resume.hidden = true; return; }
+        const now = Date.now();
+        if (!force && now - lastPersistedAt < 1000) return;
+        lastPersistedAt = now;
+        try { store.setItem(progressKey, JSON.stringify({ signature: progressSignature, time: Math.round(current * 10) / 10, duration: Number.isFinite(total) && total > 0 ? Math.round(total * 10) / 10 : null })); } catch { /* Quota/private mode: playback still works without resume. */ }
+      }
       let retryAt = null;
       const retry = button('重新加载这段语音', () => {
         if (disposed) return;
@@ -55,6 +134,7 @@ window.LessonVisuals = (() => {
       const card = el('section', { class: `narration-card${walkthroughID === null ? '' : ' snippet-narration'}`, 'aria-label': walkthroughID === null ? '听这一节的中文讲解' : '听这个代码片段的逐行讲解' },
         el('div', { class: 'narration-heading' }, el('div', { class: 'narration-title-group' }, el('span', { class: 'narration-icon', 'aria-hidden': 'true' }, '◖♪◗'), el('strong', {}, clip.title || '听一遍中文讲解')), duration),
         el('div', { class: 'narration-controls' }, player, el('label', { class: 'narration-speed-label' }, '语速', speed)),
+        el('div', { class: 'narration-actions', role: 'group', 'aria-label': '语音位置控制' }, resume, rewind, restart, progress), chapterNav,
         el('p', { class: 'narration-note' }, audioLesson.voice || '本机合成中文语音', ' · 点击播放，可以暂时移开视线'), status, retry, transcript);
       const stopExclusive = exclusivePlayback(player);
       let disposed = false;
@@ -70,13 +150,28 @@ window.LessonVisuals = (() => {
       const metadata = () => {
         if (Number.isFinite(player.duration) && player.duration > 0) duration.textContent = timeLabel(player.duration);
         player.playbackRate = Number(speed.value);
+        if (savedProgress && Number.isFinite(savedProgress.duration) && Number.isFinite(player.duration) && Math.abs(savedProgress.duration - player.duration) > Math.max(3, player.duration * .1)) {
+          savedProgress = null;
+          forgetAudioProgress(progressKey);
+        }
+        if (savedProgress?.time > 3 && savedProgress.time < player.duration - 2) {
+          resume.textContent = `继续上次 · ${timeLabel(savedProgress.time)}`;
+          resume.hidden = false;
+          status.textContent = `上次听到 ${timeLabel(savedProgress.time)}，可以继续，也可以从头开始。`;
+        }
         if (retryAt !== null) { player.currentTime = Math.min(retryAt, Math.max(0, (player.duration || 0) - .1)); retryAt = null; }
+        updateProgress();
       };
-      const playing = () => { status.textContent = ''; retry.hidden = true; };
-      player.addEventListener('error', failed); source.addEventListener('error', failed); player.addEventListener('loadedmetadata', metadata); player.addEventListener('playing', playing);
+      const playing = () => { progressDirty = true; status.textContent = ''; retry.hidden = true; resume.hidden = true; updateProgress(); };
+      const paused = () => { persistProgress(true); updateProgress(); };
+      const timeupdate = () => { if (player.currentTime > 0) progressDirty = true; persistProgress(); updateProgress(); };
+      const seeked = () => { progressDirty = true; persistProgress(true); updateProgress(); };
+      const ended = () => { forgetAudioProgress(progressKey); savedProgress = null; resume.hidden = true; updateProgress(); };
+      player.addEventListener('error', failed); source.addEventListener('error', failed); player.addEventListener('loadedmetadata', metadata); player.addEventListener('playing', playing); player.addEventListener('pause', paused); player.addEventListener('timeupdate', timeupdate); player.addEventListener('seeked', seeked); player.addEventListener('ended', ended);
       const dispose = () => {
         if (disposed) return;
-        disposed = true; stopExclusive(); player.removeEventListener('error', failed); source.removeEventListener('error', failed); player.removeEventListener('loadedmetadata', metadata); player.removeEventListener('playing', playing); player.pause(); source.removeAttribute('src'); player.removeAttribute('src'); player.load();
+        persistProgress(true);
+        disposed = true; stopExclusive(); player.removeEventListener('error', failed); source.removeEventListener('error', failed); player.removeEventListener('loadedmetadata', metadata); player.removeEventListener('playing', playing); player.removeEventListener('pause', paused); player.removeEventListener('timeupdate', timeupdate); player.removeEventListener('seeked', seeked); player.removeEventListener('ended', ended); player.pause(); source.removeAttribute('src'); player.removeAttribute('src'); player.load();
       };
       audioDisposers.set(card, dispose); onCleanup(dispose);
       return card;
@@ -97,19 +192,35 @@ window.LessonVisuals = (() => {
       const item = visual.video;
       const status = el('p', { class: 'video-status', role: 'status' });
       const captionURL = resolveMedia(item.captions);
-      const player = el('video', { class: 'lesson-video', controls: true, playsinline: true, preload: 'metadata', poster: resolveMedia(item.poster), 'aria-label': item.title || '课程原理短片' }, el('source', { src: source, type: new URL(source).pathname.endsWith('.webm') ? 'video/webm' : 'video/mp4' }), captionURL ? el('track', { kind: 'captions', src: captionURL, srclang: 'zh', label: '中文字幕', default: true }) : null, '浏览器暂不支持视频，可继续使用下方图解。');
+      const player = el('video', { class: 'lesson-video', controls: true, playsinline: true, preload: 'metadata', poster: resolveMedia(item.poster), 'aria-label': item.title || '课程原理短片' }, el('source', { src: source, type: new URL(source).pathname.endsWith('.webm') ? 'video/webm' : 'video/mp4' }), captionURL ? el('track', { kind: 'captions', src: captionURL, srclang: 'zh', label: '中文字幕（可选，画面已含字幕）' }) : null, '浏览器暂不支持视频，可继续使用下方图解。');
       const stopExclusive = exclusivePlayback(player);
       const shell = el('div', { class: 'lesson-player' }, player);
+      let disposed = false, retryAt = 0;
+      const playButton = button('播放原理动画', () => {
+        if (!player.paused) { player.pause(); return; }
+        if (shell.dataset.failed) {
+          delete shell.dataset.failed;
+          shell.replaceChildren(player);
+          player.load();
+        }
+        player.play()?.catch(() => { if (!disposed && !player.error) status.textContent = '请再点一次播放，或使用视频内的播放键。'; });
+      }, 'outline video-play-action');
+      const playing = () => { status.textContent = ''; playButton.textContent = '暂停原理动画'; };
+      const paused = () => { if (!shell.dataset.failed) playButton.textContent = player.ended ? '重看原理动画' : '播放原理动画'; };
+      const metadata = () => { if (retryAt > 0) { try { player.currentTime = Math.min(retryAt, Math.max(0, player.duration - .1)); } catch { /* Native seek stays available. */ } retryAt = 0; } };
       const fallback = () => {
-        if (shell.dataset.failed) return;
+        if (disposed || shell.dataset.failed) return;
         shell.dataset.failed = 'true';
+        retryAt = Number.isFinite(player.currentTime) ? player.currentTime : 0;
         player.pause();
         shell.replaceChildren(imageCard(visual.steps?.[0] || { title: '继续看分步图解' }));
-        status.textContent = '短片暂时无法播放。下方图解包含同样的核心过程，可以继续学习。';
+        playButton.textContent = '重新加载原理动画';
+        status.textContent = `视频暂时无法播放（音视频 ${player.error?.code || '未知'}），可重新加载；下方图解和分镜文字仍可阅读。`;
       };
+      player.addEventListener('playing', playing); player.addEventListener('pause', paused); player.addEventListener('ended', paused); player.addEventListener('loadedmetadata', metadata);
       player.addEventListener('error', fallback);
       player.querySelector('source').addEventListener('error', fallback);
-      onCleanup(() => { stopExclusive(); player.removeEventListener('error', fallback); player.querySelector('source')?.removeEventListener('error', fallback); player.pause(); player.removeAttribute('src'); player.querySelector('source')?.removeAttribute('src'); player.load(); });
+      onCleanup(() => { disposed = true; stopExclusive(); player.removeEventListener('playing', playing); player.removeEventListener('pause', paused); player.removeEventListener('ended', paused); player.removeEventListener('loadedmetadata', metadata); player.removeEventListener('error', fallback); player.querySelector('source')?.removeEventListener('error', fallback); player.pause(); player.removeAttribute('src'); player.querySelector('source')?.removeAttribute('src'); player.load(); });
       const chapters = (item.transcript || []).filter(part => Number.isFinite(part.time) && part.time >= 0 && typeof part.text === 'string');
       const transcript = chapters.length ? fold('查看分镜讲解 · 点击时间跳转', el('ol', { class: 'video-transcript' }, chapters.map(part => el('li', {}, el('button', { type: 'button', class: 'timecode', 'aria-label': `跳到 ${timeLabel(part.time)}：${part.text}`, on: { click: () => {
         if (shell.dataset.failed) { status.textContent = '视频不可用，请阅读讲解或下方图解。'; return; }
@@ -119,7 +230,7 @@ window.LessonVisuals = (() => {
       return el('section', { class: 'video-lesson', 'aria-label': '先看一段原理短片' },
         el('div', { class: 'visual-heading' }, el('span', { class: 'visual-eyebrow' }, '01 · 先看见，再理解'), el('span', { class: 'visual-duration' }, `${timeLabel(Number(item.duration_seconds) || 0)} 原理短片 · 可暂停`)),
         shell, el('div', { class: 'video-caption' }, el('strong', {}, item.title || '看一遍核心过程'), el('span', {}, '点播放开始，按你的节奏观看')),
-        status, transcript, item.attribution ? el('p', { class: 'media-attribution' }, item.attribution) : null);
+        playButton, status, transcript, item.attribution ? el('p', { class: 'media-attribution' }, item.attribution) : null);
     }
 
     function stepLesson(visual, legacyIdeas = []) {

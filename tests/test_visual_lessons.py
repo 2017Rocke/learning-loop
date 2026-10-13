@@ -23,6 +23,22 @@ def visual_fixture():
 
 
 class VisualLessonTests(unittest.TestCase):
+    def test_mobile_experiments_validate_and_reject_remote_audio(self):
+        visual = visual_fixture()
+        visual['interactive'] = dict(kind='bayes-counts', title='四格', prompt='先数人')
+        ll.validate_visual_lesson(visual)
+        sample = dict(label='甲', src='/media/voice/a.mp3', transcript='同样的文字', duration_seconds=10)
+        visual['interactive'] = dict(kind='voice-ab', title='听辨', prompt='先预测', samples=[sample, dict(sample, label='乙', src='/media/voice/b.mp3')])
+        ll.validate_visual_lesson(visual)
+        for change in [dict(src='https://example.com/a.mp3'), dict(duration_seconds=True), dict(transcript='')]:
+            invalid = deepcopy(visual)
+            invalid['interactive']['samples'][0].update(change)
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                ll.validate_visual_lesson(invalid)
+        visual['interactive']['samples'].pop()
+        with self.assertRaises(ValueError):
+            ll.validate_visual_lesson(visual)
+
     def test_legacy_and_visual_courses_are_both_supported(self):
         lesson = lesson_fixture()
         ll.validate_lesson(lesson)

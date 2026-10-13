@@ -20,6 +20,9 @@ class AndroidContentTests(unittest.TestCase):
             with patch.object(content.build_site.app, 'Store', side_effect=AssertionError('No private DB')):
                 result = content.build(target)
             manifest = json.loads((target / 'manifest.json').read_text())
+            # Older clients reject these new experiment kinds. The small manifest
+            # must ask for a compatible APK before offering the content download.
+            self.assertEqual(manifest['min_app_version'], 4)
             archive = target / manifest['archive']['name']
             self.assertEqual(hashlib.sha256(archive.read_bytes()).hexdigest(), manifest['archive']['sha256'])
             self.assertEqual(archive.stat().st_size, manifest['archive']['size'])

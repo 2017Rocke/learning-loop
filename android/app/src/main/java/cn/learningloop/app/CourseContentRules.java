@@ -311,9 +311,18 @@ public final class CourseContentRules {
             }
         }
         if (visual.get("interactive") != null) {
-            Map<String, Object> interactive = object(visual.get("interactive"), "交互演示"); keys(interactive, "kind", "title", "prompt");
-            check("gaussian-viewer".equals(interactive.get("kind")), "此演示需要升级应用后使用。");
+            Map<String, Object> interactive = object(visual.get("interactive"), "交互演示");
+            boolean voice = "voice-ab".equals(interactive.get("kind"));
+            if (voice) keys(interactive, "kind", "title", "prompt", "samples");
+            else keys(interactive, "kind", "title", "prompt");
+            check(set("gaussian-viewer", "bayes-counts", "voice-ab").contains(interactive.get("kind")), "此演示需要升级应用后使用。");
             text(interactive.get("title"), 100, "演示标题"); text(interactive.get("prompt"), 400, "演示提示");
+            if (voice) for (Object raw : list(interactive.get("samples"), 2, 2, "听辨样例")) {
+                Map<String, Object> sample = object(raw, "听辨样例"); keys(sample, "label", "src", "transcript", "duration_seconds");
+                text(sample.get("label"), 100, "听辨名称"); text(sample.get("transcript"), 1000, "听辨原文");
+                decimal(sample.get("duration_seconds"), 1, 300, "听辨时长");
+                media(sample.get("src"), media, set("mp3", "m4a", "wav"));
+            }
         }
         for (Object item : list(visual.get("takeaways"), 1, 5, "课后结论")) text(item, 200, "结论");
         for (Object raw : list(visual.get("watch_more"), 0, 100, "延伸资料")) {

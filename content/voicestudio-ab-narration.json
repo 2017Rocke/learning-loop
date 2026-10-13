@@ -1,0 +1,22 @@
+{
+  "engine": "edge-tts",
+  "voice": "zh-CN-XiaoxiaoNeural",
+  "rate": "-5%",
+  "pitch": "+0Hz",
+  "clips": [
+    {
+      "chapter": "logic",
+      "walkthrough_id": null,
+      "title": "甲：少标点",
+      "filename": "a.mp3",
+      "text": "先听开头中段结尾确认没有漏句再检查术语如果发现问题只改有问题的段落重新生成。"
+    },
+    {
+      "chapter": "case",
+      "walkthrough_id": null,
+      "title": "乙：分句标点",
+      "filename": "b.mp3",
+      "text": "先听开头、中段、结尾。确认没有漏句，再检查术语。如果发现问题，只改有问题的段落，重新生成。"
+    }
+  ]
+}

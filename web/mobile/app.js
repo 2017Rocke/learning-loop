@@ -202,9 +202,14 @@
     const chapter = available.some(([key]) => key === current.chapter) ? current.chapter : 'logic';
     const selected = state.enrollments.some(item => item.course_id === course.id);
     const page = el('div', { class: 'learn-page' }, el('div', { class: 'course-topline' }, button('← 全部课程', () => navigate('courses'), 'ghost'), el('span', { class: 'subject-label' }, course.subject || '综合学习')), el('div', { class: 'course-title' }, el('h1', {}, course.title), !selected ? button('加入学习', () => commit(L.enroll(state, course), '已加入学习，记录成果后再安排复习。'), 'small outline') : el('span', { class: 'tag' }, '已加入学习')));
+    page.append(window.LessonListen.create({ el, button, onCleanup: fn => cleanup.push(fn), courseID: course.id, lesson, assetBase: document.baseURI, onOpenChapter: key => courseRoute(course, key) }));
     const nav = el('nav', { class: 'lesson-nav', 'aria-label': '学习章节' }, available.map(([key, title]) => el('button', { type: 'button', class: `lesson-tab${key === chapter ? ' active' : ''}`, 'aria-current': key === chapter ? 'step' : null, on: { click: () => courseRoute(course, key) } }, title)));
     const content = el('section', { class: 'lesson-content panel' });
-    const audio = visuals.audioNarration(lesson, chapter);
+    const chapterIndex = available.findIndex(([key]) => key === chapter);
+    const audio = visuals.audioNarration(lesson, chapter, null, {
+      previous: chapterIndex > 0 ? { label: available[chapterIndex - 1][1], onClick: () => courseRoute(course, available[chapterIndex - 1][0]) } : null,
+      next: chapterIndex < available.length - 1 ? { label: available[chapterIndex + 1][1], onClick: () => courseRoute(course, available[chapterIndex + 1][0]) } : null,
+    });
     if (chapter === 'logic') {
       content.append(el('div', { class: 'lesson-hook' }, el('h2', {}, visual.hook || lesson.summary || course.title)), audio, visuals.videoLesson(visual), visuals.stepLesson(visual, lesson.core_ideas), visuals.gaussianViewer(visual.interactive), visuals.fold('展开完整原理讲解', el('p', { class: 'prose' }, lesson.mental_model || lesson.summary), (lesson.core_ideas || []).map(idea => el('div', { class: 'idea' }, el('h3', {}, idea.title), el('p', {}, idea.explanation)))));
     } else if (chapter === 'case') {
@@ -214,6 +219,7 @@
     } else if (chapter === 'experiment') {
       content.append(el('h2', {}, lesson.experiment?.title || '动手验证一次'), audio);
       if (visual.interactive?.kind === 'gaussian-viewer') content.append(visuals.experimentEmbed());
+      else if (window.LessonExperiments) content.append(window.LessonExperiments.create({ el, button, onCleanup: fn => cleanup.push(fn), assetBase: document.baseURI }).render(visual.interactive));
       content.append(steps(lesson.experiment?.steps), acceptance(lesson.experiment?.acceptance), evidenceForm(course, 'experiment', '记录你的实验'));
     } else if (chapter === 'application') {
       content.append(el('h2', {}, '把知识用到自己的问题'), audio, el('p', { class: 'prose' }, lesson.application?.prompt), acceptance(lesson.application?.acceptance), evidenceForm(course, 'application', '记录一次实际使用'));
@@ -222,7 +228,7 @@
       content.append(...(lesson.questions || []).map((q, i) => el('div', { class: 'question-item' }, el('p', {}, `${i + 1}. ${q.prompt}`), visuals.fold('想过以后，看参考答案', el('p', { class: 'prose' }, q.answer)))));
     }
     if (lesson.source_refs?.length) content.append(visuals.fold('资料来源', el('div', { class: 'lesson-sources' }, lesson.source_refs.map(ref => link(`${ref.title} ↗`, ref.url)))));
-    const index = available.findIndex(([key]) => key === chapter);
+    const index = chapterIndex;
     content.append(el('div', { class: 'lesson-pager' }, index > 0 ? button('← 上一节', () => courseRoute(course, available[index - 1][0]), 'ghost') : el('span', {}, '先理解，再动手'), el('span', {}, `${index + 1} / ${available.length}`), index < available.length - 1 ? button(`${available[index + 1][1]} →`, () => courseRoute(course, available[index + 1][0]), 'outline') : button('回忆复习 →', () => navigate('review'), 'outline')));
     page.append(nav, content); return page;
   }

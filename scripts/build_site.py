@@ -27,6 +27,8 @@ def referenced_media(lesson):
     paths = {step['image'] for step in visual.get('steps', [])}
     if visual.get('video'):
         paths.update(visual['video'][key] for key in ('src', 'poster', 'captions'))
+    if (visual.get('interactive') or {}).get('kind') == 'voice-ab':
+        paths.update(sample['src'] for sample in visual['interactive']['samples'])
     for clip in (lesson.get('audio_lesson') or {}).get('clips', []):
         paths.add(clip['src'])
     return sorted(paths)
@@ -75,7 +77,7 @@ def build(output):
         for name in ('index.html', 'app.js', 'style.css', 'manifest.webmanifest', 'sw.js'):
             if not (stage / name).is_file():
                 raise ValueError('手机端运行文件缺失：' + name)
-        for name in ('lesson-visuals.js', 'lesson-visuals.css'):
+        for name in ('lesson-visuals.js', 'lesson-visuals.css', 'lesson-listen.js', 'lesson-experiments.js', 'lesson-experiments.css'):
             copy_public(ROOT / 'web' / name, stage / name, ROOT / 'web')
         credits = [(name, (ROOT / name).read_text(encoding='utf-8'))
                    for name in ('THIRD_PARTY_NOTICES.md', 'LICENSE')]

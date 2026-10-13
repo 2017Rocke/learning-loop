@@ -215,6 +215,7 @@
     const visual = lesson.visual_lesson || {};
     const availableTabs = lessonTabs.filter(([key]) => key !== 'code' || lesson.code_insight !== null && typeof lesson.code_insight === 'object');
     if (!availableTabs.some(([key]) => key === lessonTab)) lessonTab = 'logic';
+    page.append(window.LessonListen.create({ el, button, onCleanup: cleanup => viewCleanups.push(cleanup), courseID: track.id, lesson, assetBase: new URL('/', document.baseURI).href, onOpenChapter: key => { lessonTab = key; render(); } }));
     const tabNav = el('nav', { class: 'lesson-nav', 'aria-label': '学习章节' }, availableTabs.map(([key, label], i) => el('button', { type: 'button', class: `lesson-tab${lessonTab === key ? ' active' : ''}`, 'aria-current': lessonTab === key ? 'step' : null, on: { click: () => { lessonTab = key; render(); } } }, el('span', { class: 'lesson-index' }, String(i + 1).padStart(2, '0')), label, ['experiment', 'application', 'summary'].includes(key) && (track.evidence || []).some(e => e.kind === key) ? el('span', { class: 'check', title: '已有记录' }, '·') : null)));
     const content = el('section', { class: 'panel lesson-content' });
     if (lessonTab === 'logic') {
@@ -235,6 +236,7 @@
       const item = lesson.experiment || {};
       content.append(el('div', { class: 'eyebrow' }, '动手实验 · 预测 → 改参数 → 看结果'), el('h2', {}, item.title || '动手实验'));
       if (track.topic_id === 'gaussian-splatting') content.append(visuals.experimentEmbed());
+      else if (['bayes-counts', 'voice-ab'].includes(visual.interactive?.kind) && window.LessonExperiments) content.append(window.LessonExperiments.create({ el, button, onCleanup: cleanup => viewCleanups.push(cleanup) }).render(visual.interactive));
       else if (visual.steps?.length) content.append(visuals.imageCard(visual.steps[0]));
       content.append(visuals.fold('展开实验步骤与本地操作方法', stepList(item.steps)), acceptance(item.acceptance), evidenceForm(track, 'experiment', '记录你的实验', '写下：我改了什么 → 预期会怎样 → 实际观察 → 结果或文件路径。'));
     } else if (lessonTab === 'application') {
@@ -245,12 +247,16 @@
       content.append(...(lesson.questions || []).map((q, i) => el('div', { class: 'question-item' }, el('p', {}, `${i + 1}. ${q.prompt}`), el('details', {}, el('summary', {}, '思考后，再看参考答案'), el('p', {}, q.answer)))));
       content.append(el('h3', {}, '更新学习阶段'), el('p', { class: 'helper' }, '“已掌握”由服务检查实操、应用和总结记录；复习仍会继续。'), el('div', { class: 'status-actions' }, [['learning', '正在理解'], ['practicing', '正在实操'], ['applied', '已应用'], ['mastered', '验收为已掌握'], ['paused', '暂时搁置']].map(([status, text]) => button(text, () => mutate(`/api/tracks/${encodeURIComponent(track.id)}/status`, { status }, '学习阶段已更新。'), status === track.status ? 'small primary' : 'small outline', null, busy || status === track.status))));
     }
-    const chapterAudio = visuals.audioNarration(lesson, lessonTab);
+    const chapterIndex = availableTabs.findIndex(([key]) => key === lessonTab);
+    const chapterAudio = visuals.audioNarration(lesson, lessonTab, null, {
+      previous: chapterIndex > 0 ? { label: availableTabs[chapterIndex - 1][1], onClick: () => { lessonTab = availableTabs[chapterIndex - 1][0]; render(); } } : null,
+      next: chapterIndex < availableTabs.length - 1 ? { label: availableTabs[chapterIndex + 1][1], onClick: () => { lessonTab = availableTabs[chapterIndex + 1][0]; render(); } } : null,
+    });
     const chapterHeading = lessonTab === 'logic' ? content.querySelector('.lesson-hook') : content.querySelector('h2');
     if (chapterHeading) chapterHeading.after(chapterAudio);
     const refs = lesson.source_refs || [];
     if (refs.length) content.append(visuals.fold('资料来源与核查依据', el('div', { class: 'lesson-sources' }, refs.map(ref => link(`${ref.title} ↗`, ref.url)))));
-    const current = availableTabs.findIndex(([key]) => key === lessonTab);
+    const current = chapterIndex;
     content.append(el('div', { class: 'lesson-pager' }, current ? button('上一节', () => { lessonTab = availableTabs[current - 1][0]; render(); }, 'ghost') : el('span', {}, '看懂之后，动手验证'), el('span', {}, `${current + 1} / ${availableTabs.length}`), current < availableTabs.length - 1 ? button(`下一节 · ${availableTabs[current + 1][1]}`, () => { lessonTab = availableTabs[current + 1][0]; render(); }, 'ghost', 'arrow') : button('去回忆复习', () => navigate('review'), 'ghost', 'review')));
     page.append(el('div', { class: 'learning-layout' }, tabNav, content));
     return page;

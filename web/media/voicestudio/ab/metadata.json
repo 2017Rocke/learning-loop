@@ -1,0 +1,21 @@
+{
+  "voice": "合成中文女声（晓晓 · Microsoft Edge Neural）",
+  "clips": [
+    {
+      "chapter": "logic",
+      "walkthrough_id": null,
+      "title": "甲：少标点",
+      "src": "/media/voicestudio/ab/a.mp3",
+      "duration_seconds": 8.832,
+      "transcript": "先听开头中段结尾确认没有漏句再检查术语如果发现问题只改有问题的段落重新生成。"
+    },
+    {
+      "chapter": "case",
+      "walkthrough_id": null,
+      "title": "乙：分句标点",
+      "src": "/media/voicestudio/ab/b.mp3",
+      "duration_seconds": 11.28,
+      "transcript": "先听开头、中段、结尾。确认没有漏句，再检查术语。如果发现问题，只改有问题的段落，重新生成。"
+    }
+  ]
+}

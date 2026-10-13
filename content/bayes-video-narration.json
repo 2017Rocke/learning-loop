@@ -1,0 +1,36 @@
+{
+  "engine": "edge-tts",
+  "voice": "zh-CN-XiaoxiaoNeural",
+  "rate": "-5%",
+  "pitch": "+0Hz",
+  "clips": [
+    {
+      "chapter": "logic",
+      "walkthrough_id": null,
+      "title": "先看起点",
+      "filename": "scene-1.mp3",
+      "text": "报警器一响，就有九成可能真坏吗？先看这一批假设产品。一万个里面，一百个坏，九千九百个正常。画面一百颗点，每颗代表一百件，所以只有一颗橙点。"
+    },
+    {
+      "chapter": "case",
+      "walkthrough_id": null,
+      "title": "沿两条路数报警",
+      "filename": "scene-2.mp3",
+      "text": "接着分两条路。坏件里九成会报警，一百乘九成，是九十。正常件也会误报，九千九百乘百分之五，是四百九十五。请看，两种产品都可能让铃铛响。"
+    },
+    {
+      "chapter": "experiment",
+      "walkthrough_id": null,
+      "title": "只留下报警队伍",
+      "filename": "scene-3.mp3",
+      "text": "现在只留下已经报警的产品。每个小点改为代表一件。九十个橙点，和四百九十五个蓝点，一起移动到紫色池子。正常件虽然报警了，仍然是正常件；颜色不变。"
+    },
+    {
+      "chapter": "summary",
+      "walkthrough_id": null,
+      "title": "分母跟着条件变",
+      "filename": "scene-4.mp3",
+      "text": "我们问的是，这五百八十五个报警件中，多少真的坏？所以九十除以五百八十五，约为百分之十五点四。报警把概率从百分之一提高了，但没有变成确定。记住：已知条件变了，就要重新选择分母。"
+    }
+  ]
+}

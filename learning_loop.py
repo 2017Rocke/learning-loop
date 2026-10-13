@@ -255,12 +255,26 @@ def validate_visual_lesson(visual):
             raise ValueError('预测题答案索引超出选项范围')
     interactive = visual['interactive']
     if interactive is not None:
-        if not isinstance(interactive, dict) or set(interactive) != {'kind','title','prompt'}:
+        fields = {'kind','title','prompt'}
+        if isinstance(interactive, dict) and interactive.get('kind') == 'voice-ab':
+            fields.add('samples')
+        if not isinstance(interactive, dict) or set(interactive) != fields:
             raise ValueError('交互演示结构不完整')
-        if interactive['kind'] not in {'gaussian-viewer'}:
+        if interactive['kind'] not in {'gaussian-viewer', 'bayes-counts', 'voice-ab'}:
             raise ValueError('该交互演示尚未实现，请使用图解或添加已验证的演示模块')
         require_text(interactive['title'], '交互演示标题', 100)
         require_text(interactive['prompt'], '交互演示提示', 400)
+        if interactive['kind'] == 'voice-ab':
+            if not isinstance(interactive['samples'], list) or len(interactive['samples']) != 2:
+                raise ValueError('听辨实验需要两个音频样例')
+            for sample in interactive['samples']:
+                if not isinstance(sample, dict) or set(sample) != {'label', 'src', 'transcript', 'duration_seconds'}:
+                    raise ValueError('听辨样例结构不完整')
+                require_text(sample['label'], '听辨名称', 100)
+                require_text(sample['transcript'], '听辨原文', 1000)
+                media_path(sample['src'], {'.mp3', '.m4a', '.wav'})
+                if type(sample['duration_seconds']) not in (int, float) or not 1 <= sample['duration_seconds'] <= 300:
+                    raise ValueError('听辨样例时长应在1到300秒之间')
     if not isinstance(visual['takeaways'], list) or not 1 <= len(visual['takeaways']) <= 5:
         raise ValueError('需要1到5条简短结论')
     for line in visual['takeaways']:
@@ -280,6 +294,8 @@ def validate_lesson_assets(lesson):
     paths = [s['image'] for s in visual['steps']] if visual else []
     if visual and visual['video']:
         paths += [visual['video'][key] for key in ('src','poster','captions')]
+    if visual and (visual.get('interactive') or {}).get('kind') == 'voice-ab':
+        paths += [sample['src'] for sample in visual['interactive']['samples']]
     if lesson.get('audio_lesson'):
         paths += [clip['src'] for clip in lesson['audio_lesson']['clips']]
     base = (ROOT / 'web' / 'media').resolve()

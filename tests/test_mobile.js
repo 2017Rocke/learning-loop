@@ -5,6 +5,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const L = require('../web/mobile/learner.js');
+require('./test_lesson_listen.js');
+require('./test_lesson_experiments.js');
 const START = Date.parse('2026-10-09T10:00:00.000Z');
 const DAY = 86400000;
 const course = { id: '统计学::贝叶斯', lesson: { questions: [{ id: '先验/证据', prompt: '如何更新判断？', answer: '组合先验与似然。' }] } };

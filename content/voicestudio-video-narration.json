@@ -1,0 +1,43 @@
+{
+  "engine": "edge-tts",
+  "voice": "zh-CN-XiaoxiaoNeural",
+  "rate": "-5%",
+  "pitch": "+0Hz",
+  "clips": [
+    {
+      "chapter": "logic",
+      "walkthrough_id": null,
+      "title": "先看输入输出",
+      "filename": "scene-1.mp3",
+      "text": "把文字变成声音，先分清分工。工作台组织输入和编辑，引擎调用已经训练好的模型，模型生成音频。画面是原理示意，不是实际模型运行；点击生成通常是在推理。"
+    },
+    {
+      "chapter": "case",
+      "walkthrough_id": null,
+      "title": "编号让问题可追踪",
+      "filename": "scene-2.mp3",
+      "text": "长稿先分成编号文字块。每一块生成对应的声音，顺序要保留。看，第一块有波形，第二块空了，第三块又有声音。如果跳过中间，文件仍可能播放，却少了一句话。"
+    },
+    {
+      "chapter": "code",
+      "walkthrough_id": null,
+      "title": "空位帮你局部修复",
+      "filename": "scene-3.mp3",
+      "text": "我们顺着第二块编号，找回原文，再单独检查和重新生成。这是人工发现问题后的修复示意，程序不会靠拼接自动补句。修好以后，仍要核对这一句是否读全。"
+    },
+    {
+      "chapter": "experiment",
+      "walkthrough_id": null,
+      "title": "交叉淡化不补内容",
+      "filename": "scene-4.mp3",
+      "text": "连接时，让前段尾巴逐渐减弱，后段开头逐渐增强。紫色重叠区把两段已有声音相加，这叫交叉淡化。它处理接缝，不会创造缺失的文字，也不是在中间添加静音。"
+    },
+    {
+      "chapter": "summary",
+      "walkthrough_id": null,
+      "title": "三条线分别验收",
+      "filename": "scene-5.mp3",
+      "text": "最后，沿原稿逐句听，检查有没有遗漏；挑出术语，确认读音；连起来听接缝，再用手机播到末尾。能播放，只证明文件能打开。读全、读对和听着连贯，都需要各自的证据。"
+    }
+  ]
+}

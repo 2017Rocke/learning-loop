@@ -4,7 +4,36 @@
   "visual_lesson": {
     "hook": "同样是“生成成功”，一份旁白为什么还能漏句？跟着小向导走过工作台，先找职责，再找证据。",
     "duration_minutes": 15,
-    "video": null,
+    "video": {
+      "src": "/media/voicestudio/principle.mp4",
+      "poster": "/media/voicestudio/poster.jpg",
+      "captions": "/media/voicestudio/zh.vtt",
+      "title": "文字到声音：分块、查漏与交叉淡化",
+      "duration_seconds": 91.2,
+      "attribution": "原创机制动画；晓晓合成中文女声（Microsoft Edge Neural）。模型、波形与局部修复均为教学示意，不是 VoiceStudio 实际运行或模型输出。",
+      "transcript": [
+        {
+          "time": 0.0,
+          "text": "把文字变成声音，先分清分工。工作台组织输入和编辑，引擎调用已经训练好的模型，模型生成音频。画面是原理示意，不是实际模型运行；点击生成通常是在推理。"
+        },
+        {
+          "time": 18.496,
+          "text": "长稿先分成编号文字块。每一块生成对应的声音，顺序要保留。看，第一块有波形，第二块空了，第三块又有声音。如果跳过中间，文件仍可能播放，却少了一句话。"
+        },
+        {
+          "time": 36.464,
+          "text": "我们顺着第二块编号，找回原文，再单独检查和重新生成。这是人工发现问题后的修复示意，程序不会靠拼接自动补句。修好以后，仍要核对这一句是否读全。"
+        },
+        {
+          "time": 53.808,
+          "text": "连接时，让前段尾巴逐渐减弱，后段开头逐渐增强。紫色重叠区把两段已有声音相加，这叫交叉淡化。它处理接缝，不会创造缺失的文字，也不是在中间添加静音。"
+        },
+        {
+          "time": 72.16,
+          "text": "最后，沿原稿逐句听，检查有没有遗漏；挑出术语，确认读音；连起来听接缝，再用手机播到末尾。能播放，只证明文件能打开。读全、读对和听着连贯，都需要各自的证据。"
+        }
+      ]
+    },
     "steps": [
       {
         "id": "voicestudio-input-output",
@@ -75,7 +104,25 @@
         }
       }
     ],
-    "interactive": null,
+    "interactive": {
+      "kind": "voice-ab",
+      "title": "同样的字，停顿会怎样变？",
+      "prompt": "先标记你预测会变化的停顿，再分别听甲和乙；可以重听，不必来回拖动长音频。",
+      "samples": [
+        {
+          "label": "甲：少标点",
+          "src": "/media/voicestudio/ab/a.mp3",
+          "transcript": "先听开头中段结尾确认没有漏句再检查术语如果发现问题只改有问题的段落重新生成。",
+          "duration_seconds": 8.832
+        },
+        {
+          "label": "乙：分句标点",
+          "src": "/media/voicestudio/ab/b.mp3",
+          "transcript": "先听开头、中段、结尾。确认没有漏句，再检查术语。如果发现问题，只改有问题的段落，重新生成。",
+          "duration_seconds": 11.28
+        }
+      ]
+    },
     "takeaways": [
       "先分清工作台、引擎和模型，问题才有定位方向。",
       "文字块与音频要一一对应；拼得顺不代表读得全。",

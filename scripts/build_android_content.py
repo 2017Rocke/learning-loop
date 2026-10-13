@@ -126,7 +126,9 @@ def build(output=None, assets=None):
             files.append(dict(path=name, sha256=digest(data), size=len(data)))
         if len(files) > 2000 or sum(item['size'] for item in files) > MAX_BYTES:
             raise ValueError('课程包超过当前客户端支持的资源上限')
-        basis = dict(schema_version=1, min_app_version=1, files=files,
+        needs_practice_ui = any(((course['lesson'].get('visual_lesson') or {}).get('interactive') or {}).get('kind')
+                               in {'bayes-counts', 'voice-ab'} for course in course_data['courses'])
+        basis = dict(schema_version=1, min_app_version=4 if needs_practice_ui else 1, files=files,
                      course_count=len(course_data['courses']), reminder=reminder)
         version = digest(json.dumps(basis, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8'))
         release = temp / 'release'
