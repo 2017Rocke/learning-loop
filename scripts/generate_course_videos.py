@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render two original narrated mechanism films from maintained public scripts.
+"""Render original narrated mechanism films from maintained public scripts.
 
 Optional authoring dependencies: Pillow and an existing FFmpeg executable.
 Prepare narration with generate_neural_audio.py first. This command does not use
@@ -21,6 +21,7 @@ import subprocess
 import tempfile
 import wave
 from PIL import Image, ImageDraw, ImageFont
+from embedded_video_scenes import EmbeddedScenes
 
 ROOT = Path(__file__).resolve().parents[1]
 W, H, FPS, RATE = 960, 540, 15, 24000
@@ -72,15 +73,16 @@ def point(d,x,y,c,r=3,mark=False):
 def wrap(value,limit=23):
     # Balance two lines and keep Chinese punctuation attached to its phrase.
     if len(value)<=limit: return [value]
+    if len(value)>2*limit: raise ValueError('Subtitle sentence is too long; split the narration sentence first')
     middle=(len(value)+1)//2
-    candidates=[i for i,c in enumerate(value,1) if c in '，；。？！' and 8<=i<=limit]
+    candidates=[i for i,c in enumerate(value,1) if c in '，；。？！' and max(8,len(value)-limit)<=i<=limit]
     split=min(candidates,key=lambda i:abs(i-middle)) if candidates else min(limit,middle)
     while split<len(value) and value[split] in '，；。？！': split+=1
     return [value[:split],value[split:]]
 
 def base(name,title,scene,total,p,t,caption):
-    im=Image.new('RGB',(W,H),C['bg'] if name=='bayes' else '#F6F1FF'); d=ImageDraw.Draw(im)
-    text(d,(44,31),'贝叶斯小侦探' if name=='bayes' else 'VoiceStudio · 声音工坊',30,anchor='la')
+    im=Image.new('RGB',(W,H),C['bg'] if name in ('bayes','capacitor') else '#F6F1FF'); d=ImageDraw.Draw(im)
+    text(d,(44,31),COURSES[name]['header'],30,anchor='la')
     text(d,(44,76),title,35,anchor='la')
     mascot(d,899,49,t,.92)
     for i in range(total):
@@ -228,6 +230,27 @@ def voice(d,scene,u,t):
             d.line((cx+13,cy+13,cx+26,cy+26),fill=C['purple'],width=5)
         text(d,(480,375),'每一项都需要检查，不预填“通过”',27,C['muted'])
 
+EMBEDDED = EmbeddedScenes(text, box, arrow, mascot, ease, mix, C)
+COURSES = {
+    'bayes': dict(header='贝叶斯小侦探', titles=BAYES_TITLES, draw=bayes,
+                  title='报警件重新组队：看见贝叶斯的分母',
+                  note='数字为教学假设；点的计数单位在画面中标明。'),
+    'voicestudio': dict(header='VoiceStudio · 声音工坊', titles=VOICE_TITLES, draw=voice,
+                        title='文字到声音：分块、查漏与交叉淡化',
+                        note='模型、波形与局部修复均为教学示意，不是 VoiceStudio 实际运行或模型输出。'),
+    'capacitor': dict(header='电路小向导 · 电容与去耦',
+                      titles=['两片导体之间，储存电场能量','需求突增：附近的电容暂时帮忙',
+                              '算一次：这段电流缺口会降多少电压？','容量、寄生参数与布局一起看'],
+                      draw=EMBEDDED.capacitor, title='电容怎样帮芯片稳住供电？',
+                      note='电路与电流为原创示意；数值采用理想合成假设，不是开发板实测。'),
+    'mosfet': dict(header='电路小向导 · MOS 管开关',
+                   titles=['小引脚管控制，电源负责带负载','栅极要充电，阈值不等于充分导通',
+                           'PWM 改开关时间，电阻影响发热','关断后，给电感电流一条返回路'],
+                   draw=EMBEDDED.mosfet, title='控制、导通与关断后的续流',
+                   note='电路、电流与波形为原创示意；数值为合成教学例子，不代表实物接线或测量。'),
+}
+
+
 def tc(seconds):
     ms=round(seconds*1000); return f'{ms//3600000:02d}:{ms//60000%60:02d}:{ms//1000%60:02d}.{ms%1000:03d}'
 
@@ -235,6 +258,8 @@ def run(cmd): return subprocess.run(cmd,check=True,capture_output=True,timeout=1
 
 def build(name,ffmpeg,output):
     src=json.loads((ROOT/f'content/{name}-video-narration.json').read_text())
+    spec=COURSES[name]
+    if len(src['clips']) != len(spec['titles']): raise ValueError('Scene titles and narration must match')
     source_dir=ROOT/f'web/media/{name}/video-audio'; media=ROOT/f'web/media/{name}'
     with tempfile.TemporaryDirectory(prefix='learning-video-') as folder:
         tmp=Path(folder); pcm_all=bytearray(); scenes=[]; captions=[]
@@ -266,8 +291,8 @@ def build(name,ffmpeg,output):
             for n in range(nframes):
                 t=n/FPS; ix=next((i for i,s in enumerate(scenes) if t<s['end']),len(scenes)-1); scene=scenes[ix]
                 u=(t-scene['start'])/(scene['end']-scene['start']); cap=next((c for a,b,c in captions if a<=t<b),'')
-                im,d=base(name,(BAYES_TITLES if name=='bayes' else VOICE_TITLES)[ix],ix,len(scenes),t/duration,t,cap)
-                (bayes if name=='bayes' else voice)(d,ix,u,t)
+                im,d=base(name,spec['titles'][ix],ix,len(scenes),t/duration,t,cap)
+                spec['draw'](d,ix,u,t)
                 process.stdin.write(im.tobytes())
                 if n==round(scenes[0]['end']*.72*FPS): im.save(tmp/'poster.jpg',quality=94,optimize=True)
                 if any(abs(t-(s['start']+.72*(s['end']-s['start'])))<.5/FPS for s in scenes): frame_sheet.append(im.copy())
@@ -276,7 +301,7 @@ def build(name,ffmpeg,output):
         except Exception:
             process.kill(); process.wait(); raise
         run([ffmpeg,'-v','error','-xerror','-i',str(tmp/'principle.mp4'),'-f','null','-'])
-        # A non-silent decoded voice track is mandatory for these two films.
+        # A non-silent decoded voice track is mandatory for every film.
         run([ffmpeg,'-y','-v','error','-i',str(tmp/'principle.mp4'),'-map','0:a:0','-ar',str(RATE),'-ac','1','-f','s16le',str(tmp/'verified.pcm')])
         pcm=array.array('h',(tmp/'verified.pcm').read_bytes()); rms=math.sqrt(sum(x*x for x in pcm)/len(pcm))
         if rms<100: raise ValueError('Silent video soundtrack')
@@ -292,9 +317,9 @@ def build(name,ffmpeg,output):
         lesson_file=ROOT/f'content/{name}.json'; lesson=json.loads(lesson_file.read_text())
         lesson['visual_lesson']['video']={
             'src':f'/media/{name}/principle.mp4','poster':f'/media/{name}/poster.jpg','captions':f'/media/{name}/zh.vtt',
-            'title':'报警件重新组队：看见贝叶斯的分母' if name=='bayes' else '文字到声音：分块、查漏与交叉淡化',
+            'title':spec['title'],
             'duration_seconds':round(duration,3),
-            'attribution':'原创机制动画；晓晓合成中文女声（Microsoft Edge Neural）。'+('数字为教学假设；点的计数单位在画面中标明。' if name=='bayes' else '模型、波形与局部修复均为教学示意，不是 VoiceStudio 实际运行或模型输出。'),
+            'attribution':'原创机制动画；晓晓合成中文女声（Microsoft Edge Neural）。'+spec['note'],
             'transcript':[dict(time=round(s['start'],3),text=s['text']) for s in scenes]}
         lesson_file.write_text(json.dumps(lesson,ensure_ascii=False,indent=2)+'\n')
         report=dict(course=name,duration_seconds=duration,audio_decoded_seconds=len(pcm)/RATE,voice_rms=round(rms,2),width=W,height=H,fps=FPS,scenes=scenes,cues=len(captions),frame_count=nframes)
@@ -305,12 +330,12 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--ffmpeg',default='ffmpeg')
     parser.add_argument('--font',type=Path,required=True,help='Existing Chinese TrueType/OpenType font')
-    parser.add_argument('--course',choices=['bayes','voicestudio','all'],default='all')
+    parser.add_argument('--course',choices=[*COURSES,'all'],default='all')
     parser.add_argument('--review-output',type=Path,required=True,help='Temporary, non-published QA artifacts directory')
     args=parser.parse_args(); ffmpeg=shutil.which(args.ffmpeg)
     if not ffmpeg or not args.font.is_file(): parser.error('FFmpeg and an existing Chinese font are required')
     global FONT
     FONT=str(args.font)
-    for name in (['bayes','voicestudio'] if args.course=='all' else [args.course]): build(name,ffmpeg,args.review_output)
+    for name in (list(COURSES) if args.course=='all' else [args.course]): build(name,ffmpeg,args.review_output)
 
 if __name__=='__main__': main()

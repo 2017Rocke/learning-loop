@@ -42,7 +42,7 @@ python3 learning_loop.py draft-lesson --track-id TRACK_ID --output content/my-to
 
 ## 可选音频制作
 
-App 播放使用打包音频，不需要制作工具、语音账号或 API key。自然女声可在备课环境显式调用可选的在线制作工具；仅发送可公开旁白，不发送学习记录。准备 Python 3.9+、`edge-tts`（本次使用 7.2.8）和 FFmpeg，然后运行：
+App 播放使用打包音频，不需要制作工具、语音账号或 API key。自然女声可在备课环境显式调用可选的在线制作工具；仅发送可公开旁白，不发送学习记录。准备 Python 3.9+、`edge-tts` 和 FFmpeg。嵌入式两课使用 7.3.1；旧版 7.2.8 在本次制作时返回 HTTP 403，更新官方客户端后恢复。遇到服务拒绝先检查正常客户端版本，不修改鉴权或在日志中输出带签名的请求地址。然后运行：
 
 ```sh
 python3 scripts/generate_neural_audio.py --input content/bayes-narration.json --output-dir web/media/bayes/audio --ffmpeg ffmpeg

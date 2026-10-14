@@ -251,7 +251,11 @@ def main():
         result = generate(data, args.output_dir, ffmpeg, edge_tts.__version__, synthesize, args.force)
     except Exception as error:
         # A nonzero exit preserves the original batch on synthesis/decode failure.
-        parser.exit(1, f"Narration generation stopped: {type(error).__name__}: {error}\n")
+        # Network exception strings can contain complete signed service URLs.
+        detail = str(error) if isinstance(error, ValueError) else 'Service or media step failed; request details omitted.'
+        status = getattr(error, 'status', None)
+        if isinstance(status, int): detail = f'HTTP {status}; request details omitted.'
+        parser.exit(1, f"Narration generation stopped: {type(error).__name__}: {detail}\n")
     print(f"Published {len(result['clips'])} verified offline clips. Lesson and learner records were not changed.")
 
 

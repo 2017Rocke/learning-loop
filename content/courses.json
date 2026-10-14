@@ -30,6 +30,26 @@
       "repo_full_name": "debpalash/VoiceStudio",
       "repo_url": "https://github.com/debpalash/VoiceStudio",
       "lesson_file": "voicestudio.json"
+    },
+    {
+      "id": "capacitor-decoupling",
+      "title": "电容与去耦：芯片旁的小电容在忙什么",
+      "topic_id": "capacitor-decoupling",
+      "subject": "嵌入式与电子电路",
+      "kind": "subject",
+      "repo_full_name": "",
+      "repo_url": "",
+      "lesson_file": "capacitor.json"
+    },
+    {
+      "id": "mosfet-switching",
+      "title": "MOS管开关：小引脚怎样控制大负载",
+      "topic_id": "mosfet-switching",
+      "subject": "嵌入式与电子电路",
+      "kind": "subject",
+      "repo_full_name": "",
+      "repo_url": "",
+      "lesson_file": "mosfet.json"
     }
   ]
 }
