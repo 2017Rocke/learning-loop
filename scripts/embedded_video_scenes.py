@@ -4,14 +4,93 @@ Moving markers indicate conventional current, not electron speed. Circuit
 waveforms and numerical examples are explicitly idealized teaching models.
 The helper functions are supplied by generate_course_videos, avoiding a second
 renderer or any runtime dependencies in the Android course package.
+The original Star Lantern Workshop skin belongs only to these subject films;
+decorative lights stay outside the circuit panel and never imply current flow.
 """
 import math
 
 
 class EmbeddedScenes:
     def __init__(self, text, box, arrow, mascot, ease, mix, colors):
-        self.text, self.box, self.arrow = text, box, arrow
-        self.mascot, self.ease, self.mix, self.c = mascot, ease, mix, colors
+        self._text, self._box, self._arrow = text, box, arrow
+        self.ease, self.mix = ease, mix
+        # Copy, never mutate the other courses' palette. Scientific roles keep
+        # their established colors, with darker strokes on warm pale panels.
+        self.c = dict(colors, night='#17233F', nightsoft='#233251',
+                      brass='#C5A367', brasslight='#E8CB8E', parchment='#FFF4DB',
+                      paper='#FFFAED', ink='#24324C', muted='#5A6374',
+                      purple='#7352A0', purplesoft='#EEE5F3',
+                      blue='#2775A6', bluesoft='#E5F0F3',
+                      green='#287858', mint='#C7EAD8',
+                      red='#BF514A', redsoft='#F8E4D8')
+
+    def text(self, d, pos, value, size=30, fill=None, anchor='mm'):
+        self._text(d,pos,value,size,fill or self.c['ink'],anchor)
+
+    def box(self, d, bounds, fill='white', outline=None, radius=22, width=2):
+        x1,y1,x2,y2=bounds
+        panel=x2-x1>100 and y2-y1>55
+        if panel and outline is None:
+            outline=self.c['brass']
+            width=1
+        self._box(d,bounds,self.c.get(fill,fill),self.c.get(outline,outline),min(radius,14),width)
+
+    def arrow(self, d, a, b, color='purple', width=5):
+        self._arrow(d,a,b,self.c.get(color,color),width)
+
+    def mascot(self, d, x, y, t, scale=.8):
+        """An original mint crystal lantern with a floating brass ring."""
+        c=self.c; y+=math.sin(t*1.9)*3; s=scale
+        # Back and front ring arcs establish depth without any borrowed crest.
+        ring=(x-33*s,y+1*s,x+33*s,y+17*s)
+        d.arc(ring,180,360,fill=c['brass'],width=max(1,round(3*s)))
+        crystal=[(x,y-31*s),(x+21*s,y-5*s),(x+15*s,y+22*s),
+                 (x,y+34*s),(x-15*s,y+22*s),(x-21*s,y-5*s)]
+        d.polygon(crystal,fill='#A5DCC4',outline='#456F69')
+        d.polygon([(x,y-31*s),(x,y+34*s),(x-15*s,y+22*s),(x-21*s,y-5*s)],fill='#CFF4DD')
+        d.line([(x,y-31*s),(x+2*s,y-5*s),(x,y+34*s)],fill='#EAFCE8',width=max(1,round(2*s)))
+        d.line([(x-21*s,y-5*s),(x+2*s,y-5*s),(x+21*s,y-5*s)],fill='#7ABBA4',width=max(1,round(s)))
+        for dx in (-7,7):
+            d.ellipse((x+(dx-1.7)*s,y+1*s,x+(dx+1.7)*s,y+5*s),fill=c['ink'])
+        d.arc((x-5*s,y+5*s,x+5*s,y+13*s),0,180,fill=c['ink'],width=max(1,round(2*s)))
+        d.arc(ring,0,180,fill=c['brasslight'],width=max(1,round(3*s)))
+
+    def frame(self, d, header, title, scene, total, p, t, lines):
+        """A star-lit study around an unobstructed, high-contrast work surface."""
+        c=self.c
+        d.rounded_rectangle((12,12,948,528),19,outline=c['brass'],width=1)
+        d.rounded_rectangle((19,19,941,521),15,outline='#384561',width=1)
+        # Small deterministic glints are confined to the frame, never circuits.
+        for n,(x,y) in enumerate([(30,38),(643,29),(814,85),(931,44),(24,188),
+                                   (938,276),(24,353),(935,463),(35,510),(925,510)]):
+            r=1.2+1.0*(.5+.5*math.sin(t*1.3+n*1.7))
+            color=c['brasslight'] if n%3 else '#B6DDD1'
+            d.line((x-r,y,x+r,y),fill=color,width=1)
+            d.line((x,y-r,x,y+r),fill=color,width=1)
+        # A round-arched alcove and modest bookshelf suggest a study, without
+        # school insignia, a franchise character, or replacing physical labels.
+        d.rounded_rectangle((841,21,920,120),39,fill=c['nightsoft'],outline=c['brass'],width=1)
+        d.line((847,118,914,118),fill=c['brass'],width=2)
+        self.mascot(d,880,67,t,.92)
+        for n,(height,color) in enumerate([(28,'#405F71'),(36,'#71634F'),(31,'#47746D'),
+                                           (38,'#625A80'),(29,'#806352')]):
+            x=701+n*19
+            d.rounded_rectangle((x,59-height,x+14,59),2,fill=color)
+            d.line((x+4,63-height,x+10,63-height),fill=c['brasslight'],width=1)
+        d.line((692,62,802,62),fill=c['brass'],width=2)
+        self.text(d,(44,29),header,28,c['brasslight'],anchor='la')
+        self.text(d,(44,76),title,34,c['parchment'],anchor='la')
+        for i in range(total):
+            x=730+i*24
+            d.ellipse((x,111,x+10,121),fill=c['brasslight'] if i<=scene else '#4E5770')
+        d.rounded_rectangle((30,132,930,402),18,fill=c['parchment'],outline=c['brass'],width=2)
+        d.rounded_rectangle((35,137,925,397),14,outline='#E7D4AE',width=1)
+        # A separate dark caption strip preserves the 23-character line budget.
+        d.rounded_rectangle((45,419,915,508),15,fill='#111C33',outline='#48506A',width=1)
+        for i,value in enumerate(lines):
+            self.text(d,(480,438+i*42),value,34,c['parchment'])
+        d.rounded_rectangle((44,526,916,532),3,fill='#3E4861')
+        d.rounded_rectangle((44,526,44+872*p,532),3,fill=c['brasslight'])
 
     def wire(self, d, points, color='blue', width=5):
         d.line(points, fill=self.c[color], width=width, joint='curve')
@@ -90,7 +169,7 @@ class EmbeddedScenes:
                 ('有效容量','电压下实际有多少','bluesoft'),
                 ('ESR / ESL','内部电阻与电感','purplesoft'),
                 ('近端布局','缩短供电回路','mint')]):
-                x=62+i*300;box(d,(x,162,x+270,286),color)
+                x=62+i*294;box(d,(x,162,x+270,286),color)
                 text(d,(x+135,197),title,32);text(d,(x+135,247),subtitle,25)
             # Expanding time window poses the transfer question without drawing
             # the new voltage drop or disclosing its answer.

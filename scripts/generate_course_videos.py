@@ -81,6 +81,11 @@ def wrap(value,limit=23):
     return [value[:split],value[split:]]
 
 def base(name,title,scene,total,p,t,caption):
+    # The original subject-film skin is isolated from Bayes and VoiceStudio.
+    if name in ('capacitor', 'mosfet'):
+        im=Image.new('RGB',(W,H),EMBEDDED.c['night']); d=ImageDraw.Draw(im)
+        EMBEDDED.frame(d,COURSES[name]['header'],title,scene,total,p,t,wrap(caption))
+        return im,d
     im=Image.new('RGB',(W,H),C['bg'] if name in ('bayes','capacitor') else '#F6F1FF'); d=ImageDraw.Draw(im)
     text(d,(44,31),COURSES[name]['header'],30,anchor='la')
     text(d,(44,76),title,35,anchor='la')
@@ -238,16 +243,16 @@ COURSES = {
     'voicestudio': dict(header='VoiceStudio · 声音工坊', titles=VOICE_TITLES, draw=voice,
                         title='文字到声音：分块、查漏与交叉淡化',
                         note='模型、波形与局部修复均为教学示意，不是 VoiceStudio 实际运行或模型输出。'),
-    'capacitor': dict(header='电路小向导 · 电容与去耦',
+    'capacitor': dict(header='星灯工坊 · 电容与去耦',
                       titles=['两片导体之间，储存电场能量','需求突增：附近的电容暂时帮忙',
                               '算一次：这段电流缺口会降多少电压？','容量、寄生参数与布局一起看'],
                       draw=EMBEDDED.capacitor, title='电容怎样帮芯片稳住供电？',
-                      note='电路与电流为原创示意；数值采用理想合成假设，不是开发板实测。'),
-    'mosfet': dict(header='电路小向导 · MOS 管开关',
+                      note='星灯工坊原创奇幻课堂；装饰不代表物理机制。电路与电流为原创示意；数值采用理想合成假设，不是开发板实测。'),
+    'mosfet': dict(header='星灯工坊 · MOS 管开关',
                    titles=['小引脚管控制，电源负责带负载','栅极要充电，阈值不等于充分导通',
                            'PWM 改开关时间，电阻影响发热','关断后，给电感电流一条返回路'],
                    draw=EMBEDDED.mosfet, title='控制、导通与关断后的续流',
-                   note='电路、电流与波形为原创示意；数值为合成教学例子，不代表实物接线或测量。'),
+                   note='星灯工坊原创奇幻课堂；装饰不代表物理机制。电路、电流与波形为原创示意；数值为合成教学例子，不代表实物接线或测量。'),
 }
 
 
