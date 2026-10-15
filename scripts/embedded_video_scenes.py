@@ -1,13 +1,50 @@
 """Original animated circuit diagrams, used only by the offline video author.
 
-Moving markers indicate conventional current, not electron speed. Circuit
-waveforms and numerical examples are explicitly idealized teaching models.
+Blue minus-marked dots in the first four capacitor scenes represent electrons
+in metal; they make finite, one-way trips. Fixed directional arrows elsewhere
+represent conventional current. Field shading is never a particle path.
+All motion and waveforms are idealized teaching models, not real speed or counts.
 The helper functions are supplied by generate_course_videos, avoiding a second
 renderer or any runtime dependencies in the Android course package.
 The original Star Lantern Workshop skin belongs only to these subject films;
 decorative lights stay outside the circuit panel and never imply current flow.
 """
 import math
+
+
+# Shared by the drawing and the physical-boundary regression check. Plates
+# occupy y=208..232 and 304..328; the entire moving symbol stays out of this gap.
+CAP_DIELECTRIC = (460, 244, 660, 292)
+ELECTRON_RADIUS = 7
+CHARGE_OUT = ((520, 208), (520, 177), (180, 177), (180, 231))
+CHARGE_IN = ((180, 312), (180, 366), (520, 366), (520, 328))
+DISCHARGE = ((620, 328), (800, 328), (800, 208), (620, 208))
+
+
+def path_point(points, fraction):
+    """Position on a finite path, including both ends; never wraps around."""
+    lengths = [math.dist(a, b) for a, b in zip(points, points[1:])]
+    distance = max(0, min(1, fraction)) * sum(lengths)
+    for a, b, length in zip(points, points[1:], lengths):
+        if distance <= length and length:
+            ratio = distance / length
+            return (a[0] + (b[0]-a[0])*ratio, a[1] + (b[1]-a[1])*ratio)
+        distance -= length
+    return points[-1]
+
+
+def electron_positions(points, progress, count=6):
+    """Each identity is emitted once, arrives once, then leaves the scene.
+
+    No modulo: resetting an open path can imply that an electron crosses an
+    insulator between the path's end and start. Counts/speed are schematic.
+    """
+    positions = []
+    for identity in range(count):
+        fraction = (progress - (.08 + identity*.085)) / .32
+        if 0 <= fraction <= 1:
+            positions.append((identity, *path_point(points, fraction)))
+    return positions
 
 
 class EmbeddedScenes:
@@ -95,161 +132,204 @@ class EmbeddedScenes:
     def wire(self, d, points, color='blue', width=5):
         d.line(points, fill=self.c[color], width=width, joint='curve')
 
-    def flow(self, d, points, t, color='blue', count=7, speed=.18, radius=6):
-        lengths = [math.dist(a, b) for a, b in zip(points, points[1:])]
-        total = sum(lengths)
-        for n in range(count):
-            distance = ((t * speed + n / count) % 1) * total
-            for a, b, length in zip(points, points[1:], lengths):
-                if distance <= length:
-                    ratio = distance / length if length else 0
-                    x, y = self.mix(a[0], b[0], ratio), self.mix(a[1], b[1], ratio)
-                    d.ellipse((x-radius, y-radius, x+radius, y+radius), fill=self.c[color])
-                    break
-                distance -= length
+    def electrons(self, d, points, progress):
+        for _, x, y in electron_positions(points, progress):
+            self.electron(d, x, y)
+
+    def electron(self, d, x, y):
+        r = ELECTRON_RADIUS
+        d.ellipse((x-r, y-r, x+r, y+r), fill=self.c['blue'])
+        d.line((x-4, y, x+4, y), fill=self.c['white'], width=2)
+
+    def current(self, d, points, t, color='green', count=5, strength=1):
+        """Fixed, gently pulsing arrows: direction symbols, never particles."""
+        shade = self.mix(.45, .95, strength)*(.92+.08*math.sin(t*2))
+        # Arrow size changes with current strength, not the direction/location.
+        half = 6 + 7*shade
+        for i in range(count):
+            fraction = (i+.5)/count
+            a = path_point(points, max(0, fraction-.018))
+            b = path_point(points, min(1, fraction+.018))
+            x, y = path_point(points, fraction)
+            angle = math.atan2(b[1]-a[1], b[0]-a[0])
+            self.arrow(d, (x-half*math.cos(angle), y-half*math.sin(angle)),
+                       (x+half*math.cos(angle), y+half*math.sin(angle)), color, 4)
+
+    def plates(self, d, charge=0, field=False):
+        c = self.c
+        d.rectangle((460,208,660,232), fill=c['purple'])
+        d.rectangle((460,304,660,328), fill=c['blue'])
+        d.rectangle(CAP_DIELECTRIC, fill=c['purplesoft'], outline='#BAA6CB', width=2)
+        self.text(d, (560,267), '绝缘层', 29, c['purple'])
+        # Field is a stationary violet background cue. Never animate particles
+        # or solid current arrows between the plates.
+        if field:
+            for x in (475,645):
+                for y in range(237,299,10):
+                    d.line((x,y,x,y+4),fill='#AB8EBB',width=2)
+        for i in range(round(charge*5)):
+            x = 480+40*i
+            self.text(d, (x,219), '+', 22, c['white'])
+            self.electron(d, x,316)
+
+    def battery(self, d):
+        self.box(d,(125,231,235,312),'bluesoft')
+        self.text(d,(180,267),'电源',29)
+        self.text(d,(212,219),'+',28,self.c['purple'])
+        self.text(d,(212,326),'−',28,self.c['blue'])
 
     def capacitor(self, d, scene, u, t):
-        text, box, arrow, c = self.text, self.box, self.arrow, self.c
+        text, box, c = self.text, self.box, self.c
         if scene == 0:
-            box(d, (70,158,365,354), 'bluesoft')
-            text(d, (217,186), '电容剖面 · 示意', 29)
-            d.rectangle((156,220,172,310), fill=c['purple'])
-            d.rectangle((266,220,282,310), fill=c['blue'])
-            d.rectangle((182,220,256,310), fill=c['purplesoft'])
-            for y in (238,263,288):
-                text(d,(163,y),'+',23,c['white']); text(d,(274,y),'−',23,c['white'])
-                arrow(d,(190,y),(246,y),'purple',3)
-            text(d,(220,334),'绝缘层 · 电场储能',24)
-            box(d,(515,184,872,327),'redsoft')
-            self.mascot(d,580,247,t,1.15)
-            text(d,(727,226),'芯片开始忙碌',31)
-            text(d,(727,277),'电流需求突然增大',26)
-            # A visibly growing demand bar represents a load step, not charge
-            # crossing the capacitor's insulating dielectric.
-            q=self.ease((u-.28)/.35)
-            box(d,(535,343,850,363),'bluesoft',radius=7)
-            box(d,(535,343,535+315*(.2+.8*q),363),'red',radius=7)
-            text(d,(480,385),'电场储能示意；不是无限供电的电池',24,c['muted'])
+            self.plates(d, charge=0)
+            # Both plates contain electrons even before charging; the total
+            # positive lattice charge is omitted from this structural picture.
+            for x in (485,535,585,635):
+                self.electron(d,x,220); self.electron(d,x,316)
+            text(d,(240,178),'先认三层',34)
+            text(d,(256,220),'上面：金属板',29)
+            text(d,(256,267),'中间：绝缘材料',29,c['purple'])
+            text(d,(256,316),'下面：金属板',29)
+            text(d,(775,220),'蓝点带 −',27,c['blue'])
+            text(d,(775,259),'表示电子',27,c['blue'])
+            text(d,(775,313),'不能穿过绝缘层',25,c['red'])
+            text(d,(480,374),'只画部分电子；未充电时，两板整体不带电',24,c['muted'])
         elif scene == 1:
-            supply=[(130,210),(790,210),(790,337),(130,337)]
-            self.wire(d,supply,'blue',4)
-            box(d,(61,239,197,308),'bluesoft'); text(d,(129,273),'电源',31)
-            self.wire(d,[(130,210),(130,239)],'blue');self.wire(d,[(130,308),(130,337)],'blue')
-            box(d,(697,234,884,311),'redsoft');text(d,(790,270),'芯片',35)
-            # Cap is connected across the same rails as the chip, not in series.
-            self.wire(d,[(537,210),(537,257)],'purple')
-            self.wire(d,[(537,287),(537,337)],'purple')
-            d.line((510,257,564,257),fill=c['purple'],width=7)
-            d.line((510,287,564,287),fill=c['purple'],width=7)
-            text(d,(462,272),'近端 C',27,c['purple'])
-            phase=u<.65
-            if phase:
-                self.flow(d,[(537,248),(537,210),(790,210),(790,337),(537,337),(537,295)],t,'green')
-            else:
-                self.flow(d,[(130,215),(537,215),(537,248)],t,'blue',4)
-                self.flow(d,[(537,295),(537,332),(130,332),(130,310)],t,'blue',4)
-            text(d,(480,172),'需求突增：近端短时补电' if phase else '负载回落：电源补回能量',31)
-            text(d,(342,229),'走线也有电感',22,c['muted'])
-            text(d,(480,380),'圆点表示常规电流方向；电容内部未画导电通路',22,c['muted'])
+            self.wire(d,CHARGE_OUT,'blue',4); self.wire(d,CHARGE_IN,'blue',4)
+            self.battery(d)
+            self.plates(d,charge=.6*self.ease(u/.85),field=True)
+            self.electrons(d,CHARGE_OUT,u); self.electrons(d,CHARGE_IN,u)
+            text(d,(342,153),'从上板取走电子',26,c['blue'])
+            text(d,(760,218),'上板：电子少',28,c['purple'])
+            text(d,(760,255),'带正电 +',27,c['purple'])
+            text(d,(760,315),'下板：电子多 −',27,c['blue'])
+            text(d,(480,389),'两条外线同时移动；中间始终绝缘',27)
         elif scene == 2:
-            box(d,(60,156,424,363),'bluesoft')
-            for i,line in enumerate(['缺口电流 20 mA','持续 10 μs','有效电容 10 μF']):
-                text(d,(242,194+56*i),line,32)
-            q=self.ease((u-.14)/.68)
-            self.wire(d,[(498,190),(498,326),(887,326)],'muted',3)
-            text(d,(548,165),'电压 V',23);text(d,(859,350),'时间 t',23)
-            d.line((511,204,860,204),fill='#D2D9E1',width=2)
-            endx=520+325*q; endy=204+93*q
-            d.line((520,204,endx,endy),fill=c['red'],width=5)
-            d.ellipse((endx-7,endy-7,endx+7,endy+7),fill=c['red'])
-            if q>.96: text(d,(711,248),'下降 20 mV',30,c['red'])
-            text(d,(480,384),'ΔV = I × Δt / C · 忽略补给与 ESR / ESL',25,c['muted'])
+            q = .6+.4*(1-math.exp(-5*u))
+            self.wire(d,CHARGE_OUT,'blue',3); self.wire(d,CHARGE_IN,'blue',3)
+            self.battery(d); self.plates(d,charge=q,field=True)
+            # The bars illustrate approaching voltages, not a timed switch.
+            text(d,(784,165),'电压对比（示意）',24)
+            text(d,(784,203),'电源：保持不变',23)
+            box(d,(694,224,884,241),'purple',radius=3)
+            text(d,(784,272),'电容：逐渐接近',23)
+            box(d,(694,293,884,310),'purplesoft',radius=3)
+            box(d,(694,293,694+190*q,310),'blue',radius=3)
+            text(d,(784,345),'推动充电的差值 ↓',23,c['red'])
+            text(d,(480,389),'理想直流稳态：充电流趋近 0，电荷仍保留',25)
+        elif scene == 3:
+            self.plates(d,charge=1-self.ease(u),field=u<.95)
+            # Supply is visibly separate; only the external load closes the
+            # path between plates. Electrons go lower -> load -> upper.
+            box(d,(79,220,293,316),'bluesoft')
+            text(d,(186,248),'电源已断开',29)
+            text(d,(186,289),'不再接在板上',23,c['muted'])
+            self.wire(d,DISCHARGE,'blue',4)
+            box(d,(747,247,853,291),'redsoft',radius=7)
+            text(d,(800,268),'负载',27)
+            self.electrons(d,DISCHARGE,u)
+            text(d,(560,172),'少电子的一板',27,c['purple'])
+            text(d,(560,357),'多电子的一板',27,c['blue'])
+            text(d,(480,389),'电子沿外线经负载返回；电场逐渐减弱',27)
         else:
-            for i,(title,subtitle,color) in enumerate([
-                ('有效容量','电压下实际有多少','bluesoft'),
-                ('ESR / ESL','内部电阻与电感','purplesoft'),
-                ('近端布局','缩短供电回路','mint')]):
-                x=62+i*294;box(d,(x,162,x+270,286),color)
-                text(d,(x+135,197),title,32);text(d,(x+135,247),subtitle,25)
-            # Expanding time window poses the transfer question without drawing
-            # the new voltage drop or disclosing its answer.
-            q=self.ease(u/.7)
-            self.wire(d,[(153,334),(153+650*q,334)],'purple',9)
-            text(d,(480,314),'只把时间从 10 μs 改成 100 μs',29)
-            text(d,(480,374),'先预测：电压下降会怎样变？',30,c['purple'])
+            # This scene explicitly switches representations. Conventional
+            # current uses fixed green arrows, with no dot respawning at plates.
+            rail_top, rail_bottom = 208,344
+            self.wire(d,[(155,rail_top),(802,rail_top),(802,rail_bottom),(155,rail_bottom)],'blue',3)
+            box(d,(77,245,230,309),'bluesoft');text(d,(154,277),'电源',30)
+            self.wire(d,[(155,rail_top),(155,245)],'blue',3)
+            self.wire(d,[(155,309),(155,rail_bottom)],'blue',3)
+            self.wire(d,[(480,rail_top),(480,238)],'purple',4)
+            self.wire(d,[(480,306),(480,rail_bottom)],'purple',4)
+            d.line((442,238,518,238),fill=c['purple'],width=8)
+            d.line((442,306,518,306),fill=c['blue'],width=8)
+            text(d,(362,271),'近端电容',27,c['purple'])
+            text(d,(480,272),'绝缘',20,c['muted'])
+            box(d,(727,244,878,310),'redsoft');text(d,(802,277),'芯片',32)
+            phase = u < .76
+            if phase:
+                path=[(480,232),(480,rail_top),(802,rail_top),(802,rail_bottom),(480,rail_bottom),(480,312)]
+                self.current(d,path,t,'green',7)
+                text(d,(480,167),'需求突增：近端电容暂时补给',30)
+            else:
+                self.current(d,[(155,rail_top),(480,rail_top),(480,232)],t,'green',3)
+                self.current(d,[(480,312),(480,rail_bottom),(155,rail_bottom),(155,309)],t,'green',3)
+                text(d,(480,167),'随后：电源补回电容的能量',30)
+            text(d,(480,383),'绿色箭头＝约定电流；与金属电子方向相反',25,c['green'])
 
     def mos_circuit(self,d,t,on=True,freewheel=False,phase=0):
         text, box, c = self.text,self.box,self.c
-        # Conventional current: supply -> load -> D -> S -> return. The
-        # flyback path instead traverses D -> diode A/K -> load top -> load.
         self.wire(d,[(360,178),(610,178),(610,206)],'blue')
-        box(d,(536,206,684,265),'bluesoft');text(d,(610,235),'感性负载',25)
+        box(d,(536,206,684,265),'bluesoft');text(d,(610,235),'线圈负载',25)
         self.wire(d,[(610,265),(610,303)],'blue')
         self.wire(d,[(610,348),(610,370),(195,370)],'blue')
-        text(d,(427,157),'+5 V',27,c['blue']);text(d,(646,286),'D',25)
+        text(d,(427,157),'电源 +',27,c['blue']);text(d,(646,286),'D',25)
         box(d,(568,303,650,348),'mint' if on else 'purplesoft')
         text(d,(609,326),'通' if on else '断',28)
         text(d,(654,358),'S',25)
-        box(d,(66,241,276,311),'purplesoft');text(d,(171,263),'单片机 GPIO',26)
-        text(d,(171,292),'3.3 V 控制',23)
+        box(d,(66,241,276,311),'purplesoft');text(d,(171,263),'控制器',29)
+        text(d,(171,292),'小引脚发令',23)
         self.wire(d,[(276,276),(493,276),(493,326),(548,326)],'purple',4)
         d.line((552,306,552,346),fill=c['purple'],width=5)
         text(d,(523,347),'G',24,c['purple'])
-        self.wire(d,[(195,311),(195,370)],'blue',3)
-        self.wire(d,[(195,370),(78,370)],'blue',3)
+        self.wire(d,[(195,311),(195,370),(78,370)],'blue',3)
         text(d,(141,346),'电源负极',21,c['blue'])
         d.ellipse((72,364,84,376),fill=c['blue'])
-        text(d,(441,389),'共同参考地 · 回到电源负极',21,c['muted'])
+        text(d,(390,389),'共地 · 箭头为约定电流',23,c['muted'])
         if on:
-            self.flow(d,[(360,178),(610,178),(610,303),(610,348),(610,370),(78,370)],t,'blue',7)
+            self.current(d,[(360,178),(610,178),(610,303),(610,348),(610,370),(78,370)],t,'blue',7)
         if freewheel:
             self.wire(d,[(610,281),(813,281),(813,178),(610,178)],'red',4)
-            # Vertical diode: triangle points to the cathode bar at the top.
             d.polygon([(801,242),(825,242),(813,218)],fill=c['red'])
             d.line((796,214,830,214),fill=c['red'],width=4)
-            text(d,(862,202),'K 负极',23,c['red']);text(d,(862,263),'A 正极',23,c['red'])
+            text(d,(862,202),'K',25,c['red']);text(d,(862,263),'A',25,c['red'])
             if not on:
-                self.flow(d,[(610,269),(610,281),(813,281),(813,178),(610,178),(610,269)],t,'red',6,
-                          speed=.16*(1-.7*phase),radius=max(2,6*(1-.65*phase)))
+                self.current(d,[(610,269),(610,281),(813,281),(813,178),(610,178),(610,269)],t,'red',6,strength=1-.8*phase)
 
     def mosfet(self,d,scene,u,t):
         text,box,arrow,c=self.text,self.box,self.arrow,self.c
         if scene==0:
             self.mos_circuit(d,t,on=u>.27)
-            text(d,(781,336),'控制 ≠ 供电',28,c['purple'])
+            text(d,(781,322),'G 管控制',28,c['purple'])
+            text(d,(781,362),'D / S 过负载电流',23,c['blue'])
         elif scene==1:
-            box(d,(64,157,408,354),'purplesoft')
-            text(d,(235,189),'栅极像小电容',31)
-            q=.12+.88*self.ease((u-.1)/.7)
-            box(d,(108,247,364,278),'white',radius=9)
-            box(d,(108,247,108+256*q,278),'purple',radius=9)
-            text(d,(236,225),'充电 → Vgs 上升',26)
-            text(d,(236,318),'Vgs = 栅极电压 − 源极电压',22)
-            arrow(d,(424,256),(489,256))
-            box(d,(511,157,898,355),'mint')
-            text(d,(704,188),'选型看哪一项？',30)
-            text(d,(704,238),'阈值：刚开始微弱导通',27)
-            text(d,(704,286),'Rds(on)：指定 Vgs 下的电阻',24)
-            text(d,(704,326),'还要核对电流与温度条件',23)
-            text(d,(480,382),'切换要充放电；3.3 V GPIO 不保证任意管子充分导通',23,c['muted'])
+            # Gate charge is indicated on the external metal, never across its
+            # insulating layer. Channel response is a separate labelled panel.
+            text(d,(260,171),'G：先充电，再放电',29)
+            self.wire(d,[(86,265),(333,265)],'purple',4)
+            d.rectangle((333,213,349,320),fill=c['purple'])
+            d.rectangle((366,213,418,320),fill=c['purplesoft'],outline='#BAA6CB',width=2)
+            text(d,(391,242),'绝',23,c['purple']);text(d,(391,278),'缘',23,c['purple'])
+            charging=u<.55
+            arrow(d,(126,265) if charging else (293,265),(293,265) if charging else (126,265),'purple',5)
+            text(d,(210,313),'箭头：约定电流',25,c['purple'])
+            text(d,(260,359),'电荷不穿过绝缘层',25)
+            box(d,(474,184,900,341),'mint')
+            text(d,(688,220),'控制量：G 与 S 的电压差',27)
+            text(d,(688,268),'名字叫「栅源电压」',29)
+            text(d,(688,313),'变化后，通道随之变化',25)
+            text(d,(480,386),'刚到门槛 ≠ 能带好负载；还需查驱动条件',24,c['muted'])
         elif scene==2:
-            box(d,(58,155,521,369),'bluesoft');text(d,(290,181),'PWM：按时间开 / 关',29)
-            pts=[(82,309)]
-            for i in range(4):
-                x=82+i*101;pts.extend([(x,309),(x,236),(x+50,236),(x+50,309),(x+101,309)])
-            d.line(pts,fill=c['purple'],width=4)
-            cx=82+(t*.28%1)*404
-            d.line((cx,222,cx,323),fill=c['red'],width=3)
-            text(d,(292,344),'占空比 ≠ 电机转速百分比',25)
-            box(d,(550,156,903,367),'redsoft')
-            text(d,(727,185),'另一项检查：发热',28)
-            text(d,(727,235),'合成例：1 A，0.1 Ω',28)
-            text(d,(727,282),'P = I²R = 0.1 W',31)
-            text(d,(727,330),'仅导通损耗 · 忽略温升',23)
-            text(d,(480,385),'波形是控制信号；不是电机实测电流或转速',24,c['muted'])
+            text(d,(480,165),'一轮中，打开的时间占多少？',30)
+            x0,yhigh,ylow,period=110,242,318,230
+            duty=.30 if u<.5 else .65
+            # Change only duty between the two examples; period stays fixed.
+            pts=[(x0,ylow)]
+            for i in range(3):
+                x=x0+i*period
+                pts.extend([(x,ylow),(x,yhigh),(x+period*duty,yhigh),(x+period*duty,ylow),(x+period,ylow)])
+            d.line(pts,fill=c['purple'],width=5)
+            text(d,(74,yhigh),'开',27,c['green']);text(d,(74,ylow),'关',27)
+            for i in range(3):
+                x=x0+i*period
+                d.line((x,343,x+period,343),fill=c['blue'],width=2)
+                for xx in (x,x+period): d.line((xx,337,xx,349),fill=c['blue'],width=2)
+            text(d,(225,366),'一轮（周期）',24,c['blue'])
+            text(d,(682,210),'打开时间较短' if u<.5 else '把打开时间加长',27,c['purple'])
+            text(d,(640,374),'占空比 ≠ 转速百分比',27,c['muted'])
         else:
-            self.mos_circuit(d,t,on=u<.22,freewheel=True,phase=max(0,(u-.22)/.78))
-            text(d,(370,205),'开通' if u<.22 else '关断 · 续流',26,c['red'] if u>=.22 else c['blue'])
-            text(d,(380,233),'电流同向衰减' if u>=.22 else '二极管反偏',23,c['muted'])
-            text(d,(830,340),'方框是开关示意',19,c['muted'])
-            text(d,(823,366),'续流走外部回路',21,c['red'])
+            self.mos_circuit(d,t,on=u<.16,freewheel=True,phase=max(0,(u-.16)/.84))
+            text(d,(370,205),'开通' if u<.16 else '关断 → 续流',26,c['red'] if u>=.16 else c['blue'])
+            text(d,(380,233),'电流同向减小' if u>=.16 else '二极管不导通',23,c['muted'])
+            text(d,(812,335),'不走 MOS 断口',24,c['red'])
+            text(d,(812,369),'沿外部回路返回',23,c['red'])
