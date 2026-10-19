@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#17283f">
+  <title>电流接力实验 · 星灯工坊</title>
+  <link rel="stylesheet" href="./lab.css">
+  <script src="./model.js" defer></script>
+  <script src="./lab.js" defer></script>
+</head>
+<body>
+  <main>
+    <a class="back" href="../../#course/capacitor-decoupling/experiment">← 返回电容课程</a>
+    <header class="hero">
+      <div class="eyebrow">✦ 原创奇幻学院 · 星灯工坊</div>
+      <svg class="lantern" viewBox="0 0 100 120" aria-hidden="true">
+        <path d="M40 19Q50 3 60 19M36 25H64L74 36V89L62 103H38L26 89V36Z" fill="#17283f" stroke="#e9c887" stroke-width="4"/>
+        <path d="M50 33L65 62L50 91L35 62Z" fill="#8ff2c3"/><path d="M50 33V91L65 62Z" fill="#43bfa4"/>
+        <path d="M35 64H65M50 33L35 64L50 53L65 64" fill="none" stroke="#caffec" stroke-width="2"/>
+        <path d="M16 31V43M10 37H22M84 77V89M78 83H90" stroke="#e9c887" stroke-width="2"/><circle cx="43" cy="64" r="2" fill="#142f46"/><circle cx="56" cy="64" r="2" fill="#142f46"/>
+      </svg>
+      <h1>芯片突然忙起来，<br>谁来接力？</h1>
+      <p>跟小灯做一次电流接力实验。改一个参数，看电压如何变化。</p>
+      <div class="hero-chips"><span>约 3 分钟</span><span>离线可玩</span><span>理想模型</span></div>
+    </header>
+
+    <section class="card prediction" aria-labelledby="predict-title">
+      <span class="step">01 · 先猜一下</span>
+      <h2 id="predict-title">同样忙一下，把电容换大，会怎样？</h2>
+      <p>电源、电流脉冲和响应速度都保持不变。先留一个猜想，等曲线来验证。</p>
+      <div class="choices" id="prediction-choices">
+        <button type="button" data-answer="less" aria-pressed="false">电压下降得更少</button>
+        <button type="button" data-answer="more" aria-pressed="false">电压下降得更多</button>
+        <button type="button" data-answer="unsure" aria-pressed="false">还不确定，想试试看</button>
+      </div>
+      <p class="feedback" id="prediction-feedback" aria-live="polite">选择后再开动实验。</p>
+    </section>
+
+    <section class="card workbench" aria-labelledby="lab-title">
+      <span class="step">02 · 操作工坊</span>
+      <h2 id="lab-title">让芯片短暂地“加班”</h2>
+      <p class="short-intro">电源和电容一起接在芯片两端。初始为 3.3 V，芯片一直需要 40 mA。</p>
+      <div class="controls">
+        <label>电容大小 <select id="capacity"><option value="4.7">4.7 μF</option><option value="10" selected>10 μF</option><option value="22">22 μF</option><option value="47">47 μF</option></select></label>
+        <label>额外电流 <select id="extra"><option value="40">40 mA</option><option value="80">80 mA</option><option value="100" selected>100 mA</option><option value="120">120 mA</option></select></label>
+        <label>加班多久 <select id="pulse"><option value="40">40 μs</option><option value="100" selected>100 μs</option><option value="200">200 μs</option></select></label>
+      </div>
+      <p class="unit-hint">μF 是容量单位；mA 是电流单位；1 μs 是百万分之一秒。</p>
+      <div class="action-row"><button class="primary" id="run" type="button" disabled>开始接力</button><button id="finish" type="button" disabled>直接看完整结果</button></div>
+      <p id="run-hint" class="small">需先选一个猜想。动画会把几百微秒放慢到 9 秒。</p>
+
+      <div class="scene">
+        <div class="phase"><span id="phase-tag">准备中</span><span id="clock">0 μs</span></div>
+        <svg id="circuit" viewBox="0 0 360 230" role="img" aria-labelledby="circuit-title circuit-description">
+          <title id="circuit-title">电源、电容和芯片并联的简化电路</title>
+          <desc id="circuit-description">电源连接上下供电线；电容与芯片分别跨接在两线之间。电容两块极板之间是绝缘层，箭头只表示约定电流，不代表电子穿过绝缘层。</desc>
+          <defs><marker id="arrow-source" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#56cdb3"/></marker><marker id="arrow-cap" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#eac675"/></marker><marker id="arrow-load" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#aba5ff"/></marker></defs>
+          <path d="M52 96V60H300V105M52 160V190H300V158M180 60V118M180 142V190" class="wire"/>
+          <circle cx="52" cy="128" r="32" fill="#254a50" stroke="#56cdb3" stroke-width="2"/>
+          <text x="52" y="127" class="component">电源</text><text x="52" y="145" class="component small-label">慢慢跟上</text>
+          <rect x="271" y="106" width="58" height="52" rx="10" fill="#3f3d65" stroke="#aba5ff" stroke-width="2"/>
+          <text x="300" y="138" class="component">芯片</text>
+          <rect x="154" y="122" width="52" height="16" rx="3" fill="#334355"/>
+          <path d="M150 119H210M150 141H210" stroke="#eac675" stroke-width="4"/>
+          <text x="180" y="133" class="dielectric">绝缘层</text>
+          <text x="180" y="215" class="component" id="circuit-capacity">电容 10 μF</text>
+          <text x="180" y="32" class="rail-voltage" id="rail-voltage">3.300 V</text>
+          <path d="M91 60H137" class="source-arrow" marker-end="url(#arrow-source)"/>
+          <path d="M300 71V94" class="load-arrow" marker-end="url(#arrow-load)"/>
+          <path id="cap-arrow-top" d="M180 109V84" class="cap-arrow" marker-end="url(#arrow-cap)" visibility="hidden"/>
+          <path id="cap-arrow-bottom" d="M180 176V151" class="cap-arrow" marker-end="url(#arrow-cap)" visibility="hidden"/>
+          <circle cx="180" cy="60" r="4" fill="#c8d8e1"/><circle cx="180" cy="190" r="4" fill="#c8d8e1"/>
+        </svg>
+        <p class="circuit-key">箭头＝约定电流方向。<strong>没有电子穿过绝缘层。</strong></p>
+      </div>
+      <div class="readings">
+        <div><span>电源供给</span><strong id="supply-value">40.0 <small>mA</small></strong></div>
+        <div><span>芯片需要</span><strong id="load-value">40.0 <small>mA</small></strong></div>
+        <div><span id="cap-label">电容待命</span><strong id="cap-value">0.0 <small>mA</small></strong></div>
+      </div>
+      <div class="guide-note" id="phase-note" aria-live="polite">先预测，再开始。所有结果都由你选的参数计算，不是真实板子的测量。</div>
+      <label class="timeline-label" for="timeline">时间拨盘 <span id="timeline-hint">运行后可拖动，逐步观察</span></label>
+      <input id="timeline" type="range" min="0" max="1000" value="0" step="1" disabled aria-valuetext="尚未运行">
+
+      <div class="chart-panel">
+        <h3>电压会掉到哪里？</h3>
+        <div class="legend"><span class="voltage-key">实线：本次电压</span><span class="limit-key">虚线：示例最低允许 3.0 V</span></div>
+        <svg id="voltage-chart" viewBox="0 0 360 190" role="img" aria-labelledby="voltage-title voltage-description"><title id="voltage-title">电容和芯片两端的电压随时间变化</title><desc id="voltage-description">开始实验后显示曲线；完整数值结论在下方。</desc></svg>
+        <h3>电流由谁来提供？</h3>
+        <div class="legend"><span class="supply-key">实线：电源供给</span><span class="load-key">虚线：芯片需要</span></div>
+        <svg id="current-chart" viewBox="0 0 360 175" role="img" aria-labelledby="current-title current-description"><title id="current-title">电源电流与芯片需求随时间变化</title><desc id="current-description">电源低于需求时电容补差；电源高于需求时给电容回充。</desc></svg>
+      </div>
+      <div id="result" class="result" role="status" aria-live="polite" hidden></div>
+      <button id="compare" type="button" disabled>保留这次曲线，再换个电容</button>
+      <p id="comparison" class="small">一次只改容量，更容易看清原因。对照只保留在当前页面。</p>
+    </section>
+
+    <section class="card transfer" aria-labelledby="transfer-title">
+      <span class="step">03 · 换个场景</span>
+      <h2 id="transfer-title">如果电源一直补不上呢？</h2>
+      <p>假设芯片长期比电源多需要 20 mA，电容已充好电。换一个更大的电容，就能一直维持正常电压吗？</p>
+      <div class="choices" id="transfer-choices"><button type="button" data-answer="yes" aria-pressed="false">可以，电容会持续供电</button><button type="button" data-answer="no" aria-pressed="false">不行，只能多撑一段时间</button></div>
+      <p id="transfer-feedback" class="feedback" aria-live="polite">先选一个判断，再看解释。</p>
+    </section>
+
+    <details class="card model-notes">
+      <summary>想更深入：模型边界与公式</summary>
+      <p>这是一组人为设定的理想教学数据。用 3.3 V 作为初始电压，3.0 V 作为示例允许下限。真实芯片请查数据手册；低于下限并不表示电容“完全没电”。</p>
+      <p>把电源视为受控电流源：它以 40 μs 的固定时间常数跟随芯片的电流需求。负载回落后，电源供给暂时高于负载，剩余电流回充电容。这个模型让缺口与回充容易对照，并不是某款稳压器的真实控制算法。</p>
+      <p class="equation">i<sub>C</sub> = I<sub>电源</sub> − I<sub>芯片</sub><br>V(t) = 3.3 V + ∫ i<sub>C</sub> dt / C</p>
+      <p>电容电流以“流入正极板”为正。电流缺口使电压下降；剩余电流使电压回升。只在电流缺口近似不变的短时段，才简化为下降量 ΔV ≈ I<sub>缺口</sub> · Δt / C。</p>
+      <p>忽略漏电、ESR、ESL、连线阻抗、容量随偏压变化和真实稳压器的电压反馈。真实板子还可能有尖峰、振铃或供电限流；不能拿此结果直接给电路选型。</p>
+      <p>核心原理沿用本课已核验来源：</p>
+      <ul><li><a href="https://openstax.org/books/university-physics-volume-2/pages/8-1-capacitors-and-capacitance" target="_blank" rel="noopener">OpenStax：电容与 Q = CV</a></li><li><a href="https://openstax.org/books/university-physics-volume-2/pages/9-1-electrical-current" target="_blank" rel="noopener">OpenStax：约定电流</a></li><li><a href="https://www.ti.com/lit/an/scaa082a/scaa082a.pdf" target="_blank" rel="noopener">TI：去耦与瞬态电流，§2.4</a></li></ul>
+    </details>
+    <footer><p>这里的选择与实验不写入学习档案，也不自动记为掌握。</p><a href="../../#course/capacitor-decoupling/experiment">回到课程，记录你自己的发现 →</a></footer>
+  </main>
+</body>
+</html>

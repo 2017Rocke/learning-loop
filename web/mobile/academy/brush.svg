@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title"><title id="title">棱镜塔：空间与光的探索；原创幻想隐喻插画，不是技术结构图</title><defs>
+<linearGradient id="sky" x2=".8" y2="1"><stop stop-color="#fbf6e9"/><stop offset="1" stop-color="#e4eee3"/></linearGradient>
+<linearGradient id="teal" x2=".8" y2="1"><stop stop-color="#74d7bd"/><stop offset="1" stop-color="#24786d"/></linearGradient>
+<linearGradient id="gold" x2=".6" y2="1"><stop stop-color="#ffe6a0"/><stop offset=".6" stop-color="#c8964c"/><stop offset="1" stop-color="#a27035"/></linearGradient>
+<linearGradient id="ink" x2=".7" y2="1"><stop stop-color="#536c78"/><stop offset="1" stop-color="#273e4a"/></linearGradient>
+<linearGradient id="stone" x2=".8" y2="1"><stop stop-color="#f7ebcc"/><stop offset="1" stop-color="#c9bd9b"/></linearGradient>
+<linearGradient id="cliff" x2=".2" y2="1"><stop stop-color="#91b9a5"/><stop offset="1" stop-color="#517b72"/></linearGradient>
+<linearGradient id="crystal" x2="1" y2="1"><stop stop-color="#c9fff2"/><stop offset=".5" stop-color="#80cabf"/><stop offset="1" stop-color="#637db1"/></linearGradient>
+<linearGradient id="violet" x2=".8" y2="1"><stop stop-color="#c0b4e9"/><stop offset="1" stop-color="#756c9e"/></linearGradient>
+<linearGradient id="rose" x2=".8" y2="1"><stop stop-color="#f7c2ad"/><stop offset="1" stop-color="#b97372"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#fff6bd" stop-opacity=".9"/><stop offset="1" stop-color="#fff6bd" stop-opacity="0"/></radialGradient>
+<radialGradient id="mist"><stop stop-color="#fffdf4"/><stop offset="1" stop-color="#fffdf4" stop-opacity="0"/></radialGradient>
+</defs><rect width="640" height="360" rx="28" fill="#e6ede5"/><circle cx="458" cy="89" r="130" fill="#f9f3dd" opacity=".85"/><circle cx="458" cy="89" r="98" fill="none" stroke="#d2c499" stroke-width="1" opacity=".5"/><path d="M0 275Q106 244 198 286Q345 332 640 242V360H0Z" fill="#cfddcf" opacity=".7"/><path d="M-10 291Q152 235 292 292Q436 347 656 278" fill="none" stroke="#bbcbb6" stroke-width="1.5"/><g transform="translate(108 103) scale(1.05)" opacity="0.6"><path d="M-55 11C-75 6-68-12-49-12C-49-35-19-42-3-22C14-37 45-25 45-8C64-11 74 9 55 16C19 28-22 23-55 11Z" fill="#fffdf4"/><path d="M-42 14Q-8 23 24 15" fill="none" stroke="#e6e7d8" stroke-width="2"/></g><g transform="translate(553 210) scale(0.76)" opacity="0.75"><path d="M-55 11C-75 6-68-12-49-12C-49-35-19-42-3-22C14-37 45-25 45-8C64-11 74 9 55 16C19 28-22 23-55 11Z" fill="#fffdf4"/><path d="M-42 14Q-8 23 24 15" fill="none" stroke="#e6e7d8" stroke-width="2"/></g><g transform="translate(65 254) scale(0.55)" opacity="0.6"><path d="M-55 11C-75 6-68-12-49-12C-49-35-19-42-3-22C14-37 45-25 45-8C64-11 74 9 55 16C19 28-22 23-55 11Z" fill="#fffdf4"/><path d="M-42 14Q-8 23 24 15" fill="none" stroke="#e6e7d8" stroke-width="2"/></g><path d="M84 46Q85 51 90 52Q85 53 84 58Q83 53 78 52Q83 51 84 46Z" fill="#b89b5d" opacity="0.7"/><path d="M526 41Q527 45 531 46Q527 47 526 51Q525 47 521 46Q525 45 526 41Z" fill="#b89b5d" opacity="0.7"/><path d="M566 120Q567 124 571 125Q567 126 566 130Q565 126 561 125Q565 124 566 120Z" fill="#b89b5d" opacity="0.7"/><path d="M165 186Q166 189 169 190Q166 191 165 194Q164 191 161 190Q164 189 165 186Z" fill="#b89b5d" opacity="0.7"/><path d="M471 277Q472 281 476 282Q472 283 471 287Q470 283 466 282Q470 281 471 277Z" fill="#b89b5d" opacity="0.7"/><path d="M240 44Q241 47 244 48Q241 49 240 52Q239 49 236 48Q239 47 240 44Z" fill="#b89b5d" opacity="0.7"/><g opacity=".36" fill="none" stroke="#b7aa7a"><circle cx="97" cy="180" r="34"/><path d="M97 141V219M58 180H136"/><circle cx="540" cy="279" r="23"/></g><g transform="translate(329 245) scale(1.0)">
+<ellipse cy="65" rx="120" ry="17" fill="#638476" opacity=".12"/>
+<path d="M-112-1L-102 31L-76 44L-59 73L-35 83L-11 108L9 90L24 93L49 60L77 53L101 24L116-3Z" fill="url(#cliff)"/>
+<path d="M-75 12L-59 73L-35 83L-47 21ZM-12 22L-11 108L9 90L17 22ZM55 15L49 60L77 53L87 6Z" fill="#3e6e66" opacity=".35"/>
+<path d="M-101-10Q-80-30-43-28Q-13-40 26-26Q57-30 90-13Q122-12 117 5Q91 25 41 27Q2 38-43 24Q-85 27-110 8Q-121-3-101-10Z" fill="#b7c9a1" stroke="#6c9280" stroke-width="2"/>
+<path d="M-96-4Q-64 17-28 14M29 17Q75 18 101-3" stroke="#e6e9c3" stroke-width="3" fill="none" opacity=".7"/>
+<path d="M-70 33L-65 48M-31 43L-27 61M35 38L30 55M75 23L68 34" stroke="#c0c89f" stroke-width="2" opacity=".5"/>
+<path d="M-91 24Q-100 47-86 56Q-72 62-78 81M80 23Q94 45 80 53" fill="none" stroke="#4b8875" stroke-width="3"/>
+<g transform="translate(-90 -2) scale(0.7)"><path d="M0 0Q-3-22 1-42M-1-16Q-19-21-16-34M0-24Q15-28 15-40" fill="none" stroke="#527e68" stroke-width="2"/><path d="M0-25Q-15-37-8-48Q4-42 0-25ZM-9-25Q-30-24-29-36Q-12-39-9-25ZM6-30Q10-48 23-48Q25-33 6-30Z" fill="#72a88b"/><path d="M0-9Q-15-9-15-20Q-2-23 0-9ZM3-17Q8-29 20-23Q17-11 3-17Z" fill="#9cc0a0"/></g><g transform="translate(88 -2) scale(0.6)"><path d="M0 0Q-3-22 1-42M-1-16Q-19-21-16-34M0-24Q15-28 15-40" fill="none" stroke="#527e68" stroke-width="2"/><path d="M0-25Q-15-37-8-48Q4-42 0-25ZM-9-25Q-30-24-29-36Q-12-39-9-25ZM6-30Q10-48 23-48Q25-33 6-30Z" fill="#72a88b"/><path d="M0-9Q-15-9-15-20Q-2-23 0-9ZM3-17Q8-29 20-23Q17-11 3-17Z" fill="#9cc0a0"/></g>
+</g><g transform="translate(329 237) scale(1.1)"><ellipse cy="10" rx="81" ry="27" fill="#628c83" opacity=".25"/>
+<path d="M-76-3Q0-35 76-3V13Q0 48-76 13Z" fill="url(#stone)" stroke="#8c997f" stroke-width="2"/>
+<ellipse cy="-4" rx="76" ry="25" fill="#eee7cc" stroke="#8c997f" stroke-width="2"/>
+<path d="M-60-6Q0-28 60-6Q0 19-60-6Z" fill="none" stroke="#b79d5c" stroke-width="2"/>
+<path d="M-28-10L-31-108L0-178L32-108L28-10L0 2Z" fill="url(#crystal)" stroke="#4b7d84" stroke-width="2.5"/>
+<path d="M0-178L0 2L28-10L32-108Z" fill="#528a9e" opacity=".45"/>
+<path d="M0-178L-13-105L0 2L13-105Z" fill="#ecfff1" opacity=".58"/>
+<path d="M-31-108L0-91L32-108M-28-43L0-31L29-43" fill="none" stroke="#b8e9d7" stroke-width="2"/>
+<path d="M-67-13L-65-70L-48-115L-28-68L-31-8L-48 0Z" fill="url(#violet)" stroke="#777999" stroke-width="2"/>
+<path d="M-48-115V0L-31-8L-28-68Z" fill="#676e96" opacity=".35"/>
+<path d="M30-13L31-64L48-105L67-64L65-13L48-5Z" fill="url(#rose)" stroke="#9e8077" stroke-width="2"/>
+<path d="M48-105V-5L65-13L67-64Z" fill="#b67974" opacity=".4"/>
+<ellipse cy="-92" rx="64" ry="15" fill="none" stroke="#d9b767" stroke-width="3" transform="rotate(-17 0 -92)"/>
+<circle cx="59" cy="-104" r="5" fill="#ffe8a6" stroke="#ad8e50" stroke-width="2"/>
+<path d="M-5 20L-5 31M5 20L5 31" stroke="#b09c72" stroke-width="3"/>
+<path d="M-77 -123Q-76 -117 -70 -116Q-76 -115 -77 -109Q-78 -115 -84 -116Q-78 -117 -77 -123Z" fill="#c49c5e" opacity="1"/><path d="M43 -162Q44 -158 48 -157Q44 -156 43 -152Q42 -156 38 -157Q42 -158 43 -162Z" fill="#c49c5e" opacity="1"/><g transform="translate(-67 9) scale(0.5)"><path d="M0 0Q-3-22 1-42M-1-16Q-19-21-16-34M0-24Q15-28 15-40" fill="none" stroke="#527e68" stroke-width="2"/><path d="M0-25Q-15-37-8-48Q4-42 0-25ZM-9-25Q-30-24-29-36Q-12-39-9-25ZM6-30Q10-48 23-48Q25-33 6-30Z" fill="#72a88b"/><path d="M0-9Q-15-9-15-20Q-2-23 0-9ZM3-17Q8-29 20-23Q17-11 3-17Z" fill="#9cc0a0"/></g></g><g transform="translate(145 275) scale(0.6)">
+<ellipse cy="55" rx="24" ry="6" fill="#477b69" opacity=".13"/>
+<path d="M-27 0Q-47-19-35-26Q-19-28-13-7M27 0Q47-19 35-26Q19-28 13-7" fill="#d0e8b7" stroke="#6eaa8c" stroke-width="2"/>
+<path d="M-9-39Q-2-61 12-49Q19-42 8-36" fill="none" stroke="#a67c3e" stroke-width="4"/>
+<path d="M-20-30L0-43L20-30L28 10L12 35L-12 35L-28 10Z" fill="url(#teal)" stroke="#426f64" stroke-width="3"/>
+<path d="M-20-30L0-20L20-30M0-20L0 31M-28 10L0 31L28 10" fill="none" stroke="#b9eee0" stroke-width="2" opacity=".8"/>
+<path d="M-18-25Q0-34 18-25L22 10Q0 27-22 10Z" fill="#d3f6d4" opacity=".9"/>
+<path d="M-8-8L-8-4M9-8L9-4" stroke="#315d53" stroke-width="3.6" stroke-linecap="round"/>
+<path d="M-4 4Q1 9 6 4" fill="none" stroke="#315d53" stroke-width="2.5" stroke-linecap="round"/>
+<ellipse cx="-14" cy="2" rx="4" ry="2" fill="#e6aa8f" opacity=".8"/><ellipse cx="15" cy="2" rx="4" ry="2" fill="#e6aa8f" opacity=".8"/>
+<path d="M-13 35H13L10 43H-10Z" fill="url(#gold)"/>
+<path d="M36 -44Q37 -39 42 -38Q37 -37 36 -32Q35 -37 30 -38Q35 -39 36 -44Z" fill="#e0b961" opacity="1"/>
+</g><g transform="translate(560 342) scale(1.5)"><path d="M0 0Q-3-22 1-42M-1-16Q-19-21-16-34M0-24Q15-28 15-40" fill="none" stroke="#527e68" stroke-width="2"/><path d="M0-25Q-15-37-8-48Q4-42 0-25ZM-9-25Q-30-24-29-36Q-12-39-9-25ZM6-30Q10-48 23-48Q25-33 6-30Z" fill="#72a88b"/><path d="M0-9Q-15-9-15-20Q-2-23 0-9ZM3-17Q8-29 20-23Q17-11 3-17Z" fill="#9cc0a0"/></g><g transform="translate(51 352) scale(1.2)"><path d="M0 0Q-3-22 1-42M-1-16Q-19-21-16-34M0-24Q15-28 15-40" fill="none" stroke="#527e68" stroke-width="2"/><path d="M0-25Q-15-37-8-48Q4-42 0-25ZM-9-25Q-30-24-29-36Q-12-39-9-25ZM6-30Q10-48 23-48Q25-33 6-30Z" fill="#72a88b"/><path d="M0-9Q-15-9-15-20Q-2-23 0-9ZM3-17Q8-29 20-23Q17-11 3-17Z" fill="#9cc0a0"/></g><path d="M22 38V22H38M602 22H618V38M618 322V338H602M38 338H22V322" fill="none" stroke="#c3ae79" stroke-width="1.4"/></svg>

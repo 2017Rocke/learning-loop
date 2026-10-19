@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title"><title id="title">小灯：戴着黄铜提环的薄荷绿小晶灯，知行学院原创向导</title><defs>
+<linearGradient id="sky" x2=".8" y2="1"><stop stop-color="#fbf6e9"/><stop offset="1" stop-color="#e4eee3"/></linearGradient>
+<linearGradient id="teal" x2=".8" y2="1"><stop stop-color="#74d7bd"/><stop offset="1" stop-color="#24786d"/></linearGradient>
+<linearGradient id="gold" x2=".6" y2="1"><stop stop-color="#ffe6a0"/><stop offset=".6" stop-color="#c8964c"/><stop offset="1" stop-color="#a27035"/></linearGradient>
+<linearGradient id="ink" x2=".7" y2="1"><stop stop-color="#536c78"/><stop offset="1" stop-color="#273e4a"/></linearGradient>
+<linearGradient id="stone" x2=".8" y2="1"><stop stop-color="#f7ebcc"/><stop offset="1" stop-color="#c9bd9b"/></linearGradient>
+<linearGradient id="cliff" x2=".2" y2="1"><stop stop-color="#91b9a5"/><stop offset="1" stop-color="#517b72"/></linearGradient>
+<linearGradient id="crystal" x2="1" y2="1"><stop stop-color="#c9fff2"/><stop offset=".5" stop-color="#80cabf"/><stop offset="1" stop-color="#637db1"/></linearGradient>
+<linearGradient id="violet" x2=".8" y2="1"><stop stop-color="#c0b4e9"/><stop offset="1" stop-color="#756c9e"/></linearGradient>
+<linearGradient id="rose" x2=".8" y2="1"><stop stop-color="#f7c2ad"/><stop offset="1" stop-color="#b97372"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#fff6bd" stop-opacity=".9"/><stop offset="1" stop-color="#fff6bd" stop-opacity="0"/></radialGradient>
+<radialGradient id="mist"><stop stop-color="#fffdf4"/><stop offset="1" stop-color="#fffdf4" stop-opacity="0"/></radialGradient>
+</defs><circle cx="100" cy="99" r="82" fill="#e7efdc"/><path d="M34 39Q35 45 41 46Q35 47 34 53Q33 47 27 46Q33 45 34 39Z" fill="#c49c5e" opacity="1"/><path d="M166 130Q167 134 171 135Q167 136 166 140Q165 136 161 135Q165 134 166 130Z" fill="#c49c5e" opacity="1"/><g transform="translate(100 99) scale(1.25)">
+<ellipse cy="55" rx="24" ry="6" fill="#477b69" opacity=".13"/>
+<path d="M-27 0Q-47-19-35-26Q-19-28-13-7M27 0Q47-19 35-26Q19-28 13-7" fill="#d0e8b7" stroke="#6eaa8c" stroke-width="2"/>
+<path d="M-9-39Q-2-61 12-49Q19-42 8-36" fill="none" stroke="#a67c3e" stroke-width="4"/>
+<path d="M-20-30L0-43L20-30L28 10L12 35L-12 35L-28 10Z" fill="url(#teal)" stroke="#426f64" stroke-width="3"/>
+<path d="M-20-30L0-20L20-30M0-20L0 31M-28 10L0 31L28 10" fill="none" stroke="#b9eee0" stroke-width="2" opacity=".8"/>
+<path d="M-18-25Q0-34 18-25L22 10Q0 27-22 10Z" fill="#d3f6d4" opacity=".9"/>
+<path d="M-8-8L-8-4M9-8L9-4" stroke="#315d53" stroke-width="3.6" stroke-linecap="round"/>
+<path d="M-4 4Q1 9 6 4" fill="none" stroke="#315d53" stroke-width="2.5" stroke-linecap="round"/>
+<ellipse cx="-14" cy="2" rx="4" ry="2" fill="#e6aa8f" opacity=".8"/><ellipse cx="15" cy="2" rx="4" ry="2" fill="#e6aa8f" opacity=".8"/>
+<path d="M-13 35H13L10 43H-10Z" fill="url(#gold)"/>
+<path d="M36 -44Q37 -39 42 -38Q37 -37 36 -32Q35 -37 30 -38Q35 -39 36 -44Z" fill="#e0b961" opacity="1"/>
+</g></svg>

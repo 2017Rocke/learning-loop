@@ -105,7 +105,7 @@ public final class MainActivity extends Activity {
                     String path = safePath(uri);
                     if (path == null) return true;
                     // Only bundled documents may become top-level pages; course data is never executable.
-                    if (request.isForMainFrame() && !(path.equals("index.html") || path.equals("credits.html") || path.equals("lab/index.html"))) return true;
+                    if (request.isForMainFrame() && !BundledNavigation.allowsDocument(path)) return true;
                     return false;
                 }
                 if (request.isForMainFrame() && request.hasGesture() && "https".equals(uri.getScheme())) openExternal(uri);
@@ -115,7 +115,7 @@ public final class MainActivity extends Activity {
             @Override public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) { pageGeneration++; closePort(); }
             @Override public void onPageFinished(WebView view, String url) {
                 Uri uri = Uri.parse(url);
-                if (trusted(uri) && "index.html".equals(safePath(uri))) connectBridge();
+                if (trusted(uri) && BundledNavigation.allowsNativeBridge(safePath(uri))) connectBridge();
             }
         });
         web.setDownloadListener((url, userAgent, disposition, mime, size) -> toast("请使用课程设置中的“导出学习记录”，通过系统文件选择器保存。"));
@@ -167,7 +167,7 @@ public final class MainActivity extends Activity {
         offerCalendarAfterLoad |= offerCalendar;
         Uri uri = Uri.parse(requestedURL);
         String path = safePath(uri);
-        web.loadUrl(trusted(uri) && path != null && (path.equals("index.html") || path.equals("credits.html") || path.equals("lab/index.html")) ? requestedURL : HOME);
+        web.loadUrl(trusted(uri) && path != null && BundledNavigation.allowsDocument(path) ? requestedURL : HOME);
     }
     private void connectBridge() {
         if (!alive() || snapshot == null) return;
@@ -176,7 +176,7 @@ public final class MainActivity extends Activity {
         final long generation = pageGeneration;
         nativePort.setWebMessageCallback(new WebMessagePort.WebMessageCallback() {
             @Override public void onMessage(WebMessagePort port, WebMessage message) {
-                if (generation != pageGeneration || !trusted(Uri.parse(web.getUrl() == null ? "" : web.getUrl())) || !"index.html".equals(safePath(Uri.parse(web.getUrl())))) return;
+                if (generation != pageGeneration || !trusted(Uri.parse(web.getUrl() == null ? "" : web.getUrl())) || !BundledNavigation.allowsNativeBridge(safePath(Uri.parse(web.getUrl())))) return;
                 handleMessage(message.getData(), generation);
             }
         }, main);

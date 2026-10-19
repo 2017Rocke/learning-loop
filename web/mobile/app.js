@@ -30,10 +30,11 @@
   }
   const STORE_KEY = `zhixing.mobile.learning.v1:${new URL('.', document.baseURI).pathname}`;
   const L = window.LearningState;
+  const A = window.LearningAcademy;
   const root = document.getElementById('app');
   const toastNode = document.getElementById('toast');
   const chapters = [['logic', '看懂原理'], ['case', '跟着案例'], ['code', '拆解代码'], ['experiment', '动手实验'], ['application', '用到实际'], ['summary', '回想总结']];
-  const navItems = [['today', '今日', '◷'], ['courses', '课程', '▤'], ['review', '复习', '↻'], ['settings', '我的', '☷']];
+  const navItems = [['today', '学院', 'home'], ['courses', '探索', 'map'], ['review', '回忆', 'recall'], ['settings', '我的', 'book']];
   let courses = [];
   let state;
   let storageError = '';
@@ -41,6 +42,8 @@
   let cleanup = [];
   let courseFilter = '全部';
   let query = '';
+  let selectedRealm = null;
+  let libraryMode = 'map';
   let selectedReview = null;
   let pendingImport = null;
   let installPrompt = null;
@@ -108,12 +111,12 @@
     if (!state) return;
     stopMedia(); root.setAttribute('aria-busy', 'false');
     const current = route();
-    const header = el('header', { class: 'app-header' }, el('button', { class: 'brand', type: 'button', on: { click: () => navigate('today') } }, el('span', { class: 'brand-mark', 'aria-hidden': 'true' }, '↻'), el('span', {}, el('strong', {}, '知行'), el('small', {}, '随身学习'))), el('div', { class: 'connection-pill', id: 'connection-state', role: 'status' }, connectionText()));
+    const header = el('header', { class: 'app-header' }, el('button', { class: 'brand', type: 'button', on: { click: () => navigate('today') } }, el('span', { class: 'brand-mark', 'aria-hidden': 'true' }, '✦'), el('span', {}, el('strong', {}, '知行'), el('small', {}, '星灯学院 / KEEP WONDERING'))), el('div', { class: 'connection-pill', id: 'connection-state', role: 'status' }, connectionText()));
     const page = el('main', { id: 'main-content', class: current.view === 'course' ? 'main course-main' : 'main' });
     if (storageError) page.append(el('div', { class: 'warning' }, storageError, ' 原记录未被覆盖。请在“我的”恢复。'));
     const renderers = { today: renderToday, courses: renderCourses, review: renderReview, settings: renderSettings, course: renderCourse };
     page.append(renderers[current.view](current));
-    const bottom = el('nav', { class: 'bottom-nav', 'aria-label': '主导航' }, navItems.map(([key, label, glyph]) => el('button', { type: 'button', class: current.view === key || current.view === 'course' && key === 'courses' ? 'active' : '', 'aria-current': current.view === key ? 'page' : null, on: { click: () => navigate(key) } }, el('span', { class: 'nav-glyph', 'aria-hidden': 'true' }, glyph), el('span', {}, label), key === 'review' && L.due(state).length ? el('b', {}, L.due(state).length) : null)));
+    const bottom = el('nav', { class: 'bottom-nav', 'aria-label': '主导航' }, navItems.map(([key, label, glyph]) => el('button', { type: 'button', class: current.view === key || current.view === 'course' && key === 'courses' ? 'active' : '', 'aria-current': current.view === key || current.view === 'course' && key === 'courses' ? 'page' : null, on: { click: () => navigate(key) } }, el('span', { class: 'nav-glyph', 'aria-hidden': 'true' }, icon(glyph)), el('span', {}, label), key === 'review' && L.due(state).length ? el('b', {}, L.due(state).length) : null)));
     root.replaceChildren(header, el('div', { id: 'update-notice' }), page, bottom); showUpdateNotice();
   }
   function connectionText() { return NATIVE ? '本机课程 · 可离线' : navigator.onLine ? offlineReady ? '已保存离线课程' : '联网可学习' : offlineReady ? '离线学习中' : '当前离线'; }
@@ -145,43 +148,91 @@
     try { await workerRegistration.update(); if (workerRegistration.waiting) { updateReady = true; showUpdateNotice(); } toast(updateReady ? '新版本已就绪，点击顶部“刷新课程”即可使用。' : '已检查更新；发现新版本后会完整下载，再提示刷新。'); } catch { toast('暂时无法检查更新，请稍后重试。', true); }
   }
 
+  function icon(name) {
+    const shapes = {
+      home: ['M3 10 12 3l9 7', 'M5 9v12h14V9', 'M9 21v-7h6v7'],
+      map: ['m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2Z', 'M9 3v16M15 5v16'],
+      recall: ['M4 10a8 8 0 1 1 1 8', 'M4 4v6h6', 'M12 8v5l3 2'],
+      book: ['M12 5C8 2 4 3 2 4v16c3-2 7-2 10 0 3-2 7-2 10 0V4c-3-2-7-2-10 1Z', 'M12 5v15'],
+    };
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    for (const [key, value] of Object.entries({ viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.6', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' })) svg.setAttribute(key, value);
+    for (const d of shapes[name] || shapes.book) { const path = document.createElementNS(svg.namespaceURI, 'path'); path.setAttribute('d', d); svg.append(path); }
+    return svg;
+  }
+  function art(course, cls = '') {
+    return el('img', { class: `academy-art ${cls}`, src: `./academy/${A.realm(course).art}.svg`, alt: '', loading: 'lazy', decoding: 'async' });
+  }
+  function sectionHeading(kicker, title, action) {
+    return el('div', { class: 'section-heading' }, el('div', {}, el('div', { class: 'eyebrow' }, kicker), el('h2', {}, title)), action);
+  }
+  function academyMap() {
+    const mapped = courses.filter(course => Number.isFinite(A.realm(course).x));
+    if (!mapped.length) return el('div');
+    const active = mapped.find(course => course.id === selectedRealm) || mapped[0];
+    const preview = el('div', { class: 'map-preview', 'aria-live': 'polite' });
+    const pins = [];
+    const stage = el('div', { class: 'academy-map', role: 'group', 'aria-label': '知识探索地图，选择地点查看课程' }, el('img', { class: 'world-art', src: './academy/world.svg', alt: '', decoding: 'async' }), el('span', { class: 'map-compass', 'aria-hidden': 'true' }, 'N', el('i', {}, '✧')));
+    function choose(course) {
+      selectedRealm = course.id;
+      const realm = A.realm(course);
+      for (const [id, node] of pins) node.setAttribute('aria-pressed', String(id === course.id));
+      preview.replaceChildren(el('div', { class: 'map-preview-copy' }, el('span', { class: 'realm-caption' }, `${realm.name} / ${course.subject}`), el('h3', {}, realm.question)), button('进入课程 →', () => courseRoute(course), 'primary'));
+    }
+    for (const course of mapped) {
+      const realm = A.realm(course);
+      const pin = el('button', { type: 'button', class: `map-pin tone-${realm.color}`, style: `--pin-x:${realm.x}%;--pin-y:${realm.y}%`, 'aria-label': `${realm.name}：${course.title}`, 'aria-pressed': 'false', on: { click: () => choose(course) } }, el('span', { class: 'pin-star', 'aria-hidden': 'true' }, '✦'), el('span', {}, realm.name));
+      pins.push([course.id, pin]); stage.append(pin);
+    }
+    choose(active);
+    return el('section', { class: 'atlas' }, el('div', { class: 'atlas-caption' }, el('span', {}, 'THE ATLAS / 知识漫游'), el('span', {}, '点亮好奇，自由选课')), stage, preview);
+  }
   function renderToday() {
     const due = L.due(state);
     const selected = state.enrollments.map(item => courseByID(item.course_id)).filter(Boolean);
     const today = dayKey(Date.now());
     const evidenceToday = state.evidence.filter(item => dayKey(item.created_at) === today).length;
     const reviewsToday = state.review_history.filter(item => dayKey(item.answered_at) === today).length;
-    const preferred = selected.find(course => { const p = L.progress(state, course.id); return !p.experiment || !p.application || !p.summary; }) || selected[0] || courses[0];
-    const progress = preferred ? L.progress(state, preferred.id) : null;
-    const nextChapter = progress ? !progress.experiment ? 'experiment' : !progress.application ? 'application' : !progress.summary ? 'summary' : 'logic' : 'logic';
-    const page = el('div', {}, el('div', { class: 'page-heading' }, el('div', { class: 'eyebrow' }, '每天一个小进步'), el('h1', {}, '把好奇，变成自己的能力。'), el('p', {}, `今天留 ${state.settings.daily_minutes} 分钟学习，再用 ${state.settings.review_minutes} 分钟找回旧知识。`)));
-    page.append(el('div', { class: 'today-stats' }, [['等待回忆', due.length, '题'], ['今日已复习', reviewsToday, '次'], ['今日成果', evidenceToday, '份']].map(([label, number, unit]) => el('div', {}, el('span', {}, label), el('strong', {}, number, el('small', {}, unit))))));
-    if (due.length) page.append(el('section', { class: 'daily-callout' }, el('div', { class: 'eyebrow' }, '先花几分钟，接住旧知识'), el('h2', {}, `${due.length} 道核心问题到期了`), el('p', {}, '不看资料解释一次，再对照答案。今天完成几题就有价值。'), button('开始主动回忆 →', () => navigate('review'), 'primary')));
+    const page = el('div', { class: 'academy-home' });
+    const welcome = el('div', { class: 'academy-welcome' }, el('div', { class: 'edition-label' }, el('span', { 'aria-hidden': 'true' }, '✦'), ' THE CURIOSITY ACADEMY'), el('h1', {}, '每一个为什么，', el('br'), '都是一扇', el('em', {}, '新门。')), el('p', {}, '欢迎来到星灯学院。', el('br'), '带着一个问题出发，让原理在手中发生。'), el('div', { class: 'guide-note' }, el('img', { src: './academy/guide.svg', alt: '原创星灯向导小灯', width: '56', height: '64' }), el('div', {}, el('strong', {}, '我是小灯，陪你一起探索。'), el('span', {}, `今天留 ${state.settings.daily_minutes} 分钟，弄懂一件小事。`))));
+    page.append(el('section', { class: 'academy-hero' }, welcome, academyMap()));
+    const pulse = el('div', { class: 'academy-pulse' }, [['到期回忆', due.length, '题'], ['今天回忆', reviewsToday, '次'], ['今天记录', evidenceToday, '份']].map(([label, number, unit]) => el('div', {}, el('strong', {}, number, el('small', {}, unit)), el('span', {}, label))));
+    page.append(pulse);
+    if (due.length) page.append(el('section', { class: 'recall-invite' }, icon('recall'), el('div', {}, el('h2', {}, '旧知识，正在等你点亮'), el('p', {}, `${due.length} 道问题到期 · 先用 ${state.settings.review_minutes} 分钟回想，再继续探索。`)), button('去回忆 →', () => navigate('review'), 'primary')));
+    const preferred = selected.find(course => { const p = L.progress(state, course.id); return !p.experiment || !p.application || !p.summary; }) || selected[0];
     if (preferred) {
-      const enrolled = selected.some(course => course.id === preferred.id);
-      page.append(el('section', { class: 'course-hero' }, el('span', { class: 'subject-label' }, preferred.subject || '跨学科学习'), el('h2', {}, preferred.title), el('p', {}, preferred.lesson.visual_lesson?.hook || preferred.lesson.summary), el('div', { class: 'learning-path' }, ['看懂', '动手', '应用', '回想'].map((label, i) => el('span', { class: i > 0 && progress[['experiment', 'application', 'summary'][i - 1]] ? 'done' : '' }, label))), button(enrolled ? `继续 · ${chapters.find(([key]) => key === nextChapter)[1]} →` : '开始今天的学习 →', () => { if (!enrolled) commit(L.enroll(state, preferred), '已加入你的学习计划。'); courseRoute(preferred, enrolled ? nextChapter : 'logic'); }, 'primary')));
+      const realm = A.realm(preferred); const progress = L.progress(state, preferred.id);
+      page.append(sectionHeading('YOUR JOURNEY / 你的探索', '接着上次，往前一步'), el('section', { class: `journey-card tone-${realm.color}` }, art(preferred), el('div', {}, el('span', { class: 'realm-caption' }, realm.name), el('h2', {}, preferred.title), el('p', {}, realm.outcome), journeyRecords(progress), button(`继续 · ${chapters.find(([key]) => key === A.nextChapter(progress))[1]} →`, () => courseRoute(preferred, A.nextChapter(progress)), 'primary'))));
+    } else {
+      page.append(sectionHeading('START WITH WONDER / 从好奇出发', '选一个让你好奇的问题', button('查看全部 →', () => navigate('courses'), 'ghost')), el('div', { class: 'discovery-strip' }, courses.slice(0, 3).map(course => el('button', { type: 'button', class: `discovery-card tone-${A.realm(course).color}`, on: { click: () => courseRoute(course) } }, art(course), el('span', { class: 'realm-caption' }, A.realm(course).name), el('strong', {}, A.realm(course).question), el('span', { class: 'discovery-action' }, '去探索 ↗')))));
     }
-    page.append(panel('今天怎样算有收获', el('ol', { class: 'steps' }, el('li', {}, '先解释一个原理，再用图解核对。'), el('li', {}, '改变一个条件，观察结果是否符合预测。'), el('li', {}, '留下自己的判断或成果，明天再主动回忆。'))));
-    page.append(el('p', { class: 'helper' }, '观看和播放不会自动算作掌握。今日督学会在打开应用时更新；关闭后不会发送推送。'));
+    page.append(sectionHeading('LEARN BY DOING / 学习的魔法', '不只看懂，还要亲手验证'), el('div', { class: 'academy-method' }, [['01', '先猜一猜', '带着预测看原理，知道自己在哪里想错了。'], ['02', '让它发生', '改一个条件，观察结果，把“听懂”变成证据。'], ['03', '留一盏灯', '写下自己的解释，过几天再从记忆中找回来。']].map(([n, title, detail]) => el('div', {}, el('span', {}, n), el('h3', {}, title), el('p', {}, detail)))));
+    page.append(el('p', { class: 'academy-footnote' }, '地图是探索入口，记录才是你的足迹。观看与试玩不会自动记为掌握。'));
     return page;
   }
-
+  function journeyRecords(progress) {
+    return el('div', { class: 'journey-records', 'aria-label': '自己的实践记录' }, [['experiment', '实验'], ['application', '应用'], ['summary', '总结']].map(([key, label]) => el('span', { class: progress[key] ? 'recorded' : '' }, `${progress[key] ? '✓' : '○'} ${label}${progress[key] ? '有记录' : '待记录'}`)));
+  }
   function renderCourses() {
-    const page = el('div', {}, el('div', { class: 'page-heading' }, el('div', { class: 'eyebrow' }, '沿着问题，连接学科'), el('h1', {}, '今天想理解什么？'), el('p', {}, '选择一个可以解释、可以验证、可以用起来的问题。')));
+    const page = el('div', { class: 'academy-library' }, el('div', { class: 'page-heading' }, el('div', { class: 'eyebrow' }, 'THE ATLAS / 探索地图'), el('h1', {}, '下一站，你想弄懂什么？'), el('p', {}, '没有固定顺序。选一个问题，就能开始你的探索。')));
+    page.append(el('div', { class: 'view-switch', role: 'group', 'aria-label': '课程展示方式' }, [['map', '探索地图'], ['shelf', '课程书架']].map(([key, label]) => el('button', { type: 'button', 'aria-pressed': String(libraryMode === key), on: { click: () => { libraryMode = key; render(); } } }, icon(key === 'map' ? 'map' : 'book'), label))));
+    if (libraryMode === 'map') page.append(academyMap());
     const subjects = ['全部', ...new Set(courses.map(course => course.subject || '其他'))];
     if (!subjects.includes(courseFilter)) courseFilter = '全部';
-    page.append(el('div', { class: 'subject-filters', role: 'group', 'aria-label': '按学科筛选' }, subjects.map(subject => button(subject, () => { courseFilter = subject; render(); }, courseFilter === subject ? 'chip active' : 'chip'))));
+    page.append(sectionHeading('THE COLLECTION / 课程书架', `可以探索的 ${courses.length} 门课`));
+    page.append(el('div', { class: 'subject-filters', role: 'group', 'aria-label': '按学科筛选' }, subjects.map(subject => { const chip = button(subject, () => { courseFilter = subject; render(); }, courseFilter === subject ? 'chip active' : 'chip'); chip.setAttribute('aria-pressed', String(courseFilter === subject)); return chip; })));
     const grid = el('div', { class: 'course-grid' });
-    function update() { const visible = courses.filter(course => (courseFilter === '全部' || (course.subject || '其他') === courseFilter) && (!query || `${course.title} ${course.subject} ${course.topic_id}`.toLowerCase().includes(query.toLowerCase()))); grid.replaceChildren(...(visible.length ? visible.map(courseCard) : [empty('没有匹配的课程', '试试其他学科或更短的关键词。')])); }
-    page.append(el('input', { class: 'search', type: 'search', placeholder: '搜索课程、学科或问题', 'aria-label': '搜索课程', value: query, on: { input: event => { query = event.target.value; update(); } } }), grid);
+    const status = el('p', { class: 'search-status', role: 'status' });
+    function update() { const visible = courses.filter(course => (courseFilter === '全部' || (course.subject || '其他') === courseFilter) && (!query || `${course.title} ${course.subject} ${course.topic_id} ${A.realm(course).name}`.toLowerCase().includes(query.toLowerCase()))); status.textContent = query || courseFilter !== '全部' ? `找到 ${visible.length} 门课程` : ''; grid.replaceChildren(...(visible.length ? visible.map(courseCard) : [empty('还没有找到这门课', '试试其他学科，或用更短的关键词。')])); }
+    page.append(el('input', { class: 'search', type: 'search', placeholder: '搜索知识、学科或学院地点…', 'aria-label': '搜索课程', value: query, on: { input: event => { query = event.target.value; update(); } } }), status, grid);
     update();
-    page.append(el('p', { class: 'helper' }, '这里展示已准备并发布的课程。新选题由电脑端学习助手研究后加入，手机会在联网刷新时读取更新。'));
+    page.append(el('p', { class: 'academy-footnote' }, '这里的每一站，都对应真实的技术或学科。奇幻场景是原创引导，原理解释以课程资料为准。'));
     return page;
   }
   function courseCard(course) {
     const started = state.enrollments.some(item => item.course_id === course.id); const progress = L.progress(state, course.id);
-    const poster = course.lesson.visual_lesson?.steps?.[0];
-    return el('article', { class: 'course-card' }, poster ? visuals.imageCard(poster) : el('div', { class: 'course-placeholder', 'aria-hidden': 'true' }, course.kind === 'project' ? '⌘' : '◉'), el('div', { class: 'course-card-copy' }, el('div', { class: 'course-card-meta' }, el('span', {}, course.subject || '综合学习'), el('span', {}, started ? '已加入学习' : '可开始')), el('h2', {}, course.title), el('p', {}, course.lesson.visual_lesson?.hook || course.lesson.summary), el('div', { class: 'course-card-bottom' }, el('span', {}, `${progress.count} 份实践记录`), button(started ? '继续学习 →' : '进入课程 →', () => courseRoute(course), 'small primary'))));
+    const realm = A.realm(course); const visual = course.lesson.visual_lesson;
+    return el('article', { class: `course-card tone-${realm.color}` }, el('div', { class: 'course-cover' }, art(course), el('span', { class: 'cover-realm' }, realm.name)), el('div', { class: 'course-card-copy' }, el('div', { class: 'course-card-meta' }, el('span', {}, course.subject || '综合学习'), el('span', {}, visual?.duration_minutes ? `约 ${visual.duration_minutes} 分钟` : '按你的节奏')), el('h2', {}, course.title), el('p', {}, realm.question), el('div', { class: 'course-tools' }, visual?.video ? el('span', {}, '▷ 原理动画') : null, course.lesson.audio_lesson ? el('span', {}, '♫ 语音讲解') : null, el('span', {}, '◇ 实践任务')), el('div', { class: 'course-card-bottom' }, el('span', {}, progress.count ? `${progress.count} 份自己的记录` : started ? '已加入探索' : '随时出发'), button(started ? '继续探索 →' : '进入课程 →', () => courseRoute(course), 'small primary'))));
   }
 
   function evidenceForm(course, kind, title) {
@@ -194,6 +245,26 @@
   }
   function steps(items) { return el('ol', { class: 'steps' }, (items || []).map(item => el('li', {}, item))); }
   function acceptance(items) { return items?.length ? el('div', { class: 'acceptance' }, el('h4', {}, '用这些标准检查成果'), el('ul', {}, items.map(item => el('li', {}, item)))) : null; }
+  function guardLabNavigation(event) {
+    // A standalone document discards every in-memory draft, including another
+    // course or a review. Return to its owner without saving on the learner's behalf.
+    const pending = [...drafts].find(([, value]) => String(value || '').trim());
+    if (!pending) return;
+    event.preventDefault();
+    const [key] = pending;
+    for (const course of courses) {
+      for (const chapter of ['experiment', 'application', 'summary']) {
+        if (key === `evidence:${course.id}:${chapter}`) {
+          courseRoute(course, chapter);
+          toast(`「${course.title}」还有未保存的文字，已回到对应章节。先保存或清空，再进入工坊。`);
+          return;
+        }
+      }
+    }
+    const review = state.reviews.find(item => key === `review:${item.id}`);
+    if (review) { selectedReview = review.id; navigate('review'); }
+    toast('还有未提交的复习回答。先完成或清空回答，再进入工坊。');
+  }
   function renderCourse(current) {
     const course = courseByID(current.id);
     if (!course) return empty('这条课程还没有发布', '返回课程列表选择当前可用的课程。', button('浏览课程', () => navigate('courses'), 'primary'));
@@ -201,26 +272,43 @@
     const available = chapters.filter(([key]) => key !== 'code' || lesson.code_insight !== null && typeof lesson.code_insight === 'object');
     const chapter = available.some(([key]) => key === current.chapter) ? current.chapter : 'logic';
     const selected = state.enrollments.some(item => item.course_id === course.id);
-    const page = el('div', { class: 'learn-page' }, el('div', { class: 'course-topline' }, button('← 全部课程', () => navigate('courses'), 'ghost'), el('span', { class: 'subject-label' }, course.subject || '综合学习')), el('div', { class: 'course-title' }, el('h1', {}, course.title), !selected ? button('加入学习', () => commit(L.enroll(state, course), '已加入学习，记录成果后再安排复习。'), 'small outline') : el('span', { class: 'tag' }, '已加入学习')));
+    const realm = A.realm(course);
+    const page = el('div', { class: `learn-page tone-${realm.color}` }, el('div', { class: 'course-topline' }, button('← 探索地图', () => navigate('courses'), 'ghost'), el('span', { class: 'subject-label' }, course.subject || '综合学习')),
+      el('header', { class: `course-banner tone-${realm.color}` }, el('div', { class: 'course-banner-copy' }, el('span', { class: 'realm-caption' }, `${realm.name} / 本次探索`), el('h1', {}, realm.title), el('p', {}, course.title),
+        el('div', { class: 'course-badges' }, visual.duration_minutes ? el('span', {}, `◷ 主路径约 ${visual.duration_minutes} 分钟`) : null, el('span', {}, '◇ 含动手任务'), !selected ? button('加入我的探索', () => commit(L.enroll(state, course), '已加入探索，留下自己的记录后再安排复习。'), 'small outline') : el('span', { class: 'tag' }, '已加入探索'))), art(course)));
     page.append(window.LessonListen.create({ el, button, onCleanup: fn => cleanup.push(fn), courseID: course.id, lesson, assetBase: document.baseURI, onOpenChapter: key => courseRoute(course, key) }));
-    const nav = el('nav', { class: 'lesson-nav', 'aria-label': '学习章节' }, available.map(([key, title]) => el('button', { type: 'button', class: `lesson-tab${key === chapter ? ' active' : ''}`, 'aria-current': key === chapter ? 'step' : null, on: { click: () => courseRoute(course, key) } }, title)));
-    const content = el('section', { class: 'lesson-content panel' });
+    const nav = el('nav', { class: 'lesson-nav', 'aria-label': '学习章节' }, available.map(([key, title], i) => el('button', { type: 'button', class: `lesson-tab${key === chapter ? ' active' : ''}`, 'aria-current': key === chapter ? 'step' : null, on: { click: () => courseRoute(course, key) } }, el('span', {}, String(i + 1).padStart(2, '0')), title)));
+    const mission = { logic: ['带着一个问题看', visual.hook || realm.question], case: ['换个情境，沿着因果走', '先想输入和目标，再跟着案例核对每一步。'], code: ['拆开机制，看看它怎样工作', '先读核心链路，再按需要展开逐行注释。'], experiment: ['轮到你让原理发生', realm.outcome], application: ['把学到的，带回真实生活', '给自己的问题做一次尝试，留下可以检查的结果。'], summary: ['合上书，用自己的话说一次', '先回忆，再展开提示。说不清的地方，就是下一次探索的起点。'] }[chapter];
+    const content = el('section', { class: 'lesson-content panel' }, el('div', { class: 'quest-brief' }, el('img', { src: './academy/guide.svg', alt: '' }), el('div', {}, el('strong', {}, mission[0]), el('p', {}, mission[1]))));
     const chapterIndex = available.findIndex(([key]) => key === chapter);
     const audio = visuals.audioNarration(lesson, chapter, null, {
       previous: chapterIndex > 0 ? { label: available[chapterIndex - 1][1], onClick: () => courseRoute(course, available[chapterIndex - 1][0]) } : null,
       next: chapterIndex < available.length - 1 ? { label: available[chapterIndex + 1][1], onClick: () => courseRoute(course, available[chapterIndex + 1][0]) } : null,
     });
     if (chapter === 'logic') {
-      content.append(el('div', { class: 'lesson-hook' }, el('h2', {}, visual.hook || lesson.summary || course.title)), audio, visuals.videoLesson(visual), visuals.stepLesson(visual, lesson.core_ideas), visuals.gaussianViewer(visual.interactive), visuals.fold('展开完整原理讲解', el('p', { class: 'prose' }, lesson.mental_model || lesson.summary), (lesson.core_ideas || []).map(idea => el('div', { class: 'idea' }, el('h3', {}, idea.title), el('p', {}, idea.explanation)))));
+      content.append(visuals.videoLesson(visual), audio, visuals.stepLesson(visual, lesson.core_ideas), visuals.gaussianViewer(visual.interactive), visuals.fold('展开完整原理讲解', el('p', { class: 'prose' }, lesson.mental_model || lesson.summary), (lesson.core_ideas || []).map(idea => el('div', { class: 'idea' }, el('h3', {}, idea.title), el('p', {}, idea.explanation)))));
     } else if (chapter === 'case') {
       content.append(el('h2', {}, lesson.case_study?.title || '跟着一个案例理解'), audio, visuals.caseWalkthrough(lesson), visuals.fold('案例背景与完整步骤', el('p', { class: 'prose' }, lesson.case_study?.scenario), steps(lesson.case_study?.steps)));
     } else if (chapter === 'code') {
       content.append(el('h2', {}, lesson.code_insight.title || '拆解代码'), audio, visuals.codeWalkthrough(lesson));
     } else if (chapter === 'experiment') {
-      content.append(el('h2', {}, lesson.experiment?.title || '动手验证一次'), audio);
-      if (visual.interactive?.kind === 'gaussian-viewer') content.append(visuals.experimentEmbed());
-      else if (window.LessonExperiments) content.append(window.LessonExperiments.create({ el, button, onCleanup: fn => cleanup.push(fn), assetBase: document.baseURI }).render(visual.interactive));
-      content.append(steps(lesson.experiment?.steps), acceptance(lesson.experiment?.acceptance), evidenceForm(course, 'experiment', '记录你的实验'));
+      if (course.id === 'capacitor-decoupling') {
+        content.append(el('section', { class: 'lab-invite' }, el('span', { class: 'eyebrow' }, 'STARLIGHT LAB / 互动工坊'), el('h2', {}, '电源还没跟上，电容能撑多久？'), el('p', {}, '先猜一猜，再改电容量和负载。亲眼看电流怎样接力、电压何时下降、随后怎样回充。'),
+          el('a', { class: 'button primary', href: './lab/capacitor/index.html', on: { click: guardLabNavigation } }, '进入供电接力实验 →'), el('p', { class: 'helper' }, '教学模拟 · 约 3–5 分钟 · 结束后回到这里记录自己的观察')),
+          acceptance(['在相同负载下比较两个电容，记下各自的最低电压。', '用自己的话解释：什么时候电容补给，什么时候电源给它回充。', '写出一个模型假设；把模拟观察与真实开发板测量区分开。']),
+          visuals.fold('还想继续？画清电子的外部路线', el('h3', {}, lesson.experiment?.title), audio, steps(lesson.experiment?.steps), acceptance(lesson.experiment?.acceptance)));
+      } else if (course.id === 'mosfet-switching') {
+        content.append(el('section', { class: 'lab-invite' }, el('span', { class: 'eyebrow' }, 'SWITCH WORKSHOP / 互动工坊'), el('h2', {}, '栅极控制开关，负载功率怎样变化？'), el('p', {}, '切换开与关，再改变 PWM 占空比。分清栅极控制信号、负载电流和平均功率。'),
+          el('a', { class: 'button primary', href: './lab/mosfet/index.html', on: { click: guardLabNavigation } }, '进入机械开关实验 →'), el('p', { class: 'helper' }, '教学模拟 · 约 3–5 分钟 · 纯电阻负载，结果不代表电机转速')),
+          acceptance(['比较持续导通与 50% 占空比时的瞬时电流和平均负载功率。', '解释为什么控制栅极不等于由 GPIO 给负载供电。', '指出模型中充分导通的前提，以及真实选型还需检查的条件。']),
+          visuals.fold('继续深入：纸面选型与感性负载', el('h3', {}, lesson.experiment?.title), audio, steps(lesson.experiment?.steps), acceptance(lesson.experiment?.acceptance)));
+      } else {
+        content.append(el('h2', {}, lesson.experiment?.title || '动手验证一次'), audio);
+        if (visual.interactive?.kind === 'gaussian-viewer') content.append(visuals.experimentEmbed());
+        else if (window.LessonExperiments) content.append(window.LessonExperiments.create({ el, button, onCleanup: fn => cleanup.push(fn), assetBase: document.baseURI }).render(visual.interactive));
+        content.append(steps(lesson.experiment?.steps), acceptance(lesson.experiment?.acceptance));
+      }
+      content.append(evidenceForm(course, 'experiment', '记录你的实验'));
     } else if (chapter === 'application') {
       content.append(el('h2', {}, '把知识用到自己的问题'), audio, el('p', { class: 'prose' }, lesson.application?.prompt), acceptance(lesson.application?.acceptance), evidenceForm(course, 'application', '记录一次实际使用'));
     } else {
@@ -307,6 +395,7 @@
   window.addEventListener('online', updateConnection); window.addEventListener('offline', updateConnection);
   window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); installPrompt = event; if (route().view === 'settings') render(); });
   window.addEventListener('pagehide', stopMedia);
+  window.addEventListener('pageshow', event => { if (event.persisted && state && courses.length) render(); });
   if (!NATIVE && 'serviceWorker' in navigator) navigator.serviceWorker.addEventListener('controllerchange', () => {
     offlineReady = true; updateConnection();
     if (reloadAfterUpdate) { location.reload(); return; }
