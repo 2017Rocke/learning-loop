@@ -1,0 +1,45 @@
+{
+  "voice": "合成中文女声（晓晓 · Microsoft Edge Neural）",
+  "clips": [
+    {
+      "chapter": "logic",
+      "walkthrough_id": null,
+      "title": "电容是什么，为什么芯片旁边有它",
+      "src": "/media/capacitor-beginner/video/audio/scene-1.mp3",
+      "duration_seconds": 19.968,
+      "transcript": "电容，是能暂时储存一点电能的元件。开发板上，它可能是小长方块，也可能像小圆罐。外形不能单独确认身份，要对照原理图。本课只看一个用途：芯片突然忙起来，身边的电容先帮它撑一下。"
+    },
+    {
+      "chapter": "case",
+      "walkthrough_id": null,
+      "title": "像手边的一小杯备用水，但不是水穿过隔板",
+      "src": "/media/capacitor-beginner/video/audio/scene-2.mp3",
+      "duration_seconds": 21.024,
+      "transcript": "想象水龙头来不及供水，手边一小杯备用水先帮忙。这只是短时接力的比喻。真实电容有两块导电板，中间绝缘。电源经两条外线，一边补电子，一边取电子，建立储能的电场。电子不穿过绝缘层。"
+    },
+    {
+      "chapter": "experiment",
+      "walkthrough_id": null,
+      "title": "芯片突忙：电源没补齐，电容暂补缺口",
+      "src": "/media/capacitor-beginner/video/audio/scene-3.mp3",
+      "duration_seconds": 23.832,
+      "transcript": "现在只看同一块芯片。平时，电源给芯片供电，电容已经充好。芯片突然忙起来，需要更多电流。电源和连线没有立刻补齐时，电容沿外部回路暂时补上缺口。它在释放储能，自己的电压会下降。图中箭头表示约定电流。"
+    },
+    {
+      "chapter": "application",
+      "walkthrough_id": null,
+      "title": "电源跟上后接力，电容不能一直撑",
+      "src": "/media/capacitor-beginner/video/audio/scene-4.mp3",
+      "duration_seconds": 23.808,
+      "transcript": "电源逐渐跟上，电容要补的缺口就变小。接力完成后，持续供电仍由电源负责。电容能撑多久，取决于缺口多大、持续多久，以及容量和允许的电压下降。不是等到完全放空才出问题。电源长期供不够，换大电容也只能多撑一会儿。"
+    },
+    {
+      "chapter": "summary",
+      "walkthrough_id": null,
+      "title": "芯片恢复空闲，电源把储能补回",
+      "src": "/media/capacitor-beginner/video/audio/scene-5.mp3",
+      "duration_seconds": 25.176,
+      "transcript": "芯片不再这么忙，需求降下来。在电源有余量、能正常调节的情况下，电源又给电容补回能量，电压逐渐恢复。恢复稳定后，理想电容不再持续充电。先记住：电源长期供，电容短时补，再由电源充回。整个过程，电子都不穿过理想绝缘层。"
+    }
+  ]
+}

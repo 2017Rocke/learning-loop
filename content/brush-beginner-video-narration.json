@@ -1,0 +1,43 @@
+{
+  "engine": "edge-tts",
+  "voice": "zh-CN-XiaoxiaoNeural",
+  "rate": "-5%",
+  "pitch": "+0Hz",
+  "clips": [
+    {
+      "chapter": "logic",
+      "walkthrough_id": null,
+      "title": "从不同位置拍同一只杯子",
+      "filename": "scene-1.mp3",
+      "text": "想让朋友转着看杯子，单张照片的线索不够。让杯子静止，拿手机绕着移动。不同位置的清晰照片，给程序不同方向的观察。"
+    },
+    {
+      "chapter": "case",
+      "walkthrough_id": null,
+      "title": "用软色斑表示外观",
+      "filename": "scene-2.mp3",
+      "text": "程序用许多三维软色斑，近似杯子的外观。它们有位置、大小、颜色和透明度。色斑是画图用的表示，不是杯子的实体材料，也不是贴上去的照片。"
+    },
+    {
+      "chapter": "experiment",
+      "walkthrough_id": null,
+      "title": "从一个位置画出来",
+      "filename": "scene-3.mp3",
+      "text": "选一个相机位置，三维软色斑投到屏幕，成为边缘柔软的椭圆。按前后和透明程度合成，就得到当前的杯子画面。这一步叫渲染，还没有调整参数。"
+    },
+    {
+      "chapter": "application",
+      "walkthrough_id": null,
+      "title": "对照同角度照片调整",
+      "filename": "scene-4.mp3",
+      "text": "把预测画面与同角度照片比较。这里用合成例子，只调一个位置，看看误差怎样变小。真实训练用图像误差指导许多参数更新，再画、再比较，不保证每一步都变好。"
+    },
+    {
+      "chapter": "summary",
+      "walkthrough_id": null,
+      "title": "换个角度才能验收",
+      "filename": "scene-5.mp3",
+      "text": "训练后，用同一组色斑换个方向画，就能转着看。还要拿预留照片检查。没有拍到的背面，不能保证正确；画面逼真，也不等于精确网格或可直接打印。"
+    }
+  ]
+}

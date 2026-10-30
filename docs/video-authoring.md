@@ -1,8 +1,20 @@
 # 原理动画维护
 
-Bayes、VoiceStudio、电容与去耦、MOS 管开关的视频由本项目原创图形逐帧生成，再合入晓晓中文女声。它们解释课程中的机制，不是实际检测数据、模型运行录像、开发板实测波形或学习成绩。贝叶斯动画先用 100 个等权点表示 10,000 件产品（每点 100 件），汇入报警池时明确改成每点 1 件，完整绘制 90 个坏件和 495 个正常件。
+五门课的当前入门动画由本项目原创图形逐帧生成，再合入晓晓中文女声。它们解释机制，不是实际重建结果、模型运行录像、开发板测量或学习成绩。图解、正文、主章听讲和动画须沿同一个例子；完整教学方法见 [先懂再深入](../skill/learning-loop/references/beginner-first.md)。
 
-Bayes、VoiceStudio、电容旁白在 `content/<课程>-video-narration.json`，渲染入口在 `scripts/generate_course_videos.py`；电容分镜在 `scripts/embedded_video_scenes.py`。MOS 入门版改用 `content/mosfet-beginner-video-narration.json` 和 `scripts/generate_mosfet_beginner_video.py`，输出至 `web/media/mosfet-beginner/video/`。旧 MOS 素材与生成入口保留作历史参考，不能再用旧入口或 `--course all` 覆盖当前基础课。课程和回忆题继续使用原稳定 ID。
+## 当前入口与历史素材
+
+| 课程 | 贯穿例子 | 当前渲染脚本 | 视频分段语音目录 |
+| --- | --- | --- | --- |
+| Brush | 同一个静止杯子：拍摄、软色斑、投影、比对调整、新视角 | `scripts/generate_brush_beginner_media.py` | `web/media/brush-beginner/video/audio/` |
+| 贝叶斯 | 同一批100盏灯：10故障、90正常 → 8真报警、9误报 → 在17盏里数 | `scripts/generate_bayes_beginner_media.py` | `web/media/bayes-beginner/video/audio/` |
+| VoiceStudio | 同一段三句中文：分段、配对、按序拼接、试听 | `scripts/generate_voicestudio_beginner_media.py` | `web/media/voicestudio-beginner/video-audio/` |
+| 电容 | 同一芯片：稳定、突然多用电、电源接力、负载回落、回充 | `scripts/generate_capacitor_beginner_media.py` | `web/media/capacitor-beginner/video/audio/` |
+| MOS 管 | 同一盏小灯：控制与供能分开，导通、主动拉低关断 | `scripts/generate_mosfet_beginner_video.py` | `web/media/mosfet-beginner/video/audio/` |
+
+旁白源均为 `content/<课程>-beginner-video-narration.json`；主章听讲使用 `content/<课程>-beginner-narration.json`，输出至 `web/media/<课程>-beginner/audio/`。每个新视频在相应媒体目录的 `video/` 下。旧 `generate_course_videos.py`、旧旁白与旧素材保留作历史参考；不要用它们或其 `--course all` 结果覆盖当前入门课。课程和回忆题继续使用原稳定 ID。
+
+贝叶斯每个计数点始终表示一盏灯，不再切换单位。末幕只把误报9改为3，先让学习者预测，答案在作答反馈。原10,000件产品组件仍在课程中明确标为进阶选学，不能与基础例子的数字混用。Brush 的杯把调整是单参数教学演示，不冒充 Brush 的完整优化器。VoiceStudio 的卡片与波形是示意，真实分块不保证一块一句。
 
 ## 初学者先看什么
 
@@ -12,7 +24,7 @@ Bayes、VoiceStudio、电容旁白在 `content/<课程>-video-narration.json`，
 
 | 课程 | 分镜顺序 | 每镜的任务 |
 | --- | --- | --- |
-| 电容与去耦 | 结构 → 充电 → 稳态 → 外路放电 → 去耦 | 先认极板和介质；再看外部导线使极板电荷分离；到达稳态时停止净充电；接外部负载后经外路释放能量；最后迁移到芯片瞬时用电。 |
+| 电容与去耦 | 认元件 → 临时水杯类比 → 芯片突忙 → 电源接力 → 恢复回充 | 电容并在供电两端，提供短时差额；电源持续供能，需求降低后经外部回路补回电荷，稳定后不再净充电。 |
 | MOS 管入门 | 电子开关用途 → 水龙头类比 → 合适栅源电压 → 小灯回路 → 主动拉低关断 | 同一盏小灯贯穿；先分清控制与供能，再看电压怎样改变导通状态。悬空不保证关闭；PWM、续流与发热留到选学。 |
 
 MOS 的 PWM 镜头不同时显示发热公式；I²R 放在独立进阶例子。电容的 ΔV≈IΔt/C 同样先说明“短时间多要电，电压会变化”，再在后置例子列出恒流与理想容量项的假设。新迁移题的结果只放在作答反馈或折叠答案中，不提前写进图、字幕、替代文字或旁白。
@@ -36,23 +48,27 @@ MOS 的 PWM 镜头不同时显示发热公式；I²R 放在独立进阶例子。
 制作环境需自行准备 Pillow、edge-tts、FFmpeg 和可显示中文的字体。它们是可选作者工具，手机和静态站点不安装这些依赖。先明确检查本次旁白适合公开，再显式生成音频；该步骤会把旁白发送给在线语音服务：
 
 ```sh
-python3 scripts/generate_neural_audio.py --input content/bayes-video-narration.json --output-dir web/media/bayes/video-audio --ffmpeg ffmpeg
-python3 scripts/generate_neural_audio.py --input content/voicestudio-video-narration.json --output-dir web/media/voicestudio/video-audio --ffmpeg ffmpeg
-python3 scripts/generate_neural_audio.py --input content/capacitor-video-narration.json --output-dir web/media/capacitor/video-audio --ffmpeg ffmpeg
-python3 scripts/generate_neural_audio.py --input content/mosfet-beginner-video-narration.json --output-dir web/media/mosfet-beginner/video/audio --ffmpeg ffmpeg
-python3 scripts/generate_neural_audio.py --input content/mosfet-beginner-narration.json --output-dir web/media/mosfet-beginner/audio --ffmpeg ffmpeg
+python3 scripts/generate_neural_audio.py --input content/bayes-beginner-video-narration.json --output-dir web/media/bayes-beginner/video/audio --ffmpeg ffmpeg
+python3 scripts/generate_neural_audio.py --input content/bayes-beginner-narration.json --output-dir web/media/bayes-beginner/audio --ffmpeg ffmpeg
 ```
 
-然后提供实际字体文件路径。下面 `path/to/chinese-font.ttf` 必须替换为当前环境已有字体；QA 输出应放在不提交的本地目录：
+其他课程按上表选择对应输入和输出，VoiceStudio 视频分段语音的目录名是 `video-audio`。然后提供当前环境已有的中文字体；`path/to/chinese-font.ttf` 是需替换的占位路径。只重建本次改动的课程，QA 放在不提交的本地目录：
 
 ```sh
-python3 scripts/generate_course_videos.py --course capacitor --font path/to/chinese-font.ttf --ffmpeg ffmpeg --review-output dist/video-review
+python3 scripts/generate_bayes_beginner_media.py --input content/bayes-beginner-video-narration.json --audio-dir web/media/bayes-beginner/video/audio --font path/to/chinese-font.ttf --ffmpeg ffmpeg --review-output dist/bayes-beginner-review
+python3 scripts/generate_voicestudio_beginner_media.py --input content/voicestudio-beginner-video-narration.json --audio-dir web/media/voicestudio-beginner/video-audio --font path/to/chinese-font.ttf --ffmpeg ffmpeg --review-output dist/voicestudio-beginner-review
+python3 scripts/generate_brush_beginner_media.py --video --font path/to/chinese-font.ttf --ffmpeg ffmpeg --review-output dist/brush-beginner-review
+python3 scripts/generate_capacitor_beginner_media.py --font path/to/chinese-font.ttf --ffmpeg ffmpeg --review-output dist/capacitor-beginner-review
 python3 scripts/generate_mosfet_beginner_video.py --input content/mosfet-beginner-video-narration.json --audio-dir web/media/mosfet-beginner/video/audio --font path/to/chinese-font.ttf --ffmpeg ffmpeg --review-output dist/mos-beginner-video-review
-python3 learning_loop.py validate-lesson --file content/capacitor.json
-python3 learning_loop.py validate-lesson --file content/mosfet.json
 ```
 
-只重建修改过的课程，逐课选择当前入口。渲染器不访问网络。它完整解码每段 MP3，使用实测语音长度安排镜头并追加一秒观察空隙，输出 960×540、15 fps、H.264/yuv420p + AAC 视频、JPEG 封面和 VTT 字幕。字幕按短句及实测段落时长分配窗口，每行最多 23 字、最多两行，过长句子须先改写；不宣称词级对齐。完整旁白保留为分镜文字稿。MOS 入门生成器将视频字段写入 QA 目录的 `video-metadata.json`，需核验后合入 `content/mosfet.json` 的 `visual_lesson.video`；整课音频对应 `web/media/mosfet-beginner/audio/metadata.json`，合入 `audio_lesson`。每次写入课程前重新读取 JSON，只替换对应媒体字段。
+渲染器不访问网络；使用实测语音长度安排镜头并留观察空隙，输出960×540、15fps、H.264/yuv420p + AAC视频、JPEG封面和VTT字幕。字幕窗口按短句长度分配，不宣称词级对齐。完整旁白保留为分镜文字稿。
+
+先检查 QA 目录中的 `video-metadata.json`，再合入课程的 `visual_lesson.video`；主章音频对应媒体目录 `audio/metadata.json`，合入 `audio_lesson`。电容脚本目前会在本地校验完成后直接合并这两个字段，务必检查其 diff；其余脚本只输出素材和元数据。VoiceStudio 保留准确的旧源码精讲时，仅替换五个主章节，不丢弃 `code` 和逐行深讲条目。每次写入前重读课程 JSON，避免覆盖同时完成的正文修改。
+
+```sh
+python3 learning_loop.py validate-lesson --file content/bayes.json
+```
 
 时长以本次生成后的媒体测量为准，再写入 `duration_seconds` 和分镜 `transcript[].time`，不沿用旧版本时长或用字数估计冒充实测。增加或删减分镜后，逐项对齐旁白源、分段音频元数据、镜头数量、字幕窗口与课程文字稿。
 

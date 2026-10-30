@@ -1,0 +1,45 @@
+{
+  "voice": "合成中文女声（晓晓 · Microsoft Edge Neural）",
+  "clips": [
+    {
+      "chapter": "logic",
+      "walkthrough_id": null,
+      "title": "贝叶斯是在帮你判断什么",
+      "src": "/media/bayes-beginner/video/audio/scene-1.mp3",
+      "duration_seconds": 16.728,
+      "transcript": "一盏灯报警了，就一定坏了吗？报警只是看见的线索，故障是我们想判断的真实状况。正常灯也可能误报警。贝叶斯就是帮助我们结合线索，重新判断可能性的方法。"
+    },
+    {
+      "chapter": "case",
+      "walkthrough_id": null,
+      "title": "先看原本这一百盏灯",
+      "src": "/media/bayes-beginner/video/audio/scene-2.mp3",
+      "duration_seconds": 18.264,
+      "transcript": "先看这组教学假设。一百盏灯里，十盏故障、九十盏正常。每个点只代表一盏灯。还没有这次报警线索时，我们看整批灯，故障比例是百分之十。接下来看看哪一些会报警。"
+    },
+    {
+      "chapter": "experiment",
+      "walkthrough_id": null,
+      "title": "报警沿两条路产生",
+      "src": "/media/bayes-beginner/video/audio/scene-3.mp3",
+      "duration_seconds": 18.12,
+      "transcript": "十盏故障灯里，八盏被检测出来并报警。九十盏正常灯里，也有九盏误报警。颜色表示真实类别，紫色标记表示报警。正常灯虽然报警了，仍然是正常灯，不会因此变坏。"
+    },
+    {
+      "chapter": "application",
+      "walkthrough_id": null,
+      "title": "只留下报警的灯再数",
+      "src": "/media/bayes-beginner/video/audio/scene-4.mp3",
+      "duration_seconds": 18.48,
+      "transcript": "现在已经知道它报警，就只留下这支报警队伍。八盏真故障加九盏正常误报，总共十七盏。故障比例是八除以十七，约百分之四十七。报警让判断提高了，但没有让它变成确定。"
+    },
+    {
+      "chapter": "summary",
+      "walkthrough_id": null,
+      "title": "只改变误报，先预测",
+      "src": "/media/bayes-beginner/video/audio/scene-5.mp3",
+      "duration_seconds": 21.624,
+      "transcript": "最后只改一个条件。真故障报警仍是八盏，正常灯误报从九盏减少到三盏。新队伍里，故障所占的比例会变大还是变小？请暂停，先自己数。记住：已知条件改变，就要明确现在在哪一组里面判断。"
+    }
+  ]
+}

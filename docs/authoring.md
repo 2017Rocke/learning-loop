@@ -20,7 +20,7 @@ python3 learning_loop.py draft-lesson --track-id TRACK_ID --output content/my-to
 
 项目查官方文档与固定提交源码；学科查权威教材、讲义或原始研究。只引用真正读过的来源。提炼 3～5 个核心思想，解释为什么需要、怎样工作、删掉会怎样、何时失效。标清事实、类比与假设；贝叶斯工厂数字是合成例题，不是实际统计。
 
-先设计 3～5 幅因果图，每幅一个机制、一句结论和一个预测问题，提供替代文字。动态过程可加短视频和字幕，但不是每课必须有视频。只使用已实现且适合本课的交互；没有合适组件就设 `interactive: null`。
+先读 [先懂再深入的备课方法](../skill/learning-loop/references/beginner-first.md)，确定一个贯穿例子和两三项基础学习目标。按因果需要设计图解，每幅一个机制、一句结论和一个预测问题，提供替代文字；不要把图数当硬指标。动态过程可加短视频和字幕。只使用已实现且适合本课的交互；没有合适组件就设 `interactive: null`。
 
 初学者路线先回答“它是什么、有什么用”，用同一个具体案例讲完因果，再进入术语和条件。图后问题必须能用刚讲的内容推理，不把认端子的第一图配成选型或发热题。基本解释、操作和选学资料分开；基础简化后同步核对声音与动画。MOS 课程的可读性改版与评估见 [教学评估](course-reviews/mosfet-readability-2026-10.md)。
 
@@ -47,7 +47,7 @@ python3 learning_loop.py draft-lesson --track-id TRACK_ID --output content/my-to
 App 播放使用打包音频，不需要制作工具、语音账号或 API key。自然女声可在备课环境显式调用可选的在线制作工具；仅发送可公开旁白，不发送学习记录。准备 Python 3.9+、`edge-tts` 和 FFmpeg。嵌入式两课使用 7.3.1；旧版 7.2.8 在本次制作时返回 HTTP 403，更新官方客户端后恢复。遇到服务拒绝先检查正常客户端版本，不修改鉴权或在日志中输出带签名的请求地址。然后运行：
 
 ```sh
-python3 scripts/generate_neural_audio.py --input content/bayes-narration.json --output-dir web/media/bayes/audio --ffmpeg ffmpeg
+python3 scripts/generate_neural_audio.py --input content/bayes-beginner-narration.json --output-dir web/media/bayes-beginner/audio --ffmpeg ffmpeg
 ```
 
 脚本不自动安装依赖；服务不可用时停止，不无限重试或修改鉴权。旁白源格式见教学包规范。它逐段生成 MP3，并完整解码验证非静音和时长；全部通过后才替换目标文件。输入和音频哈希匹配时可复用，失败不会留下半套新课。制作过程完成后再构建或发布，不能在它运行中抓取目录。
@@ -58,7 +58,7 @@ python3 scripts/generate_neural_audio.py --input content/bayes-narration.json --
 python3 scripts/generate_brush_audio.py --input content/brush-narration.json --output-dir web/media/brush/audio
 ```
 
-两种输入格式不同，不把神经语音 JSON 交给系统音色生成器。不假定其他机器安装 Tingting，也不自动下载。核对输出 `metadata.json` 的实测时长、文字稿、章节和路径，再合并到 `audio_lesson`。保留真实音色来源，不公开本机路径与生成记录。
+两种输入格式不同，不把神经语音 JSON 交给系统音色生成器。不假定其他机器安装 Tingting，也不自动下载；当前五门入门课使用晓晓，旧 Brush 系统音色命令仅作备用制作示例。当前入口见 [原理动画维护](video-authoring.md)，不要用历史素材覆盖新版主路径。核对输出 `metadata.json` 的实测时长、文字稿、章节和路径，再合并到 `audio_lesson`。保留真实音色来源，不公开本机路径与生成记录。
 
 ## 校验与共享
 
