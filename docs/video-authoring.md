@@ -2,7 +2,7 @@
 
 Bayes、VoiceStudio、电容与去耦、MOS 管开关的视频由本项目原创图形逐帧生成，再合入晓晓中文女声。它们解释课程中的机制，不是实际检测数据、模型运行录像、开发板实测波形或学习成绩。贝叶斯动画先用 100 个等权点表示 10,000 件产品（每点 100 件），汇入报警池时明确改成每点 1 件，完整绘制 90 个坏件和 495 个正常件。
 
-旁白在 `content/<课程>-video-narration.json`，课程标识为 `bayes`、`voicestudio`、`capacitor`、`mosfet`。渲染入口在 `scripts/generate_course_videos.py`；嵌入式两课的分镜绘图在 `scripts/embedded_video_scenes.py`。只修改旁白或绘图，不更改课程、问题或源码摘录的稳定 ID。
+Bayes、VoiceStudio、电容旁白在 `content/<课程>-video-narration.json`，渲染入口在 `scripts/generate_course_videos.py`；电容分镜在 `scripts/embedded_video_scenes.py`。MOS 入门版改用 `content/mosfet-beginner-video-narration.json` 和 `scripts/generate_mosfet_beginner_video.py`，输出至 `web/media/mosfet-beginner/video/`。旧 MOS 素材与生成入口保留作历史参考，不能再用旧入口或 `--course all` 覆盖当前基础课。课程和回忆题继续使用原稳定 ID。
 
 ## 初学者先看什么
 
@@ -13,7 +13,7 @@ Bayes、VoiceStudio、电容与去耦、MOS 管开关的视频由本项目原创
 | 课程 | 分镜顺序 | 每镜的任务 |
 | --- | --- | --- |
 | 电容与去耦 | 结构 → 充电 → 稳态 → 外路放电 → 去耦 | 先认极板和介质；再看外部导线使极板电荷分离；到达稳态时停止净充电；接外部负载后经外路释放能量；最后迁移到芯片瞬时用电。 |
-| MOS 管开关 | 控制与供电 → 栅极充放电 → PWM 时间 → 关断续流 | 分清谁发令、谁出力；说明栅源电压是两端差；只讲一周期内开多久；最后沿外部二极管追踪不穿 MOS 断口的闭环。 |
+| MOS 管入门 | 电子开关用途 → 水龙头类比 → 合适栅源电压 → 小灯回路 → 主动拉低关断 | 同一盏小灯贯穿；先分清控制与供能，再看电压怎样改变导通状态。悬空不保证关闭；PWM、续流与发热留到选学。 |
 
 MOS 的 PWM 镜头不同时显示发热公式；I²R 放在独立进阶例子。电容的 ΔV≈IΔt/C 同样先说明“短时间多要电，电压会变化”，再在后置例子列出恒流与理想容量项的假设。新迁移题的结果只放在作答反馈或折叠答案中，不提前写进图、字幕、替代文字或旁白。
 
@@ -29,7 +29,7 @@ MOS 的 PWM 镜头不同时显示发热公式；I²R 放在独立进阶例子。
 
 检查路径时把标记半径、描边和尾迹一并纳入边界，整颗符号都不得触碰或进入不应经过的介质区域。栅极处的控制作用通过电场解释，不画成电荷横穿绝缘层进入负载通路。电容放电只经已画明的外部导线和负载，电流标记不能穿过电容介质闭环。
 
-MOS 动画用紫色控制与蓝色负载电流区分两条路径；珊瑚红续流从线圈下端经外部二极管回上端，再沿原方向穿过线圈。二极管 K 接电源正端、A 接漏极；普通低端 N 沟道 MOS 管的体二极管不能替代这条回路。关断画面须有清楚断口，续流箭头不能经过该断口。方框只是简化器件，不是内部结构图。
+当前 MOS 入门动画用紫色表示控制、绿色箭头表示约定负载电流。小灯按无电感的电阻负载理解；关断时停止负载电流，保留清楚断口。方框只是功能示意，不是器件内部剖面。旧进阶动画中的珊瑚红续流只适用于其线圈场景：二极管 K 接电源正端、A 接漏极，普通低端 N 沟道 MOS 管的体二极管不能替代这条回路；不要把线圈续流套到入门小灯示意中。
 
 ## 生成与时长
 
@@ -39,19 +39,20 @@ MOS 动画用紫色控制与蓝色负载电流区分两条路径；珊瑚红续�
 python3 scripts/generate_neural_audio.py --input content/bayes-video-narration.json --output-dir web/media/bayes/video-audio --ffmpeg ffmpeg
 python3 scripts/generate_neural_audio.py --input content/voicestudio-video-narration.json --output-dir web/media/voicestudio/video-audio --ffmpeg ffmpeg
 python3 scripts/generate_neural_audio.py --input content/capacitor-video-narration.json --output-dir web/media/capacitor/video-audio --ffmpeg ffmpeg
-python3 scripts/generate_neural_audio.py --input content/mosfet-video-narration.json --output-dir web/media/mosfet/video-audio --ffmpeg ffmpeg
+python3 scripts/generate_neural_audio.py --input content/mosfet-beginner-video-narration.json --output-dir web/media/mosfet-beginner/video/audio --ffmpeg ffmpeg
+python3 scripts/generate_neural_audio.py --input content/mosfet-beginner-narration.json --output-dir web/media/mosfet-beginner/audio --ffmpeg ffmpeg
 ```
 
 然后提供实际字体文件路径。下面 `path/to/chinese-font.ttf` 必须替换为当前环境已有字体；QA 输出应放在不提交的本地目录：
 
 ```sh
 python3 scripts/generate_course_videos.py --course capacitor --font path/to/chinese-font.ttf --ffmpeg ffmpeg --review-output dist/video-review
-python3 scripts/generate_course_videos.py --course mosfet --font path/to/chinese-font.ttf --ffmpeg ffmpeg --review-output dist/video-review
+python3 scripts/generate_mosfet_beginner_video.py --input content/mosfet-beginner-video-narration.json --audio-dir web/media/mosfet-beginner/video/audio --font path/to/chinese-font.ttf --ffmpeg ffmpeg --review-output dist/mos-beginner-video-review
 python3 learning_loop.py validate-lesson --file content/capacitor.json
 python3 learning_loop.py validate-lesson --file content/mosfet.json
 ```
 
-只重建修改过的课程；`--course all` 会重建上述四门课，需要它们各自完整的分段音频。渲染器不访问网络。它完整解码每段 MP3，使用实测语音长度安排镜头并追加一秒观察空隙，输出 960×540、15 fps、H.264/yuv420p + AAC 视频、JPEG 封面、VTT 字幕以及课程的 `visual_lesson.video`。字幕按短句及实测段落时长分配窗口，每行最多 23 字、最多两行，过长句子须先改写；不宣称词级对齐。完整旁白保留为分镜文字稿。每次写入课程前重新读取 JSON，只替换视频字段。
+只重建修改过的课程，逐课选择当前入口。渲染器不访问网络。它完整解码每段 MP3，使用实测语音长度安排镜头并追加一秒观察空隙，输出 960×540、15 fps、H.264/yuv420p + AAC 视频、JPEG 封面和 VTT 字幕。字幕按短句及实测段落时长分配窗口，每行最多 23 字、最多两行，过长句子须先改写；不宣称词级对齐。完整旁白保留为分镜文字稿。MOS 入门生成器将视频字段写入 QA 目录的 `video-metadata.json`，需核验后合入 `content/mosfet.json` 的 `visual_lesson.video`；整课音频对应 `web/media/mosfet-beginner/audio/metadata.json`，合入 `audio_lesson`。每次写入课程前重新读取 JSON，只替换对应媒体字段。
 
 时长以本次生成后的媒体测量为准，再写入 `duration_seconds` 和分镜 `transcript[].time`，不沿用旧版本时长或用字数估计冒充实测。增加或删减分镜后，逐项对齐旁白源、分段音频元数据、镜头数量、字幕窗口与课程文字稿。
 

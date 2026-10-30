@@ -43,7 +43,7 @@
     },
     {
       "id": "mosfet-switching",
-      "title": "MOS管开关：小引脚怎样控制大负载",
+      "title": "MOS管入门：用电压控制一盏灯",
       "topic_id": "mosfet-switching",
       "subject": "嵌入式与电子电路",
       "kind": "subject",

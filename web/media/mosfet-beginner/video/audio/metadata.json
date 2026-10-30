@@ -1,0 +1,45 @@
+{
+  "voice": "合成中文女声（晓晓 · Microsoft Edge Neural）",
+  "clips": [
+    {
+      "chapter": "logic",
+      "walkthrough_id": null,
+      "title": "MOS管：用电压控制的电子开关",
+      "src": "/media/mosfet-beginner/video/audio/scene-1.mp3",
+      "duration_seconds": 21.96,
+      "transcript": "MOS管，可以先理解成用电压控制的电子开关。比如，让开发板控制一盏小灯。开发板负责决定亮还是灭，但它的信号引脚不适合直接给这盏灯供电。所以，我们请外部电源供能，请MOS管负责接通或切断灯的电路。"
+    },
+    {
+      "chapter": "case",
+      "walkthrough_id": null,
+      "title": "先借水龙头认清三个角色",
+      "src": "/media/mosfet-beginner/video/audio/scene-2.mp3",
+      "duration_seconds": 20.976,
+      "transcript": "把MOS管想成水龙头。栅极G像手柄，漏极D和源极S是通路的两端。转手柄的人不用亲自供水，同样，控制信号也不用承担灯的供电。这个比喻只用来分清角色，MOS管里面没有会转动的手柄。"
+    },
+    {
+      "chapter": "experiment",
+      "walkthrough_id": null,
+      "title": "打开：改变G与S之间的电压",
+      "src": "/media/mosfet-beginner/video/audio/scene-3.mp3",
+      "duration_seconds": 24.24,
+      "transcript": "回到电路。本例把S接在电源负端，开发板的地端，也接到S这一侧。控制器把G相对S的电压升到合适值，电场就让D与S之间的通道更容易导电。这叫导通。我们假设已经选对器件；不是所有MOS管都能用三点三伏充分打开。"
+    },
+    {
+      "chapter": "application",
+      "walkthrough_id": null,
+      "title": "供能：沿着灯的回路走一圈",
+      "src": "/media/mosfet-beginner/video/audio/scene-4.mp3",
+      "duration_seconds": 20.496,
+      "transcript": "开关导通以后，电流沿这条回路流动：电源正端，经过小灯，再经过D和S，回到电源负端。灯就亮了。紫线负责控制，绿色箭头表示约定电流。让灯工作的能量来自外部电源，不是由G提供。"
+    },
+    {
+      "chapter": "summary",
+      "walkthrough_id": null,
+      "title": "关闭：把G主动拉回S的电位",
+      "src": "/media/mosfet-beginner/video/audio/scene-5.mp3",
+      "duration_seconds": 24.984,
+      "transcript": "要关灯，控制器把G主动拉回S的电位，就是让两者的电压差回到接近零，并释放栅极储存的电荷。通道关断，灯就熄灭。只是拔掉控制线，让G悬空，不一定能可靠关断。先记住一句话：G管开关，D和S走负载电流，电源提供能量。"
+    }
+  ]
+}
